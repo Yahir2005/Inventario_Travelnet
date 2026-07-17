@@ -113,3 +113,29 @@ CREATE TABLE Modificaciones(
     Valores_nuevos JSON DEFAULT NULL,
     FOREIGN KEY (ClienteId) REFERENCES Clientes(ClienteId) 
 );
+
+
+CREATE TABLE Inventario(
+    HerramientaId INT
+    MaterialId INT
+    FOREIGN KEY (HerramientaId) REFERENCES Inventario(HerramientaId),
+    FOREIGN KEY (MaterialId) REFERENCES Material(MaterialId)
+);
+
+CREATE TABLE Herramienta(
+    HerramientaId INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre_Herramienta VARCHAR(50),
+    Descripcion TEXT,
+    Codigo VARCHAR(50),
+    Estado ENUM("Perdido","Disponible","En reposicion"),
+    Fecha_Actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Material(
+    MaterialId INT AUTO_INCREMENT PRIMARY KEY,
+    Tipo ENUM("Fibra","Antena"),
+    Descripcion TEXT,
+    Cantidad DECIMAL(10,2),
+    Unidad DECIMAL(10,2),
+    Fecha_Actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
