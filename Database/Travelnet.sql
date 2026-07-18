@@ -14,15 +14,6 @@ CREATE TABLE Usuario(
     Ocupacion ENUM('Administrador','Instalador','Mostrador')
 );
 
-CREATE TABLE Clientes(
-    ClienteId INT AUTO_INCREMENT PRIMARY KEY,
-    Telefono VARCHAR(13),
-    Nombre_Cliente VARCHAR(50),
-    Ubicacion TEXT,
-    Fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
-    Saldo_Pendiente DECIMAL(10,2) DEFAULT 0.00 
-);
-
 CREATE TABLE Tipo_Instalacion(
     Tipo_InstalacionId INT AUTO_INCREMENT PRIMARY KEY,
     Tipo ENUM('Fibra','Antena'), 
@@ -32,16 +23,16 @@ CREATE TABLE Tipo_Instalacion(
 CREATE TABLE Instalacion(
     InstalacionId INT AUTO_INCREMENT PRIMARY KEY,
     Tipo_InstalacionId INT,
-    ClienteId INT,
     UsuarioId INT,
+    Nombre_Cliente VARCHAR(50),
     Ubicacion_Maps TEXT,
-    Fechar_Instalacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    Telefono VARCHAR(13),
     Nombre_Wifi VARCHAR(50),
     Password_Wifi VARCHAR(100),
     Uuid_local VARCHAR(36) DEFAULT NULL UNIQUE,
     Sincronizado TINYINT(1) DEFAULT 1,
+    Fecha_Instalacion DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (Tipo_InstalacionId) REFERENCES Tipo_Instalacion(Tipo_InstalacionId), 
-    FOREIGN KEY (ClienteId) REFERENCES Clientes(ClienteId), 
     FOREIGN KEY (UsuarioId) REFERENCES Usuario(UsuarioId) 
 );
 
@@ -56,7 +47,6 @@ CREATE TABLE Imagen_Instalacion(
 
 CREATE TABLE Servicios(
     ServicioId INT AUTO_INCREMENT PRIMARY KEY,
-    ClienteId INT,
     InstalacionId INT,
     UsuarioId INT,
     Tipo_Servicio ENUM('Mantenimiento','Migracion','Otro'),
@@ -64,14 +54,13 @@ CREATE TABLE Servicios(
     Fecha_Servicio DATETIME DEFAULT CURRENT_TIMESTAMP,
     Uuid_local VARCHAR(36) DEFAULT NULL UNIQUE,
     Sincronizado TINYINT(1) DEFAULT 1,
-    FOREIGN KEY (InstalacionId) REFERENCES Instalacion(InstalacionId),
-    FOREIGN KEY (ClienteId) REFERENCES Clientes(ClienteId), 
+    FOREIGN KEY (InstalacionId) REFERENCES Instalacion(InstalacionId), 
     FOREIGN KEY (UsuarioId) REFERENCES Usuario(UsuarioId)
 );
 
 CREATE TABLE Pago(
     PagoId INT AUTO_INCREMENT PRIMARY KEY,
-    ClienteId INT,
+    InstalacionId INT,
     UsuarioId INT,
     Modalidad_Servicio ENUM('Mensual','Bimestral','Trimestral','Anual','Otro'),
     Otro_Modalidad TEXT,
@@ -84,13 +73,12 @@ CREATE TABLE Pago(
     Uuid_local VARCHAR(36) DEFAULT NULL UNIQUE,
     Sincronizado TINYINT(1) DEFAULT 1, 
     Ultima_modificacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (ClienteId) REFERENCES Clientes(ClienteId),
+    FOREIGN KEY (InstalacionId) REFERENCES Instalacion(InstalacionId),
     FOREIGN KEY (UsuarioId) REFERENCES Usuario(UsuarioId)
 );
 
 CREATE TABLE Desinstalacion(
     DesinstalacionId INT AUTO_INCREMENT PRIMARY KEY,
-    ClienteId INT,
     InstalacionId INT, 
     UsuarioId INT,
     Motivo TEXT,
@@ -98,20 +86,19 @@ CREATE TABLE Desinstalacion(
     uuid_local VARCHAR(36) DEFAULT NULL UNIQUE,
     sincronizado TINYINT(1) DEFAULT 1,    
     FOREIGN KEY (InstalacionId) REFERENCES Instalacion(InstalacionId), 
-    FOREIGN KEY (ClienteId) REFERENCES Clientes(ClienteId), 
     FOREIGN KEY (UsuarioId) REFERENCES Usuario(UsuarioId)
 );
 
 CREATE TABLE Modificaciones(
     LogId INT AUTO_INCREMENT PRIMARY KEY,
-    ClienteId INT, 
+    InstalacionId INT,
     Tabla_Afectada VARCHAR(50),
     Registro_Afectado VARCHAR(50),
     Accion ENUM('Insercion','Modificacion','Eliminacion'),
     Fecha_Hora DATETIME DEFAULT CURRENT_TIMESTAMP,
     Valores_anteriores JSON DEFAULT NULL,
     Valores_nuevos JSON DEFAULT NULL,
-    FOREIGN KEY (ClienteId) REFERENCES Clientes(ClienteId) 
+    FOREIGN KEY (InstalacionId) REFERENCES Instalacion(InstalacionId) 
 );
 
 
@@ -133,7 +120,7 @@ CREATE TABLE Herramienta(
 
 CREATE TABLE Material(
     MaterialId INT AUTO_INCREMENT PRIMARY KEY,
-    Tipo ENUM("Fibra","Antena"),
+    Tipo ENUM("Fibra","Antena","Ambos"),
     Descripcion TEXT,
     Cantidad DECIMAL(10,2),
     Unidad DECIMAL(10,2),
