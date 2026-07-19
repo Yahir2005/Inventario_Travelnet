@@ -20,18 +20,27 @@ CREATE TABLE Tipo_Instalacion(
     Torre_Asignada_o_OLT VARCHAR(30)
 );
 
+CREATE TABLE Cliente(
+    ClienteId INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre_Cliente VARCHAR(50),
+    Telefono VARCHAR(13),
+    Direccion TEXT,
+    Active BOOLEAN DEFAULT TRUE,
+    TipoCliente ENUM("Fisica","Moral")
+);
+
 CREATE TABLE Instalacion(
     InstalacionId INT AUTO_INCREMENT PRIMARY KEY,
     Tipo_InstalacionId INT,
     UsuarioId INT,
-    Nombre_Cliente VARCHAR(50),
     Ubicacion_Maps TEXT,
-    Telefono VARCHAR(13),
     Nombre_Wifi VARCHAR(50),
     Password_Wifi VARCHAR(100),
+    Active BOOLEAN DEFAULT TRUE,
     Uuid_local VARCHAR(36) DEFAULT NULL UNIQUE,
     Sincronizado TINYINT(1) DEFAULT 1,
     Fecha_Instalacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (ClienteId) REFERENCES Cliente(ClienteId),
     FOREIGN KEY (Tipo_InstalacionId) REFERENCES Tipo_Instalacion(Tipo_InstalacionId), 
     FOREIGN KEY (UsuarioId) REFERENCES Usuario(UsuarioId) 
 );
@@ -51,7 +60,9 @@ CREATE TABLE Servicios(
     UsuarioId INT,
     Tipo_Servicio ENUM('Mantenimiento','Migracion','Otro'),
     Detalle_Otro TEXT,
-    Fecha_Servicio DATETIME DEFAULT CURRENT_TIMESTAMP,
+    Estado ENUM("Realizado","Pospuesto"),
+    Fecha_Levantamiento DATE,
+    Fecha_Finalizado DATETIME DEFAULT CURRENT_TIMESTAMP,
     Uuid_local VARCHAR(36) DEFAULT NULL UNIQUE,
     Sincronizado TINYINT(1) DEFAULT 1,
     FOREIGN KEY (InstalacionId) REFERENCES Instalacion(InstalacionId), 
@@ -69,7 +80,8 @@ CREATE TABLE Pago(
     Otro_Pago TEXT,
     Numero_cuenta VARCHAR(50),
     Estado_Pago ENUM('Completado', 'Incompleto', 'Pendiente') DEFAULT 'Completado', 
-    Monto DECIMAL(10,2) NOT NULL, 
+    Monto DECIMAL(10,2) NOT NULL,
+    Plan ENUM("20 MEGAS","40 MEGAS","60 MEGAS", "80 MEGAS","100 MEGAS"),
     Uuid_local VARCHAR(36) DEFAULT NULL UNIQUE,
     Sincronizado TINYINT(1) DEFAULT 1, 
     Ultima_modificacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
