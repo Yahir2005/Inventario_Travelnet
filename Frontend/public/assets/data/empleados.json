@@ -1,0 +1,50 @@
+[
+    {
+        "UsuarioId": 1,
+        "Nombre": "Jose Antonio Cruz",
+        "Usuario": "admin",
+        "Password": "12345678",
+        "Email": "JoseAntonio@outlook.com",
+        "Telefono": "2371002345",
+        "Activo": true,
+        "accesos_count": 5,
+        "ultimo_acceso": "2026-07-20T10:30:00",
+        "ocupacion": "Administrador"
+    },
+    {
+        "UsuarioId": 2,
+        "Nombre": "María lopez",
+        "Usuario": "mlopez",
+        "Password": "abcde",
+        "Email": "MariaLopez@example.com",
+        "Telefono": "2373245234",
+        "Activo": true,
+        "accesos_count": 12,
+        "ultimo_acceso": "2026-07-19T18:10:00",
+        "ocupacion": "Instalador"
+    },
+    {
+        "UsuarioId": 3,
+        "Nombre": "Daniel Olivera",
+        "Usuario": "DaniO",
+        "Password": "234fasf",
+        "Email": "DanielOlivera@example.com",
+        "Telefono": "2378902345",
+        "Activo": false,
+        "accesos_count": 4,
+        "ultimo_acceso": null,
+        "ocupacion": "Mostrador"
+    },
+    {
+        "UsuarioId": 4,
+        "Nombre": "Jose Perez",
+        "Usuario": "JosePerez",
+        "Password": "fds244",
+        "Email": "Jose@example.com",
+        "Telefono": "2379870234",
+        "Activo": true,
+        "accesos_count": 5,
+        "ultimo_acceso": "2026-07-19T18:23:20",
+        "ocupacion": "Mostrador"
+    }
+]
