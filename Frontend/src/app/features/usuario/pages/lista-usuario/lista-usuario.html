@@ -1,1 +1,49 @@
-<p>lista-usuario works!</p>
+<div class="container mt-4">
+  <h2>Lista de Usuarios</h2>
+  <table class="table table-striped table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th>#</th>
+        <th>Nombre</th>
+        <th>Usuario</th>
+        <th>Email</th>
+        <th>Teléfono</th>
+        <th>Activo</th>
+        <th>Accesos</th>
+        <th>Último Acceso</th>
+        <th>Ocupación</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (usuario of usuario(); track usuario.UsuarioId) {
+      <tr>
+        <td>{{ usuario.UsuarioId }}</td>
+        <td>{{ usuario.Nombre }}</td>
+        <td>{{ usuario.Usuario }}</td>
+        <td>{{ usuario.Email }}</td>
+        <td>{{ usuario.Telefono }}</td>
+        <td>
+          @if (usuario.Activo) {
+          <span class="badge bg-success">Sí</span>
+          } @else {
+          <span class="badge bg-danger">No</span>
+          }
+        </td>
+        <td>{{ usuario.accesos_count }}</td>
+        <td>{{ usuario.ultimo_acceso || '—' }}</td>
+        <td>
+          <span class="badge" [class.bg-primary]="usuario.ocupacion === 'Administrador'"
+            [class.bg-info]="usuario.ocupacion === 'Instalador'"
+            [class.bg-secondary]="usuario.ocupacion === 'Mostrador'">
+            {{ usuario.ocupacion }}
+          </span>
+        </td>
+      </tr>
+      } @empty {
+      <tr>
+        <td colspan="9" class="text-center">Cargando usuarios...</td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>
