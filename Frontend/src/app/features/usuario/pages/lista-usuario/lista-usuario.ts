@@ -9,13 +9,13 @@ import { Usuario } from '../../models/usuario.model';
   templateUrl: './lista-usuario.html',
   styleUrl: './lista-usuario.scss',
 })
-export class ListaUsuario {
+export class ListaUsuario implements OnInit {
 
   private usuarioService = inject(UsuarioService);
   usuario = signal<Usuario[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
-  ngOninit(): void {
+  ngOnInit(): void {
     this.loading.set(true);
     this.usuarioService.getUsuarios().subscribe({
       next: (data) => {

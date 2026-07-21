@@ -8,7 +8,7 @@ import { Usuario } from '../models/usuario.model';
 })
 export class UsuarioService {
   constructor(private http: HttpClient) { }
-  private readonly dataUrl = '/public/assets/data/empleados.json';
+  private readonly dataUrl = '/assets/data/empleados.json';
   getUsuarios(): Observable<Usuario[]> {
     //return this.http.get<Usuario[]>('/public/assets/data/empleados.json');
     return this.http.get<Usuario[]>(this.dataUrl);
