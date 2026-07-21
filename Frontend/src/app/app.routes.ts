@@ -7,5 +7,12 @@ export const routes: Routes = [
             import('./features/usuario/usuario.routes').then(
                 (m) => m.USUARIO
             )
+    },
+    {
+        path: 'cliente',
+        loadChildren: () =>
+            import('./features/cliente/cliente.routes').then(
+                (m) => m.CLIENTE_ROUTES
+            )
     }
 ];
