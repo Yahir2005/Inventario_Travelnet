@@ -14,10 +14,16 @@ CREATE TABLE Usuario(
     Ocupacion ENUM('Administrador','Instalador','Mostrador')
 );
 
-CREATE TABLE Tipo_Instalacion(
-    Tipo_InstalacionId INT AUTO_INCREMENT PRIMARY KEY,
-    Tipo ENUM('Fibra','Antena'), 
-    Torre_Asignada_o_OLT VARCHAR(30)
+CREATE TABLE OLT (
+    OLTId INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre VARCHAR(50),
+    Ubicacion TEXT
+);
+
+CREATE TABLE Torre (
+    TorreId INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre VARCHAR(50),
+    Ubicacion TEXT
 );
 
 CREATE TABLE Cliente(
@@ -31,18 +37,25 @@ CREATE TABLE Cliente(
 
 CREATE TABLE Instalacion(
     InstalacionId INT AUTO_INCREMENT PRIMARY KEY,
-    Tipo_InstalacionId INT,
     UsuarioId INT,
+    OLTId INT DEFAULT NULL,
+    TorreId INT DEFAULT NULL,
     Ubicacion_Maps TEXT,
     Nombre_Wifi VARCHAR(50),
     Password_Wifi VARCHAR(100),
     Active BOOLEAN DEFAULT TRUE,
+    Tipo ENUM('Fibra','Antena'),
     Uuid_local VARCHAR(36) DEFAULT NULL UNIQUE,
     Sincronizado TINYINT(1) DEFAULT 1,
     Fecha_Instalacion DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (ClienteId) REFERENCES Cliente(ClienteId),
-    FOREIGN KEY (Tipo_InstalacionId) REFERENCES Tipo_Instalacion(Tipo_InstalacionId), 
-    FOREIGN KEY (UsuarioId) REFERENCES Usuario(UsuarioId) 
+    FOREIGN KEY (UsuarioId) REFERENCES Usuario(UsuarioId),
+    FOREIGN KEY (OLTId) REFERENCES OLT(OLTId),
+    FOREIGN KEY (TorreId) REFERENCES Torre(TorreId),
+    CHECK (
+        (Tipo = 'Fibra' AND OLTId IS NOT NULL AND TorreId IS NULL) OR
+        (Tipo = 'Antena' AND TorreId IS NOT NULL AND OLTId IS NULL)
+    )  
 );
 
 CREATE TABLE Imagen_Instalacion(
