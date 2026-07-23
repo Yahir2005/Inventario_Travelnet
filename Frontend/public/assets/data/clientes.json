@@ -1,26 +1,26 @@
 [
     {
-        "idCliente": 1,
-        "Nombre": "Pedro Martínez",
+        "ClienteId":1,
+        "Nombre":"Pedro Martínez",
         "Maps": "https://maps.google.com/?q=18.3221,-97.6105",
-        "Pagos": {
-            "estado": "Proximo",
+        "Pagos":{
+            "estado": "Proximo pago",
             "fecha_proximo_pago": "2027-02-18",
-            "debe": false
+            "debe": false           
         },
-        "Modalidad": "Anual",
-        "Instalacion": "Fibra",
-        "Detalles": {
-            "InstalacionId": 101,
-            "Nombre_Wifi": "MARTINEZ_FIBRA_5G",
-            "Password_Wifi": "P3dro_2021",
-            "Asignado_a": {
-                "Tipo": "OLT",
-                "Nombre": "OLT-Central-01"
+        "Modalidad":"Anual",
+        "Instalacion":"Fibra",
+        "Detalles":{
+            "InstalacionId":101,
+            "Nombre_Wifi":"MARTINEZ_FIBRA_5G",
+            "Password_Wifi":"234234lfe.2",
+            "Asignado_a":{
+                "Tipo":"OLT",
+                "Nombre":"OLT-Central-01"
             },
-            "Cantidad_Pagos": 4,
-            "Plan": "60 MEGAS",
-            "Pagos_Historial": [
+            "Cantidad_Pagos":4,
+            "Plan":"60 MEGAS",
+            "Pagos_Historial":[
                 {
                     "PagoId": 401,
                     "Fecha_Pago": "2023-02-18",
@@ -48,108 +48,108 @@
                     "Monto": 5200.00,
                     "Estado_Pago": "Completado",
                     "Tipo_Pago": "Transferencia"
-                }
+                }                
             ]
         }
     },
     {
-        "idCliente": 2,
-        "Nombre": "Adrian Gómez",
-        "Maps": "https://maps.google.com/?q=18.3350,-97.5980",
-        "Pagos": {
-            "estado": "Proximo",
-            "fecha_proximo_pago": "2026-08-18",
-            "debe": false
-        },
-        "Modalidad": "Mensual",
-        "Instalacion": "Antena",
-        "Detalles": {
-            "InstalacionId": 102,
-            "Nombre_Wifi": "GOMEZ_HOME_WIFI",
-            "Password_Wifi": "Adrian1234!",
-            "Asignado_a": {
-                "Tipo": "Torre",
-                "Nombre": "Torre-Norte"
-            },
-            "Cantidad_Pagos": 30,
-            "Plan": "40 MEGAS",
-            "Pagos_Historial": [
-                {
-                    "PagoId": 410,
-                    "Fecha_Pago": "2023-08-18",
-                    "Monto": 350.00,
-                    "Estado_Pago": "Completado",
-                    "Tipo_Pago": "Efectivo"
-                },
-                {
-                    "PagoId": 411,
-                    "Fecha_Pago": "2023-09-18",
-                    "Monto": 350.00,
-                    "Estado_Pago": "Completado",
-                    "Tipo_Pago": "Efectivo"
-                },
-                {
-                    "PagoId": 412,
-                    "Fecha_Pago": "2026-06-18",
-                    "Monto": 400.00,
-                    "Estado_Pago": "Completado",
-                    "Tipo_Pago": "Efectivo"
-                },
-                {
-                    "PagoId": 413,
-                    "Fecha_Pago": "2026-07-18",
-                    "Monto": 400.00,
-                    "Estado_Pago": "Completado",
-                    "Tipo_Pago": "Efectivo"
-                }
-            ]
-        }
+    "idCliente": 2,
+    "Nombre": "Adrian Gómez",
+    "Maps": "https://maps.google.com/?q=18.3350,-97.5980",
+    "Pagos": {
+      "estado": "Proximo pago",
+      "fecha_proximo_pago": "2026-08-18",
+      "debe": false
     },
-    {
-        "idCliente": 3,
-        "Nombre": "Daniel Ortiz",
-        "Maps": "https://maps.google.com/?q=18.3400,-97.6200",
-        "Pagos": {
-            "estado": "Debe",
-            "fecha_proximo_pago": null,
-            "debe": true,
-            "monto_adeudo": 400.00
+    "Modalidad": "Mensual",
+    "Instalacion": "Antena",
+    "Detalles": {
+      "InstalacionId": 102,
+      "Nombre_Wifi": "GOMEZ_HOME_WIFI",
+      "Password_Wifi": "Adrian1234!",
+      "Asignado_a": {
+        "Tipo": "Torre",
+        "Nombre": "Torre-Norte"
+      },
+      "Cantidad_Pagos": 30,
+      "Plan": "40 MEGAS",
+      "Pagos_Historial": [
+        {
+          "PagoId": 410,
+          "Fecha_Pago": "2023-08-18",
+          "Monto": 350.00,
+          "Estado_Pago": "Completado",
+          "Tipo_Pago": "Efectivo"
         },
-        "Modalidad": "Bimestral",
-        "Instalacion": "Fibra",
-        "Detalles": {
-            "InstalacionId": 103,
-            "Nombre_Wifi": "ORTIZ_FIBRA",
-            "Password_Wifi": "Dani3l_2023",
-            "Asignado_a": {
-                "Tipo": "OLT",
-                "Nombre": "OLT-Comercial-02"
-            },
-            "Cantidad_Pagos": 15,
-            "Plan": "80 MEGAS",
-            "Pagos_Historial": [
-                {
-                    "PagoId": 420,
-                    "Fecha_Pago": "2023-05-10",
-                    "Monto": 700.00,
-                    "Estado_Pago": "Completado",
-                    "Tipo_Pago": "Efectivo"
-                },
-                {
-                    "PagoId": 421,
-                    "Fecha_Pago": "2026-03-10",
-                    "Monto": 750.00,
-                    "Estado_Pago": "Completado",
-                    "Tipo_Pago": "Transferencia"
-                },
-                {
-                    "PagoId": 422,
-                    "Fecha_Pago": "2026-05-10",
-                    "Monto": 750.00,
-                    "Estado_Pago": "Pendiente",
-                    "Tipo_Pago": "Otro"
-                }
-            ]
+        {
+          "PagoId": 411,
+          "Fecha_Pago": "2023-09-18",
+          "Monto": 350.00,
+          "Estado_Pago": "Completado",
+          "Tipo_Pago": "Efectivo"
+        },
+        {
+          "PagoId": 412,
+          "Fecha_Pago": "2026-06-18",
+          "Monto": 400.00,
+          "Estado_Pago": "Completado",
+          "Tipo_Pago": "Efectivo"
+        },
+        {
+          "PagoId": 413,
+          "Fecha_Pago": "2026-07-18",
+          "Monto": 400.00,
+          "Estado_Pago": "Completado",
+          "Tipo_Pago": "Efectivo"
         }
+      ]
     }
+  },
+  {
+    "idCliente": 3,
+    "Nombre": "Daniel Ortiz",
+    "Maps": "https://maps.google.com/?q=18.3400,-97.6200",
+    "Pagos": {
+      "estado": "Debe",
+      "fecha_proximo_pago": null,
+      "debe": true,
+      "monto_adeudo": 400.00
+    },
+    "Modalidad": "Bimestral",
+    "Instalacion": "Fibra",
+    "Detalles": {
+      "InstalacionId": 103,
+      "Nombre_Wifi": "ORTIZ_FIBRA",
+      "Password_Wifi": "Dani3l_2023",
+      "Asignado_a": {
+        "Tipo": "OLT",
+        "Nombre": "OLT-Comercial-02"
+      },
+      "Cantidad_Pagos": 15,
+      "Plan": "80 MEGAS",
+      "Pagos_Historial": [
+        {
+          "PagoId": 420,
+          "Fecha_Pago": "2023-05-10",
+          "Monto": 700.00,
+          "Estado_Pago": "Completado",
+          "Tipo_Pago": "Efectivo"
+        },
+        {
+          "PagoId": 421,
+          "Fecha_Pago": "2026-03-10",
+          "Monto": 750.00,
+          "Estado_Pago": "Completado",
+          "Tipo_Pago": "Transferencia"
+        },
+        {
+          "PagoId": 422,
+          "Fecha_Pago": "2026-05-10",
+          "Monto": 750.00,
+          "Estado_Pago": "Pendiente",
+          "Tipo_Pago": "Otro"
+        }
+      ]
+    }
+  }
 ]
