@@ -21,5 +21,12 @@ export const routes: Routes = [
             import('./features/pago/pago.routes').then(
                 (m) => m.PAGO_ROUTES
             )
+    },
+    {
+        path: 'instalacion',
+        loadChildren: () =>
+            import('./features/instalacion/instalacion.routes').then(
+                (m) => m.INSTALACION_ROUTES
+            )
     }
 ];
