@@ -28,5 +28,12 @@ export const routes: Routes = [
             import('./features/instalacion/instalacion.routes').then(
                 (m) => m.INSTALACION_ROUTES
             )
+    },
+    {
+        path: 'servicios',
+        loadChildren: () =>
+            import('./features/servicios/servicios.routes').then(
+                (m) => m.SERVICIOS_ROUTES
+            )
     }
 ];
