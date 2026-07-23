@@ -1,0 +1,29 @@
+[
+    {
+        "ServicioId":1,
+        "Instalacion":101,
+        "UsuarioId":1,
+        "Tipo_Servicio":"Mantenimiento",
+        "Detalle_Otro": null,
+        "Estado":"Realizado",
+        "Fecha_Levantamiento":"2026-07-19"
+    },
+    {
+        "ServicioId":2,
+        "Instalacion":102,
+        "UsuarioId":1,
+        "Tipo_Servicio":"Mantenimiento",
+        "Detalle_Otro": null,
+        "Estado":"Realizado",
+        "Fecha_Levantamiento":"2026-07-19"
+    },
+    {
+        "ServicioId":1,
+        "Instalacion":103,
+        "UsuarioId":1,
+        "Tipo_Servicio":"Mantenimiento",
+        "Detalle_Otro": null,
+        "Estado":"Realizado",
+        "Fecha_Levantamiento":"2026-07-19"
+    }
+]
