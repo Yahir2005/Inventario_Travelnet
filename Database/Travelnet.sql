@@ -38,6 +38,7 @@ CREATE TABLE Cliente(
 CREATE TABLE Instalacion(
     InstalacionId INT AUTO_INCREMENT PRIMARY KEY,
     UsuarioId INT,
+    ClienteId INT,
     OLTId INT DEFAULT NULL,
     TorreId INT DEFAULT NULL,
     Ubicacion_Maps TEXT,
@@ -126,14 +127,6 @@ CREATE TABLE Modificaciones(
     FOREIGN KEY (InstalacionId) REFERENCES Instalacion(InstalacionId) 
 );
 
-
-CREATE TABLE Inventario(
-    HerramientaId INT
-    MaterialId INT
-    FOREIGN KEY (HerramientaId) REFERENCES Inventario(HerramientaId),
-    FOREIGN KEY (MaterialId) REFERENCES Material(MaterialId)
-);
-
 CREATE TABLE Herramienta(
     HerramientaId INT AUTO_INCREMENT PRIMARY KEY,
     Nombre_Herramienta VARCHAR(50),
@@ -148,6 +141,13 @@ CREATE TABLE Material(
     Tipo ENUM("Fibra","Antena","Ambos"),
     Descripcion TEXT,
     Cantidad DECIMAL(10,2),
-    Unidad DECIMAL(10,2),
+    Unidad_Medida ENUM('Metros', 'Piezas', 'Kilogramos', 'Litros'),
     Fecha_Actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Inventario(
+    HerramientaId INT,
+    MaterialId INT,
+    FOREIGN KEY (HerramientaId) REFERENCES Inventario(HerramientaId),
+    FOREIGN KEY (MaterialId) REFERENCES Material(MaterialId)
 );
