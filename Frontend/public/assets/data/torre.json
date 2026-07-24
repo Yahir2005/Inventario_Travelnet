@@ -1,0 +1,17 @@
+[
+  {
+    "OLTId": 1,
+    "Nombre": "OLT-CENTRO-01",
+    "Ubicacion": "Oficinas Centrales, Piso 2"
+  },
+  {
+    "OLTId": 2,
+    "Nombre": "OLT-NORTE-01",
+    "Ubicacion": "Plaza Norte, Local 15"
+  },
+  {
+    "OLTId": 3,
+    "Nombre": "OLT-SUR-01",
+    "Ubicacion": "Bodega Sur, Zona Industrial"
+  }
+]
