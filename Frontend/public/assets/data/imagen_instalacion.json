@@ -1,0 +1,23 @@
+[
+  {
+    "Imagen_InstalacionId": 1,
+    "InstalacionId": 1,
+    "Ruta_Imagen": "assets/images/instalaciones/foto1_instalacion_1.jpg",
+    "Uuid_local": "e5f6g7h8-i9j0-1234-klmn-opqrstuvwxyz",
+    "Sincronizado": "1"
+  },
+  {
+    "Imagen_InstalacionId": 2,
+    "InstalacionId": 1,
+    "Ruta_Imagen": "assets/images/instalaciones/foto2_instalacion_1.jpg",
+    "Uuid_local": "f6g7h8i9-j0k1-2345-lmno-pqrstuvwxyz",
+    "Sincronizado": "1"
+  },
+  {
+    "Imagen_InstalacionId": 3,
+    "InstalacionId": 2,
+    "Ruta_Imagen": "assets/images/instalaciones/foto1_instalacion_2.jpg",
+    "Uuid_local": "g7h8i9j0-k1l2-3456-mnop-qrstuvwxyz",
+    "Sincronizado": "0"
+  }
+]
