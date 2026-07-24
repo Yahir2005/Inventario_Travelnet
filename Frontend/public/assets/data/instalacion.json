@@ -1,0 +1,47 @@
+[
+  {
+    "InstalacionId": 1,
+    "UsuarioId": 2,
+    "ClienteId": 1,
+    "OLTId": 1,
+    "TorreId": null,
+    "Ubicacion_Maps": "https://maps.google.com?q=19.432608,-99.133209",
+    "Nombre_Wifi": "WiFi-Casa-Roberto",
+    "Password_Wifi": "ClaveSegura123",
+    "Active": true,
+    "Tipo": "Fibra",
+    "Uuid_local": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    "Sincronizado": true,
+    "Fecha_Instalacion": "2026-07-20T14:30:00"
+  },
+  {
+    "InstalacionId": 2,
+    "UsuarioId": 2,
+    "ClienteId": 2,
+    "OLTId": null,
+    "TorreId": 1,
+    "Ubicacion_Maps": "https://maps.google.com?q=19.432608,-99.133209",
+    "Nombre_Wifi": "WiFi-Empresa-XYZ",
+    "Password_Wifi": "EmpresaSegura456",
+    "Active": true,
+    "Tipo": "Antena",
+    "Uuid_local": "6d5a8c3e-5f88-4d1a-9b3c-7e92f4d6a801",
+    "Sincronizado": true,
+    "Fecha_Instalacion": "2026-07-21T09:00:00"
+  },
+  {
+    "InstalacionId": 3,
+    "UsuarioId": 3,
+    "ClienteId": 3,
+    "OLTId": 2,
+    "TorreId": null,
+    "Ubicacion_Maps": "https://maps.google.com?q=19.432608,-99.133209",
+    "Nombre_Wifi": "WiFi-Ana-Torres",
+    "Password_Wifi": "WifiAna789",
+    "Active": false,
+    "Tipo": "Fibra",
+    "Uuid_local": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "Sincronizado": false,
+    "Fecha_Instalacion": "2026-07-19T16:45:00"
+  }
+]
