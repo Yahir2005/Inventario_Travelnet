@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ClienteService } from '../../services/cliente';
-import { Cliente } from '../../models/cliente.model'
+import { ClienteListView } from '../../models/cliente-list-view.model';
 
 @Component({
   selector: 'app-lista-cliente',
@@ -11,27 +11,26 @@ import { Cliente } from '../../models/cliente.model'
   styleUrl: './lista-cliente.scss',
 })
 export class ListaCliente implements OnInit {
-  private clienteService = inject(ClienteService);
+  clientes = signal<ClienteListView[]>([]);
+  loading = signal<boolean>(true);
 
-  clientes = signal<Cliente[]>([]);
-  clienteSeleccionado = signal<Cliente | null>(null);
-  loading = signal(false);
-  
+  constructor(private clienteService: ClienteService) {}
+
   ngOnInit(): void {
-    this.loading.set(true);
-    this.clienteService.getClientes().subscribe({
+    this.clienteService.getClientesListView().subscribe({
       next: (data) => {
         this.clientes.set(data);
         this.loading.set(false);
       },
       error: (err) => {
-        console.error('Error al cargar clientes',err);
+        console.error('Error al cargar clientes', err);
         this.loading.set(false);
-      }
+      },
     });
   }
-  verDetalles(cliente: Cliente) {
-    this.clienteSeleccionado.set(cliente);
+
+  verDetalles(cliente: ClienteListView): void {
+    console.log(cliente);
+    // TODO: navegar a detalles o abrir modal
   }
 }
-

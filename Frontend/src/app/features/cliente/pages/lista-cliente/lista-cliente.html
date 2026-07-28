@@ -1,1 +1,87 @@
-<p>lista-cliente works!</p>
+<div class="container-fluid mt-3">
+
+    <div class="row mb-4 align-items-end gap-3">
+
+        <div class="col-auto">
+            <select class="form-select" aria-label="Default select example">
+                <option selected>Ordenar Por</option>
+                <option value="nombre">Nombre</option>
+                <option value="id">ID</option>
+                <option value="adeudo">Adeudo</option>
+                <option value="pago">Pago</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-dark">Ordenar Por</button>
+        </div>
+        <div class="col-auto">
+            <select class="form-select" aria-label="Default select example">
+                <option selected>Filtros</option>
+                <option value="antena">Antena</option>
+                <option value="fibra">Fibra</option>
+                <option value="adeudo">Adeudo</option>
+                <option value="modalidad">Modalidad</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-danger">Filtrar</button>
+        </div>
+        <div class="col-md-4">
+            <form class="d-flex" role="search">
+                <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search"/>
+                <button class="btn btn-outline-success text-nowrap" type="submit">Buscar Cliente</button>
+            </form>
+        </div>
+        
+    <table class="table-bordered">
+        <thead >
+            <tr>
+            <th scope="col">ClienteId</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Maps</th>
+            <th scope="col">Pagos</th>
+            <th scope="col">Modalidad</th>
+            <th scope="col">Instalación</th>
+            <th scope="col">Detalles</th>
+            </tr>
+        </thead>
+            <tbody>
+               @for (cliente of clientes(); track cliente.idCliente) {
+                <tr>
+                    <td>{{ cliente.idCliente }}</td>
+                    <td>{{ cliente.Nombre }}</td>
+                    <td>
+                        <a [href]="cliente.Maps" target="_blank" class="text-decoration-none fw-bold">Enlace</a>
+                    </td>
+                    <td>
+                        {{ cliente.Pagos.estado }}
+                        @if (cliente.Pagos.debe) {
+                            <button class="btn btn-success btn-sm ms-2"  style="font-size: 0.75rem;">Registrar Pago</button>
+                        }
+                    </td>
+                    <td>{{ cliente.Modalidad }}</td>
+                    <td>{{ cliente.Instalacion }}</td>
+                    <td class="text-center">
+                        <button class="btn btn-primary btn-sm" (click)="verDetalles(cliente)">
+                            Detalles
+                        </button>
+                    </td>
+                </tr>
+               } @empty {
+                <tr>
+                    <td colspan="7" class="text-center py-4">
+                        @if (loading()) {
+                            <div class="spinner-border text-primary" role="status"></div>
+                        } @else {
+                            No hay clientes para mostrar.
+                        }
+                    </td>
+                </tr>
+               }
+            </tbody>
+    </table>
+    
+    </div>
+
+
+</div>
