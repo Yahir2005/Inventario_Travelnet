@@ -7,5 +7,12 @@ export const CLIENTE_ROUTES: Routes = [
             import('./pages/lista-cliente/lista-cliente').then(
                 (m) => m.ListaCliente
             )
+    },
+    {
+        path: 'insertar',
+        loadComponent: () =>
+            import('./pages/insertar-cliente/insertar-cliente').then(
+                (m) => m.InsertarCliente
+            )
     }
 ];
