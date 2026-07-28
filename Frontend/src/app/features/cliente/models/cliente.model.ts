@@ -1,6 +1,6 @@
 export interface Cliente{
   ClienteId: number;
-  Nombre_Cliente: number;
+  Nombre_Cliente: string;
   Telefono: string;
   Direccion: string;
   Active: boolean;
