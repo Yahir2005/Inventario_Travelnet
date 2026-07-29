@@ -1,0 +1,70 @@
+# =========================
+# Node / Express Backend
+# =========================
+
+# Dependencias
+node_modules/
+
+# Archivos de lock
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Archivos de entorno
+.env
+.env.*        # .env.development, .env.production, etc.
+!.env.example # se permite subir un template
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Cache
+.cache/
+.tmp/
+temp/
+
+# Compilación (TypeScript o bundlers)
+dist/
+build/
+out/
+out-tsc/
+
+# PM2
+.pids
+*.pid
+*.seed
+*.pid.lock
+pm2.log
+
+# Cobertura de tests
+coverage/
+
+# Tests
+jest-cache/
+jest-output/
+test-output/
+
+# IDE / Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-data/
+docker-compose.override.yml
+
+# Prisma
+prisma/migrations/*-dev/
+prisma/dev.db
+
+# Sequelize
+sequelize-data/
+*.sqlite
+*.sqlite3
+
+# Otros archivos que no deben subirse
+*.tsbuildinfo
+*.tgz
