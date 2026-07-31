@@ -1,16 +1,26 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { Usuario } from '../models/usuario.model';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UsuarioService {
-  constructor(private http: HttpClient) { }
-  private readonly dataUrl = '/assets/data/empleados.json';
-  getUsuarios(): Observable<Usuario[]> {
-    //return this.http.get<Usuario[]>('/public/assets/data/empleados.json');
-    return this.http.get<Usuario[]>(this.dataUrl);
+  private http = inject(HttpClient);
+  private apiUrl = 'http://localhost:3000/api/usuarios/login';
+
+  login(credenciales: {Usuario: string, Password: string}){
+    return this.http.post<any>(this.apiUrl, credenciales).pipe(
+      tap(respuesta => {
+        if(respuesta && respuesta.token){
+          localStorage.setItem('token',respuesta.token);
+          localStorage.setItem('usuario',JSON.stringify(respuesta.user));
+        }
+      })
+    )
+  }
+
+  estaAutenticado(): boolean{
+    return !!localStorage.getItem('token');
   }
 }
