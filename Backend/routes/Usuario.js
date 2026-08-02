@@ -7,7 +7,7 @@ router.post('/login',UsuarioController.login);
 router.get('/activos',UsuarioController.getByActive);
 
 router.get('/',UsuarioController.getAll);
-router.get('/',UsuarioController.create);
+router.post('/',UsuarioController.create);
 
 router.get('/:id',UsuarioController.getById);
 router.put('/:id',UsuarioController.update);
