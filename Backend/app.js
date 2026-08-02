@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
+var jwt = require('jsonwebtoken');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -28,15 +29,34 @@ app.use(function(req,res,next){
   next();
 });
 
+app.use(function(req, res, next) {
+  if (req.path === '/api/usuarios/login') {
+    req.db = getDbPool(); 
+    return next();
+  }
+
+  const authHeader = req.headers['authorization'];
+  if (authHeader) {
+    const token = authHeader.split(' ')[1]; 
+    try {
+      const decoded = jwt.verify(token, 'TU CLAVE SECRETA AQUÍ'); 
+      req.db = getDbPool(decoded.rol); 
+      return next();
+    } catch (error) {
+      return res.status(401).json({ error: 'Token inválido o expirado' });
+    }
+  }
+
+  return res.status(401).json({ error: 'No autorizado. Falta el token de acceso.' });
+});
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api/usuarios',usuarioRouter);
 app.use('/api/cliente',clienteRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
+
 
 // error handler
 app.use(function(err, req, res, next) {
