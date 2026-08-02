@@ -1,5 +1,5 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import { Router,RouterOutlet } from '@angular/router';
 import { Navbar } from './shared/components/navbar/navbar';
 
 @Component({
@@ -9,5 +9,5 @@ import { Navbar } from './shared/components/navbar/navbar';
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = signal('Frontend');
+  public router = inject(Router);
 }

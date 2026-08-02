@@ -1,5 +1,7 @@
 <!-- Tu componente Navbar global -->
-<app-navbar></app-navbar>
+@if (router.url !== '/login') {
+  <app-navbar></app-navbar>
+}
 
 <!-- Contenedor principal para las páginas dinámicas -->
 <main class="container mt-4">
