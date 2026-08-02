@@ -20,7 +20,7 @@ const Usuario = {
         const {Nombre, Usuario, Password,Email,Telefono,Active,Ocupacion} = data;
         const result = await db.query(
             'INSERT INTO Usuario (Nombre, Usuario, Password,Email,Telefono,Active,Ocupacion) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [Nombre,Usuario,Password,Email,Telefono,Active]
+            [Nombre,Usuario,Password,Email,Telefono,Active,Ocupacion]
         );
         return { UsuarioId: result.insertId, ...data,Active:true};
     },
