@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 
 const getAll = async (req,res) => {
     try {
-        const cliente = await Cliente.findAll(req,db);
+        const cliente = await Cliente.findAll(req.db);
         res.json(cliente);
     } catch (error) {
         res.status(500).json({ error: error.message});
