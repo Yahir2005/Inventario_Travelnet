@@ -18,13 +18,15 @@ export class ListaUsuario implements OnInit {
   ngOnInit(): void {
     this.loading.set(true);
     this.usuarioService.getUsuarios().subscribe({
-      next: (data) => {
+      next: (data: Usuario[]) => {
         this.usuario.set(data);
         this.loading.set(false);
       },
       error: () => {
-        this.error.set('Error al cargar los usuarios');
-        this.loading.set(false);
+        error: () => {
+          this.error.set('Error al cargar los usuarios');
+          this.loading.set(false);
+        }
       }
     });
   }
