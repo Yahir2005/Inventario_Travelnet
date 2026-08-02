@@ -18,6 +18,11 @@ export class Login {
   credenciales = { Usuario: '', Password: ''};
   mensajeError = '';
 
+  mostrarPassword = false;
+  togglePassword(){
+    this.mostrarPassword = !this.mostrarPassword;
+  }
+
   onLogin(){
     this.authService.login(this.credenciales).subscribe({
       next: (res) => {
