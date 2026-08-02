@@ -44,7 +44,7 @@ const update = async (req,res) => {
         const exist = await Usuario.findByPk(req.db,req.params.id);
         if(!exist) return res.status(404).json({error: 'Usuario no encontrado'});
 
-        const usuarioUpdated = await Usuario.update(req.params.id, req.body);
+        const usuarioUpdated = await Usuario.update(req.db, req.params.id, req.body);
         res.json(usuarioUpdated);
     } catch (error) {
         res.status(500).json({error: error.message});
