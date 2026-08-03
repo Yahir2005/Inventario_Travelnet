@@ -12,6 +12,7 @@ var getDbPool = require('./src/config/database');
 var usuarioRouter = require('./routes/Usuario');
 var clienteRouter = require('./routes/Cliente');
 var instalacionRouter = require('./routes/Instalacion');
+var imagenInstalacionRouter = require('./routes/Imagen_Instalacion');
 
 var app = express();
 
@@ -56,6 +57,7 @@ app.use('/users', usersRouter);
 app.use('/api/usuarios',usuarioRouter);
 app.use('/api/cliente',clienteRouter);
 app.use('/api/instalacion',instalacionRouter);
+app.use('/api/imagenInstalacion',imagenInstalacionRouter);
 
 // catch 404 and forward to error handler
 
