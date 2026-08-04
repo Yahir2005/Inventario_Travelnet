@@ -1,4 +1,4 @@
-const Imagen_Instalacion = require('../model/imagen_instalacion');
+const Imagen_Instalacion = require('../model/Imagen_Instalacion');
 
 const getAll = async (req, res) => {
     try {
