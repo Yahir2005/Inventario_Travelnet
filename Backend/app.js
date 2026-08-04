@@ -14,7 +14,8 @@ var clienteRouter = require('./routes/Cliente');
 var instalacionRouter = require('./routes/Instalacion');
 var imagenInstalacionRouter = require('./routes/Imagen_Instalacion');
 var pagoRouter = require('./routes/Pago');
-
+var oltRouter = require('./routes/OLT');
+var torreRouter = require('./routes/Torre');
 var app = express();
 
 // view engine setup
@@ -56,6 +57,8 @@ app.use('/api/cliente',clienteRouter);
 app.use('/api/instalacion',instalacionRouter);
 app.use('/api/imagenInstalacion',imagenInstalacionRouter);
 app.use('/api/pago',pagoRouter);
+app.use('/api/OLT',oltRouter);
+app.use('/api/torre',torreRouter);
 
 // error handler
 app.use(function(err, req, res, next) {
