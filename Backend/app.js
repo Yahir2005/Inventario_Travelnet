@@ -13,6 +13,7 @@ var usuarioRouter = require('./routes/Usuario');
 var clienteRouter = require('./routes/Cliente');
 var instalacionRouter = require('./routes/Instalacion');
 var imagenInstalacionRouter = require('./routes/Imagen_Instalacion');
+var pagoRouter = require('./routes/Pago');
 
 var app = express();
 
@@ -26,10 +27,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(function(req,res,next){
-  req.db = getDbPool();
-  next();
-});
 
 app.use(function(req, res, next) {
   if (req.path === '/api/usuarios/login') {
@@ -58,9 +55,7 @@ app.use('/api/usuarios',usuarioRouter);
 app.use('/api/cliente',clienteRouter);
 app.use('/api/instalacion',instalacionRouter);
 app.use('/api/imagenInstalacion',imagenInstalacionRouter);
-
-// catch 404 and forward to error handler
-
+app.use('/api/pago',pagoRouter);
 
 // error handler
 app.use(function(err, req, res, next) {
