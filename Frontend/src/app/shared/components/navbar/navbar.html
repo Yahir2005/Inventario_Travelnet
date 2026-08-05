@@ -1,22 +1,22 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-        <!-- Reemplazamos "#" por la ruta raíz o tu home -->
         <a class="navbar-brand" routerLink="/">Travelnet</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+        
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <!-- Añadido routerLink y routerLinkActive -->
                     <a class="nav-link" routerLink="/home" routerLinkActive="active">Home</a>
                 </li>
-                <li class="nav-item">
+
+                <li class="nav-item" *ngIf="esAdmin">
                     <a class="nav-link" routerLink="/usuario" routerLinkActive="active">Usuarios</a>
                 </li>
+
                 <li class="nav-item dropdown">
-                    <!-- El toggle del dropdown de Bootstrap sí usa href="#" porque es solo un disparador visual de JS, no navega -->
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         Clientes
@@ -24,20 +24,35 @@
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li><a class="dropdown-item" routerLink="/cliente" routerLinkActive="active">Listar Clientes</a></li>
                         <li><a class="dropdown-item" routerLink="/cliente/insertar" routerLinkActive="active">Agregar Clientes</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">Otras opciones</a></li>
                     </ul>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-                </li>
             </ul>
-            <form class="d-flex">
-                <input class="form-control me-2" type="search" placeholder="Buscar..." aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Buscar</button>
-            </form>
+
+            <!-- SECCIÓN DERECHA: Búsqueda, Ocupación y Botón de Salir -->
+            <div class="d-flex align-items-center gap-3">
+                
+                <!-- Tu barra de búsqueda original -->
+                <form class="d-flex">
+                    <input class="form-control me-2" type="search" placeholder="Buscar..." aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Buscar</button>
+                </form>
+
+                <!-- Separador visual (opcional) -->
+                <div class="vr d-none d-lg-block"></div>
+
+                <!-- Mostrar la Ocupación -->
+                <span class="navbar-text fw-bold text-primary">
+                    {{ ocupacionUsuario }}
+                </span>
+
+                <!-- Botón de Salir -->
+                <button class="btn btn-danger btn-sm" (click)="cerrarSesion()">
+                    Salir
+                </button>
+                
+            </div>
         </div>
     </div>
 </nav>
