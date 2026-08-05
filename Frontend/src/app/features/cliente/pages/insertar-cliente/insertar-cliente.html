@@ -1,12 +1,42 @@
 <div class="container-fluid mt-3">
+  <h2>Agregar Nuevo Cliente</h2>
 
-<div class="mb-3">
-  <label for="exampleFormControlInput1" class="form-label">Email address</label>
-  <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
-</div>
-<div class="mb-3">
-  <label for="exampleFormControlTextarea1" class="form-label">Example textarea</label>
-  <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-</div>
+  <form (ngSubmit)="guardarCliente()">
+
+    <div class="mb-4">
+      <label for="nombre_cliente" class="form-label">Nombre Cliente</label>
+
+      <input type="text" class="form-control" id="nombre_cliente" name="Nombre" [(ngModel)]="cliente.Nombre_Cliente" placeholder="Ejemplo: Juarez Perez Antonio" required>
+    </div>
+
+    <div class="mb-4">
+      <label for="Telefono" class="form-label">Teléfono</label>
+
+      <input type="tel" class="form-control" id="Telefono" name="Telefono" [(ngModel)]="cliente.Telefono" placeholder="Ejemplo: 2341049080" required>
+    </div>
+
+    <div class="mb-4">
+      <label for="Direccion" class="form-label">Dirección</label>
+
+      <textarea class="form-control" id="Direccion" name="Direccion" rows="3" [(ngModel)]="cliente.Direccion"  required></textarea>
+    </div>
+
+    <div class="mb-4">
+      <label for="TipoCliente" class="form-label">Tipo cliente</label>
+
+      <select class="form-select" id="TipoCliente" name="Tipo" [(ngModel)]="cliente.TipoCliente" required>
+        <option value="" disabled selected>Selecciona un tipo...</option>
+        <option value="Fisica">Física</option>
+        <option value="Moral">Moral</option>
+      </select>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="mt-4">
+      <button type="submit" class="btn btn-primary">Guardar Cliente</button>
+      <button type="button" class="btn btn-secondary ms-2" routerLink="/cliente">Cancelar</button>
+    </div>
+
+  </form>
 
 </div>

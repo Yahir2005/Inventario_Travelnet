@@ -15,4 +15,8 @@ export class ClienteService {
   obtenerListaDetallada(): Observable <ClienteDetallado[]>{
     return this.http.get<ClienteDetallado[]>(`${this.apiUrl}/lista-detallada`);
   }
+
+  crearCliente(datosCliente:any) {
+    return this.http.post(this.apiUrl,datosCliente);
+  }
 }
