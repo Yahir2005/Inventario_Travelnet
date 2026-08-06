@@ -18,14 +18,16 @@ var oltRouter = require('./routes/OLT');
 var torreRouter = require('./routes/Torre');
 var app = express();
 
+BigInt.prototype.toJSON = function() { return this.toString(); };
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 app.use(logger('dev'));
 app.use(cors({ origin: 'http://localhost:4200'}));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
