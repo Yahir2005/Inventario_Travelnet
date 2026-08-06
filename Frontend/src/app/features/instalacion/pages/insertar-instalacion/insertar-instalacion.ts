@@ -115,8 +115,17 @@ obtenerClienteDeUrl() {
     }
 
     this.instalacionService.crearInstalacion(this.instalacion).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         alert('Instalación guardada exitosamente')
+        if (res && res.InstalacionId) {
+          const agregarImagen = confirm('¿Deseas agregar una imagen de instalación para este cliente?');
+          if (agregarImagen) {
+            this.router.navigate(['/imagen-instalacion/insertar-imagen-instalacion'], {
+              queryParams: { instalacionId: res.InstalacionId }
+            });
+            return;
+          }
+        }
         this.router.navigate(['/cliente']);
       },
       error: (err) => {
