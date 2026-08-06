@@ -31,10 +31,17 @@ export class InsertarClienteComponent {
     }
 
     this.clienteService.crearCliente(this.cliente).subscribe({
-      next: (respuesta) => {
+      next: (respuesta:any) => {
         alert('Cliente guardado exitosamente');
-        // Redirigimos a la tabla de clientes
-        this.router.navigate(['/cliente']); 
+        
+        const idGenerado = respuesta.ClienteId;
+
+        console.log('ID que se va a enviar:', idGenerado);
+
+        this.router.navigate(['instalacion/insertar-instalacion'], {
+          queryParams: {clienteId: idGenerado}
+        });
+
       },
       error: (err) => {
         console.error('Error al guardar:', err);
