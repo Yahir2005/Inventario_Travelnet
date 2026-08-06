@@ -1,0 +1,36 @@
+<div class="container-fluid mt-3">
+  <h2>Evidencia de Instalación</h2>
+
+  <div class="mb-4" *ngIf="!fotoCapturada">
+    <video #videoElement autoplay playsinline style="width: 100%; max-width: 600px; border: 2px solid #ccc; border-radius: 8px;"></video>
+    
+    <div class="mt-3">
+      <button type="button" class="btn btn-secondary me-2" (click)="iniciarCamara()" *ngIf="!mediaStream">
+        📷 Activar Cámara
+      </button>
+      <button type="button" class="btn btn-primary" (click)="capturarFoto()" *ngIf="mediaStream">
+        📸 Tomar Fotografía
+      </button>
+    </div>
+  </div>
+
+  <canvas #canvasElement style="display: none;"></canvas>
+
+  <!-- Sección: Vista previa de la foto tomada -->
+  <div class="mb-4" *ngIf="fotoCapturada">
+    <h5 class="text-success">¡Foto capturada con éxito!</h5>
+    <img [src]="fotoCapturada" style="width: 100%; max-width: 600px; border: 2px solid #28a745; border-radius: 8px;">
+    
+    <div class="mt-3">
+      <button type="button" class="btn btn-warning" (click)="fotoCapturada = null; iniciarCamara()">
+        🔄 Repetir Foto
+      </button>
+    </div>
+  </div>
+
+  <!-- Botón final para guardar en MariaDB -->
+  <hr>
+  <button type="button" class="btn btn-success btn-lg" (click)="saveImagen_Instalacion()" [disabled]="!fotoCapturada">
+    💾 Guardar en Base de Datos
+  </button>
+</div>
