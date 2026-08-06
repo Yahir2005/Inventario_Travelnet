@@ -51,5 +51,13 @@ export const routes: Routes = [
             import('./features/servicios/servicios.routes').then(
                 (m) => m.SERVICIOS_ROUTES
             )
+    },
+    {
+        path: 'imagen-instalacion',
+        canActivate:[authGuard],
+        loadChildren: () => 
+            import('./features/imagen_instalacion/imagen_instalacion.routes').then(
+                (m) => m.IMAGEN_INSTALACION_ROUTES
+            )
     }
 ];
