@@ -12,7 +12,7 @@ export const CLIENTE_ROUTES: Routes = [
         path: 'insertar',
         loadComponent: () =>
             import('./pages/insertar-cliente/insertar-cliente').then(
-                (m) => m.InsertarCliente
+                (m) => m.InsertarClienteComponent
             )
     }
 ];
