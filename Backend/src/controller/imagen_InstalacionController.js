@@ -1,4 +1,6 @@
 const Imagen_Instalacion = require('../model/Imagen_Instalacion');
+const path = require('path');
+const fs = require('fs');
 
 const getAll = async (req, res) => {
     try {
@@ -21,7 +23,19 @@ const getById = async (req, res) => {
 
 const create = async (req, res) => {
     try {
+
+        if(req.body.Ruta_Imagen && req.body.Ruta_Imagen.startsWith('data:image')){
+            const base64Data = req.body.Ruta_Imagen.replace(/^data:image\/\w+;base64,/, "");
+            const nombreArchivo = `evidencia_${Date.now()}.jpg`;
+            const dirUploads = path.join(__dirname, '../public/uploads');
+            fs.mkdirSync(dirUploads, { recursive: true });
+            const rutaFisica = path.join(dirUploads, nombreArchivo);
+            fs.writeFileSync(rutaFisica, base64Data, { encoding: 'base64' });
+            req.body.Ruta_Imagen = `/uploads/${nombreArchivo}`;
+
+        }
         const imagen_Instalacion = await Imagen_Instalacion.create(req.db, req.body);
+        
         res.status(201).json(imagen_Instalacion);
     } catch (error) {
         res.status(500).json({ error: error.message });
