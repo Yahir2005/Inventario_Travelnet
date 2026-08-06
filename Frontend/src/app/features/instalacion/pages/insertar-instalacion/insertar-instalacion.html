@@ -1,0 +1,83 @@
+<div class="container-fluid mt-3">
+  <h2>Nueva Instalación</h2>
+
+  <form (ngSubmit)="guardarInstalacion()">
+
+    <!-- Fila 1: Cliente y Tipo -->
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label class="form-label">Cliente</label>
+        <!-- Campo bloqueado, el ClienteId ya viene en la URL -->
+        <input type="text" class="form-control" value="✓ Cliente asignado automáticamente" disabled>
+        <input type="hidden" name="ClienteId" [(ngModel)]="instalacion.ClienteId">
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Tipo de Conexión</label>
+        <select class="form-select" name="Tipo" [(ngModel)]="instalacion.Tipo" required>
+          <option value="" disabled selected>Selecciona un tipo...</option>
+          <option value="Fibra">Fibra Óptica</option>
+          <option value="Antena">Antena (Inalámbrico)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Fila 2: Condicional para OLT o Torre -->
+    <div class="row mb-3">
+      <!-- Se muestra solo si es Fibra -->
+      <div class="col-md-6" *ngIf="instalacion.Tipo === 'Fibra'">
+        <label class="form-label">Seleccionar OLT</label>
+        <select class="form-select" name="OLTId" [(ngModel)]="instalacion.OLTId" required>
+          <option value="null" disabled selected>Selecciona una OLT...</option>
+          <option *ngFor="let olt of olts" [value]="olt.OLTId">{{ olt.Nombre }}</option>
+        </select>
+      </div>
+
+      <!-- Se muestra solo si es Antena -->
+      <div class="col-md-6" *ngIf="instalacion.Tipo === 'Antena'">
+        <label class="form-label">Seleccionar Torre</label>
+        <select class="form-select" name="TorreId" [(ngModel)]="instalacion.TorreId" required>
+          <option value="null" disabled selected>Selecciona una Torre...</option>
+          <option *ngFor="let torre of torres" [value]="torre.TorreId">{{ torre.Nombre }}</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Fila 3: Datos de Red y Localidad -->
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label class="form-label">Nombre de Wi-Fi</label>
+        <input type="text" class="form-control" name="Nombre_Wifi" [(ngModel)]="instalacion.Nombre_Wifi" required>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Contraseña Wi-Fi</label>
+        <input type="text" class="form-control" name="Password_Wifi" [(ngModel)]="instalacion.Password_Wifi" required>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Localidad</label>
+        <input type="text" class="form-control" name="Localidad" [(ngModel)]="instalacion.Localidad" required>
+      </div>
+    </div>
+
+    <!-- Fila 4: Geolocalización -->
+    <div class="mb-4 p-3 border rounded bg-light">
+      <label class="form-label d-block fw-bold">Ubicación del Dispositivo</label>
+      
+      <button type="button" class="btn btn-info mb-2" (click)="obtenerUbicacion()" [disabled]="cargandoUbicacion">
+        {{ cargandoUbicacion ? 'Obteniendo coordenadas...' : '📍 Capturar mi ubicación actual' }}
+      </button>
+      
+      <!-- Mostramos el link generado si ya se obtuvo -->
+      <div *ngIf="ubicacionObtenida" class="alert alert-success mt-2 p-2">
+        Ubicación capturada correctamente: <br>
+        <a [href]="instalacion.Ubicacion_Maps" target="_blank" class="small text-break">{{ instalacion.Ubicacion_Maps }}</a>
+      </div>
+    </div>
+
+    <!-- Botones Finales -->
+    <div class="mt-4">
+      <button type="submit" class="btn btn-primary">Registrar Instalación</button>
+    </div>
+
+  </form>
+</div>
