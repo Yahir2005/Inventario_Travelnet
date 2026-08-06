@@ -7,5 +7,12 @@ export const INSTALACION_ROUTES: Routes = [
             import('./pages/lista-instalacion/lista-instalacion').then(
                 (m) => m.ListaInstalacion
             )
+    },
+    {
+        path: 'insertar-instalacion',
+        loadComponent: () => 
+            import('./pages/insertar-instalacion/insertar-instalacion').then(
+                (m) => m.InsertarInstalacionComponent
+            )
     }
 ]
