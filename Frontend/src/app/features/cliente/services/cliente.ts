@@ -2,6 +2,7 @@ import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { ClienteDetallado } from "../models/cliente-list-view.model";
+import { Cliente } from "../models/cliente.model";
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,10 @@ export class ClienteService {
 
   obtenerListaDetallada(): Observable <ClienteDetallado[]>{
     return this.http.get<ClienteDetallado[]>(`${this.apiUrl}/lista-detallada`);
+  }
+
+  getClientes():Observable <Cliente[]>{
+    return this.http.get<Cliente[]>(this.apiUrl);
   }
 
   crearCliente(datosCliente:any) {
