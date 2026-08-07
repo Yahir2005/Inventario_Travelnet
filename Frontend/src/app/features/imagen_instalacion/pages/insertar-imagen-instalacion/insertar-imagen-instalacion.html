@@ -8,8 +8,8 @@
       <button type="button" class="btn btn-secondary me-2" (click)="iniciarCamara()" *ngIf="!mediaStream">
         📷 Activar Cámara
       </button>
-      <button type="button" class="btn btn-primary" (click)="capturarFoto()" *ngIf="mediaStream">
-        📸 Tomar Fotografía
+      <button type="button" class="btn btn-primary" (click)="capturarFoto()" *ngIf="mediaStream" [disabled]="!coordenadasObtenidas">
+        {{ coordenadasObtenidas ? '📸 Tomar Fotografía' : '⏳ Obteniendo ubicación...' }}
       </button>
     </div>
   </div>
