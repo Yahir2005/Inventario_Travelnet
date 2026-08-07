@@ -72,7 +72,14 @@ export class InsertarImagenInstalacion implements OnInit{
 
   async iniciarCamara() {
     try {
-      this.mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); 
+      this.mediaStream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          facingMode: 
+          'environment' ,
+          width: { ideal: 1920 },
+          height: { ideal: 1080 }
+        } 
+      }); 
       this.videoElement.nativeElement.srcObject = this.mediaStream;
 
       this.obtenerCoordenadasYDireccion();
