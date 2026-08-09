@@ -5,10 +5,10 @@ CREATE TABLE Usuario(
     UsuarioId INT AUTO_INCREMENT PRIMARY KEY,
     Nombre VARCHAR(50),
     Usuario VARCHAR(50),
-    Password VARCHAR(50),
+    Password VARCHAR(100),
     Email VARCHAR(60),
     Telefono VARCHAR(13),
-    Activo BOOLEAN DEFAULT TRUE,
+    Active BOOLEAN DEFAULT TRUE,
     accesos_count INT DEFAULT 0,
     ultimo_acceso DATETIME DEFAULT NULL,
     Ocupacion ENUM('Administrador','Instalador','Mostrador')
@@ -35,20 +35,61 @@ CREATE TABLE Cliente(
     TipoCliente ENUM("Fisica","Moral")
 );
 
+CREATE TABLE Localidad(
+    LocalidadId INT AUTO_INCREMENT PRIMARY KEY,
+    NombreLocalidad VARCHAR(60)
+);
+
+INSERT INTO Localidad (NombreLocalidad) VALUES
+('Tlacotepec de Benito Juárez'),
+('San Marcos Tlacoyalco'),
+('Santa María la Alta'),
+('Santo Nombre'),
+('San José Buenavista'),
+('Tepazolco'),
+('Pericotepec'),
+('San Lucas el Viejo'),
+('San Martín Esperilla'),
+('San Antonio Tlacuitlapan'),
+('Tepetlacolco'),
+('San José Tlacuitlapan'),
+('Guadalupe Victoria'),
+('La Colonia Benito Juárez'),
+('Tecoxtle'),
+('Colonia Jose Huerta'),
+('La Columna'),
+('Tecalzingo'),
+('El Común'),
+('Colonia San Pedro'),
+('Rancho de Rojas'),
+('Palmillas'),
+('Colonia Ignacio Zaragoza'),
+('Monte de Horno'),
+('La Estación'),
+('San Jose Valsequillo'),
+('Barrio San Lucas'),
+('Pazoltepec'),
+('Tecamachalco'),
+('Quecholac');
+
 CREATE TABLE Instalacion(
     InstalacionId INT AUTO_INCREMENT PRIMARY KEY,
     UsuarioId INT,
     ClienteId INT,
     OLTId INT DEFAULT NULL,
     TorreId INT DEFAULT NULL,
+    LocalidadId INT,
     Ubicacion_Maps TEXT,
     Nombre_Wifi VARCHAR(50),
     Password_Wifi VARCHAR(100),
     Active BOOLEAN DEFAULT TRUE,
     Tipo ENUM('Fibra','Antena'),
+    Plan ENUM("20 MEGAS","40 MEGAS","60 MEGAS", "80 MEGAS","100 MEGAS"),
+    Modalidad_Servicio ENUM('Mensual','Bimestral','Trimestral','Cuatrimestral','Quinquemestral','Semestral','Heptamestral','Octomestral','Nonamestral','Decamestral','Oncemestral','Anual') DEFAULT 'Mensual',
     Uuid_local VARCHAR(36) DEFAULT NULL UNIQUE,
     Sincronizado TINYINT(1) DEFAULT 1,
     Fecha_Instalacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (LocalidadId) REFERENCES Localidad(LocalidadId),
     FOREIGN KEY (ClienteId) REFERENCES Cliente(ClienteId),
     FOREIGN KEY (UsuarioId) REFERENCES Usuario(UsuarioId),
     FOREIGN KEY (OLTId) REFERENCES OLT(OLTId),
@@ -68,39 +109,67 @@ CREATE TABLE Imagen_Instalacion(
     FOREIGN KEY (InstalacionId) REFERENCES Instalacion(InstalacionId)
 );
 
+CREATE TABLE Reporte(
+    ReporteId INT AUTO_INCREMENT PRIMARY KEY,
+    UsuarioId INT,
+    InstalacionId INT,
+    Fecha_Levantamiento DATE,
+    Tipo_Servicio ENUM('Mantenimiento','Migracion'),
+    Detalles TEXT,
+    Active BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (InstalacionId) REFERENCES Instalacion(InstalacionId), 
+    FOREIGN KEY (UsuarioId) REFERENCES Usuario(UsuarioId)
+);
+
 CREATE TABLE Servicios(
     ServicioId INT AUTO_INCREMENT PRIMARY KEY,
-    InstalacionId INT,
     UsuarioId INT,
-    Tipo_Servicio ENUM('Mantenimiento','Migracion','Otro'),
-    Detalle_Otro TEXT,
+    ReporteId INT,
+    Observaciones TEXT,
     Estado ENUM("Realizado","Pospuesto"),
-    Fecha_Levantamiento DATE,
+    Pago DECIMAL(10,2) DEFAULT NULL,
     Fecha_Finalizado DATETIME DEFAULT CURRENT_TIMESTAMP,
     Uuid_local VARCHAR(36) DEFAULT NULL UNIQUE,
     Sincronizado TINYINT(1) DEFAULT 1,
-    FOREIGN KEY (InstalacionId) REFERENCES Instalacion(InstalacionId), 
-    FOREIGN KEY (UsuarioId) REFERENCES Usuario(UsuarioId)
+    FOREIGN KEY (UsuarioId) REFERENCES Usuario(UsuarioId),
+    FOREIGN KEY (ReporteId) REFERENCES Reporte(ReporteId)
+);
+
+CREATE TABLE Mensualidad (
+    MensualidadId INT AUTO_INCREMENT PRIMARY KEY,
+    InstalacionId INT,
+    Mes INT,
+    Anio INT,
+    Concepto VARCHAR (100),
+    Monto DECIMAL(10,2),
+    Estado  ENUM('Pendiente','Pagado','Vencido'),
+    FOREIGN KEY (InstalacionId) REFERENCES Instalacion(InstalacionId)
 );
 
 CREATE TABLE Pago(
     PagoId INT AUTO_INCREMENT PRIMARY KEY,
     InstalacionId INT,
     UsuarioId INT,
-    Modalidad_Servicio ENUM('Mensual','Bimestral','Trimestral','Anual','Otro'),
-    Otro_Modalidad TEXT,
     Fecha_Pago DATETIME DEFAULT CURRENT_TIMESTAMP,
-    Tipo_Pago ENUM('Efectivo','Transferencia','Otro'),
-    Otro_Pago TEXT,
-    Numero_cuenta VARCHAR(50),
+    Tipo_Pago ENUM('Efectivo','Transferencia','Cheque','Trueque','Paypal','MercadoPago','Pagaré'),
+    Numero_cuenta VARCHAR(50) DEFAULT 'Efectivo',
+    Descuento DECIMAL(10,2),
     Estado_Pago ENUM('Completado', 'Incompleto', 'Pendiente') DEFAULT 'Completado', 
     Monto DECIMAL(10,2) NOT NULL,
-    Plan ENUM("20 MEGAS","40 MEGAS","60 MEGAS", "80 MEGAS","100 MEGAS"),
     Uuid_local VARCHAR(36) DEFAULT NULL UNIQUE,
     Sincronizado TINYINT(1) DEFAULT 1, 
     Ultima_modificacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (InstalacionId) REFERENCES Instalacion(InstalacionId),
     FOREIGN KEY (UsuarioId) REFERENCES Usuario(UsuarioId)
+);
+
+CREATE TABLE Pago_Detalle (
+    DetalleId INT AUTO_INCREMENT PRIMARY KEY,
+    PagoId INT,
+    MensualidadId INT,
+    Monto_Abonado DECIMAL(10,2),
+    FOREIGN KEY (PagoId) REFERENCES Pago(PagoId),
+    FOREIGN KEY (MensualidadId) REFERENCES Mensualidad(MensualidadId)
 );
 
 CREATE TABLE Desinstalacion(
@@ -148,6 +217,6 @@ CREATE TABLE Material(
 CREATE TABLE Inventario(
     HerramientaId INT,
     MaterialId INT,
-    FOREIGN KEY (HerramientaId) REFERENCES Inventario(HerramientaId),
+    FOREIGN KEY (HerramientaId) REFERENCES Herramienta(HerramientaId),
     FOREIGN KEY (MaterialId) REFERENCES Material(MaterialId)
 );
