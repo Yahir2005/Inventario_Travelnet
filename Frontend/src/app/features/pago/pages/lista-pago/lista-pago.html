@@ -9,7 +9,8 @@
           <th>Modalidad</th>
           <th>Último pago</th>
           <th>Estado</th>
-          <th class = "text-end">Acción</th>
+          <th>Atraso</th>
+          <th class="text-end">Acción</th>
       </tr>
     </thead>
     <tbody>
@@ -21,37 +22,41 @@
         <td>{{ pago.Plan }}</td>
         <td>{{ pago.Modalidad_Servicio }}</td>
         <td>
-          @if (pago.PagoId){
+          @if (pago.Ultimo_Mes_Pagado && pago.Ultimo_Anio_Pagado){
+            <span class="fw-bold text-primary">{{ obtenerNombreMes(pago.Ultimo_Mes_Pagado) }} {{ pago.Ultimo_Anio_Pagado }}</span>
+            <div class="small text-muted">{{ pago.Concepto_Ultimo_Pago }}</div>
+          } @else if (pago.PagoId){
             {{ pago.Fecha_Pago | date: 'dd/MM/yyyy' }}
             <span class="badge text-bg-secondary ms-1">${{ pago.Monto }}</span>
           } @else {
-            <span class = "text-muted">Sin pagos</span>
+            <span class="text-muted">Sin pagos</span>
           }
         </td>
         <td>
           @if(pago.Estado_Pago){
-            <span class = "badge text-bg-{{pago.Estado_Pago === 'Completado' ? 'sucess':
+            <span class="badge text-bg-{{pago.Estado_Pago === 'Completado' ? 'success':
             (pago.Estado_Pago === 'Pendiente' ? 'warning':'secondary')}}">
             {{pago.Estado_Pago}}
             </span>
           }@else {
-            <span class = "badge text-bg-warning"> Pendiente</span>
+            <span class="badge text-bg-warning"> Pendiente</span>
           }
         </td>
         <td>
           @if(pago.Atrasado){
-            <span class = "badge text-bg-danger">Atrasado {{pago.Dias_Atraso}} días</span>
+            <span class="badge text-bg-danger">Atrasado {{pago.Dias_Atraso}} días</span>
           } @else {
-            <span class = "badge text-bg-success"> Al día</span>
+            <span class="badge text-bg-success"> Al día</span>
           }
         </td>
         <td class="text-end">
             <button class="btn btn-sm btn-success" (click)="abrirModal(pago)">Registrar pago</button>
-        </tr>
+        </td>
+      </tr>
       }@empty {
-          <tr>
-            <td colspan="3" class="ListaPago__empty">No hay pagos registrados.</td>
-        </tr>      
+      <tr>
+        <td colspan="9" class="text-center py-4 text-muted">No hay pagos registrados.</td>
+      </tr>      
       }
     </tbody>
   </table>
@@ -59,19 +64,64 @@
 
 @if (mostrarModal) {
   <div class="modal fade show d-block" tabindex="-1" role="dialog" style="background: rgba(0,0,0,0.5);">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">
             Registrar pago
             @if (pagoSeleccionado) {
-              — {{ pagoSeleccionado.Nombre_Cliente }}
+              — {{ pagoSeleccionado.Nombre_Cliente }} ({{ pagoSeleccionado.Modalidad_Servicio }})
             }
           </h5>
           <button type="button" class="btn-close" (click)="cerrarModal()" [disabled]="cargando()"></button>
         </div>
         <div class="modal-body">
           <form (ngSubmit)="registrarPago()">
+            <div class="row mb-3">
+              <div class="col-md-5">
+                <label class="form-label">Mes de Inicio</label>
+                <select class="form-select" [(ngModel)]="formPago.Mes" (change)="actualizarConcepto()" name="mesInicio">
+                  @for (m of mesesLista; track m.id) {
+                    <option [value]="m.id">{{ m.nombre }}</option>
+                  }
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Año</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  [(ngModel)]="formPago.Anio"
+                  (change)="actualizarConcepto()"
+                  name="anioInicio"
+                  min="2000"
+                  max="2100"
+                />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Cantidad de Meses</label>
+                <select class="form-select" [(ngModel)]="formPago.Cantidad_Meses" (change)="actualizarConcepto()" name="cantidadMeses">
+                  <option [value]="1">1 mes</option>
+                  <option [value]="2">2 meses</option>
+                  <option [value]="3">3 meses</option>
+                  <option [value]="4">4 meses</option>
+                  <option [value]="6">6 meses</option>
+                  <option [value]="12">12 meses (1 Año)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Concepto</label>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="formPago.Concepto"
+                name="concepto"
+                placeholder="Ej. Mensualidad Junio 2026"
+              />
+            </div>
+
             <div class="mb-3">
               <label class="form-label">Tipo de pago</label>
               <select class="form-select" [(ngModel)]="formPago.Tipo_Pago" name="tipoPago">
@@ -94,30 +144,31 @@
               </div>
             }
 
-            <div class="mb-3">
-              <label class="form-label">Monto</label>
-              <input
-                type="number"
-                class="form-control"
-                [(ngModel)]="formPago.Monto"
-                name="monto"
-                min="0"
-                step="0.01"
-                placeholder="0.00"
-              />
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label">Descuento</label>
-              <input
-                type="number"
-                class="form-control"
-                [(ngModel)]="formPago.Descuento"
-                name="descuento"
-                min="0"
-                step="0.01"
-                placeholder="0.00"
-              />
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Monto Total</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  [(ngModel)]="formPago.Monto"
+                  name="monto"
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00"
+                />
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Descuento</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  [(ngModel)]="formPago.Descuento"
+                  name="descuento"
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00"
+                />
+              </div>
             </div>
 
             <div class="mb-3">

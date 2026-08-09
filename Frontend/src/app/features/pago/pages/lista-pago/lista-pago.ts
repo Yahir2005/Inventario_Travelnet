@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, Signal, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -15,7 +15,7 @@ import { PagoDetallado, PagoForm } from '../../models/pago.model';
 export class ListaPago implements OnInit {
   private pagoService = inject(PagoService);
 
-  pagos = signal <PagoDetallado[]>([]);
+  pagos = signal<PagoDetallado[]>([]);
   loading = signal(true);
   cargando = signal(false);
   error = signal<string | null>(null);
@@ -26,6 +26,36 @@ export class ListaPago implements OnInit {
   tipoPagos = ['Efectivo', 'Transferencia', 'Cheque', 'Trueque', 'Paypal', 'MercadoPago', 'Pagaré'];
   estadosPago = ['Completado', 'Incompleto', 'Pendiente'];
 
+  mesesLista = [
+    { id: 1, nombre: 'Enero' },
+    { id: 2, nombre: 'Febrero' },
+    { id: 3, nombre: 'Marzo' },
+    { id: 4, nombre: 'Abril' },
+    { id: 5, nombre: 'Mayo' },
+    { id: 6, nombre: 'Junio' },
+    { id: 7, nombre: 'Julio' },
+    { id: 8, nombre: 'Agosto' },
+    { id: 9, nombre: 'Septiembre' },
+    { id: 10, nombre: 'Octubre' },
+    { id: 11, nombre: 'Noviembre' },
+    { id: 12, nombre: 'Diciembre' }
+  ];
+
+  modalidadMesesMap: Record<string, number> = {
+    'Mensual': 1,
+    'Bimestral': 2,
+    'Trimestral': 3,
+    'Cuatrimestral': 4,
+    'Quinquemestral': 5,
+    'Semestral': 6,
+    'Heptamestral': 7,
+    'Octomestral': 8,
+    'Nonamestral': 9,
+    'Decamestral': 10,
+    'Oncemestral': 11,
+    'Anual': 12
+  };
+
   formPago: PagoForm = {
     InstalacionId: 0,
     UsuarioId: null,
@@ -33,9 +63,12 @@ export class ListaPago implements OnInit {
     Numero_cuenta: '',
     Descuento: null,
     Monto: null,
-    Estado_Pago: 'Completado'
+    Estado_Pago: 'Completado',
+    Mes: new Date().getMonth() + 1,
+    Anio: new Date().getFullYear(),
+    Cantidad_Meses: 1,
+    Concepto: ''
   };
-
 
   ngOnInit(): void {
     this.pagoService.getPagos().subscribe({
@@ -44,7 +77,7 @@ export class ListaPago implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.error.set('Error al cargar las categorias');
+        this.error.set('Error al cargar las categorías');
         this.loading.set(false);
       }
     });
@@ -84,6 +117,21 @@ export class ListaPago implements OnInit {
 
   abrirModal(pago: PagoDetallado) {
     this.pagoSeleccionado = pago;
+    
+    let mesInicio = new Date().getMonth() + 1;
+    let anioInicio = new Date().getFullYear();
+
+    if (pago.Ultimo_Mes_Pagado && pago.Ultimo_Anio_Pagado) {
+      mesInicio = pago.Ultimo_Mes_Pagado + 1;
+      anioInicio = pago.Ultimo_Anio_Pagado;
+      if (mesInicio > 12) {
+        mesInicio = 1;
+        anioInicio++;
+      }
+    }
+
+    const cantidadDefault = pago.Modalidad_Servicio ? (this.modalidadMesesMap[pago.Modalidad_Servicio] || 1) : 1;
+
     this.formPago = {
       InstalacionId: pago.InstalacionId,
       UsuarioId: this.obtenerUsuarioActual(),
@@ -91,9 +139,39 @@ export class ListaPago implements OnInit {
       Numero_cuenta: '',
       Descuento: null,
       Monto: null,
-      Estado_Pago: 'Completado'
+      Estado_Pago: 'Completado',
+      Mes: mesInicio,
+      Anio: anioInicio,
+      Cantidad_Meses: cantidadDefault,
+      Concepto: ''
     };
+
+    this.actualizarConcepto();
     this.mostrarModal = true;
+  }
+
+  actualizarConcepto() {
+    const startMes = Number(this.formPago.Mes) || 1;
+    const startAnio = Number(this.formPago.Anio) || new Date().getFullYear();
+    const cant = Number(this.formPago.Cantidad_Meses) || 1;
+
+    const startMesObj = this.mesesLista.find(m => m.id === startMes);
+    const startNombre = startMesObj ? startMesObj.nombre : '';
+
+    if (cant === 1) {
+      this.formPago.Concepto = `Mensualidad ${startNombre} ${startAnio}`;
+    } else {
+      const endMesIndex = (startMes - 1 + cant - 1) % 12;
+      const endAnio = startAnio + Math.floor((startMes - 1 + cant - 1) / 12);
+      const endNombre = this.mesesLista[endMesIndex].nombre;
+      this.formPago.Concepto = `Pago de ${cant} meses (${startNombre} ${startAnio} - ${endNombre} ${endAnio})`;
+    }
+  }
+
+  obtenerNombreMes(mesId?: number | null): string {
+    if (!mesId) return '';
+    const m = this.mesesLista.find(item => item.id === mesId);
+    return m ? m.nombre : '';
   }
 
   private obtenerUsuarioActual(): number | null {
@@ -104,5 +182,5 @@ export class ListaPago implements OnInit {
     }
     return null;
   }
-
 }
+
