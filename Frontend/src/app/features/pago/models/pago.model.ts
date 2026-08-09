@@ -29,6 +29,10 @@ export interface PagoDetallado {
     Descuento?: string | number | null;
     Tipo_Pago?: 'Efectivo' | 'Transferencia' | 'Cheque' | 'Trueque' | 'Paypal' | 'MercadoPago' | 'Pagaré' | null;
 
+    Ultimo_Mes_Pagado?: number | null;
+    Ultimo_Anio_Pagado?: number | null;
+    Concepto_Ultimo_Pago?: string | null;
+
     Atrasado: boolean;
     Dias_Atraso?: number;
 }
@@ -41,4 +45,8 @@ export type PagoForm = {
     Descuento: number | null;
     Monto: number | null;
     Estado_Pago: 'Completado' | 'Incompleto' | 'Pendiente';
+    Mes: number;
+    Anio: number;
+    Cantidad_Meses: number;
+    Concepto: string;
 };
