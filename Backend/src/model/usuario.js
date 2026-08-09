@@ -1,37 +1,48 @@
 const db = require('../config/database');
+const bcrypt = require('bcrypt');
+
+const SALT_ROUNDS = 10;
+
+const sanitize = (row) => {
+    if (!row) return row;
+    const { Password, ...safe } = row;
+    return safe;
+};
 
 const Usuario = {
     findAll: async(db) => {
         const rows =await db.query('SELECT * FROM Usuario');
-        return rows;
+        return rows.map(sanitize);
     },
 
     findByPk: async (db,id) => {
         const rows = await db.query('SELECT * FROM Usuario WHERE UsuarioId = ?',[id]);
-        return rows[0];
+        return sanitize(rows[0]);
     },
     
     findByActive: async(db,Active) => {
         const rows = await db.query('SELECT * FROM Usuario WHERE Active = TRUE')
-        return rows[0];
+        return sanitize(rows[0]);
     },
     
     create: async (db,data) => {
         const {Nombre, Usuario, Password,Email,Telefono,Active,Ocupacion} = data;
+        const passwordHash = bcrypt.hashSync(Password, SALT_ROUNDS);
         const result = await db.query(
             'INSERT INTO Usuario (Nombre, Usuario, Password,Email,Telefono,Active,Ocupacion) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [Nombre,Usuario,Password,Email,Telefono,Active,Ocupacion]
+            [Nombre,Usuario,passwordHash,Email,Telefono,Active,Ocupacion]
         );
-        return { UsuarioId: result.insertId, ...data,Active:true};
+        return sanitize({ UsuarioId: result.insertId, ...data,Active:true });
     },
 
     update: async(db,id,data) => {
         const {Nombre,Usuario,Password,Email,Telefono} = data;
+        const passwordHash = Password ? bcrypt.hashSync(Password, SALT_ROUNDS) : undefined;
         await db.query(
             'UPDATE Usuario SET Nombre = ?, Usuario = ?, Password = ?, Email = ?, Telefono = ? WHERE UsuarioId = ?',
-            [Nombre, Usuario, Password, Email, Telefono, id]
+            [Nombre, Usuario, Password ? passwordHash : Password, Email, Telefono, id]
         );
-        return {UsuarioId: id, ...data};
+        return sanitize({UsuarioId: id, ...data});
     },
 
     remove: async (db,id) => {
@@ -43,15 +54,21 @@ const Usuario = {
         const {Usuario,Password} = credentials;
 
         const rows = await db.query(
-            'SELECT UsuarioId, Nombre, Usuario, Email, Ocupacion FROM Usuario WHERE Usuario = ? AND Password = ? AND Active = TRUE',
-            [Usuario,Password]
+            'SELECT UsuarioId, Nombre, Usuario, Email, Ocupacion, Password FROM Usuario WHERE Usuario = ? AND Active = TRUE',
+            [Usuario]
         );
 
         if(rows.length === 0){
             return null;
         }
 
-        return rows[0];
+        const user = rows[0];
+
+        if(!bcrypt.compareSync(Password || '', user.Password)){
+            return null;
+        }
+
+        return sanitize(user);
     }
 }
 
