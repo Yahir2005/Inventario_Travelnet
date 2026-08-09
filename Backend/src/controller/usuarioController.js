@@ -1,5 +1,6 @@
 const Usuario = require ('../model/usuario');
 const jwt = require('jsonwebtoken');
+const jwtConfig = require('../config/jwt');
 
 const getAll = async ( req,res) => {
     try{
@@ -74,7 +75,7 @@ const login = async (req,res) => {
                 id: usuarioLoged.UsuarioId,
                 rol: usuarioLoged.Ocupacion
             },
-            'TU CLAVE SECRETA AQUÍ',
+            jwtConfig.getSecret(),
             {
                 expiresIn: '8h'
             }
