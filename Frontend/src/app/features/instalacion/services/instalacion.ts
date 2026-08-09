@@ -15,9 +15,10 @@ export class InstalacionService {
   private apiTorre = 'http://localhost:3000/api/torre';
   private apiOlt = 'http://localhost:3000/api/olt';
   private apiCliente = 'http://localhost:3000/api/cliente';
+  private apiLocalidad = 'http://localhost:3000/api/localidad';
 
   getInstalaciones(): Observable <Instalacion[]>{
-    return this.http.get<Instalacion[]>(`${this.apiUrl}/lista`);
+    return this.http.get<Instalacion[]>(this.apiUrl);
   }
   crearInstalacion(datosInstalacion:any){
     return this.http.post(this.apiUrl,datosInstalacion);
@@ -33,6 +34,10 @@ export class InstalacionService {
 
   getTorre(): Observable <Torre[]>{
     return this.http.get<Torre[]>(this.apiTorre);
+  }
+
+  getLocalidades(): Observable<any[]>{
+    return this.http.get<any[]>(this.apiLocalidad);
   }
 
 }
