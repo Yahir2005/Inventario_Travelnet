@@ -16,6 +16,9 @@ var imagenInstalacionRouter = require('./routes/Imagen_Instalacion');
 var pagoRouter = require('./routes/Pago');
 var oltRouter = require('./routes/OLT');
 var torreRouter = require('./routes/Torre');
+var localidadRouter = require('./routes/Localidad');
+var mensualidadRouter = require('./routes/Mensualidad');
+var pagoDetalleRouter = require('./routes/Pago_Detalle');
 var app = express();
 
 BigInt.prototype.toJSON = function() { return this.toString(); };
@@ -61,6 +64,9 @@ app.use('/api/imagenInstalacion',imagenInstalacionRouter);
 app.use('/api/pago',pagoRouter);
 app.use('/api/OLT',oltRouter);
 app.use('/api/torre',torreRouter);
+app.use('/api/localidad',localidadRouter);
+app.use('/api/mensualidad',mensualidadRouter);
+app.use('/api/pagoDetalle',pagoDetalleRouter);
 
 // error handler
 app.use(function(err, req, res, next) {
