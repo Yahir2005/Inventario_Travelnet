@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, Signal, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -15,9 +15,10 @@ import { PagoDetallado, PagoForm } from '../../models/pago.model';
 export class ListaPago implements OnInit {
   private pagoService = inject(PagoService);
 
-  pagos: PagoDetallado[] = [];
-  loading = true;
-  cargando = false;
+  pagos = signal <PagoDetallado[]>([]);
+  loading = signal(true);
+  cargando = signal(false);
+  error = signal<string | null>(null);
 
   mostrarModal = false;
   pagoSeleccionado: PagoDetallado | null = null;
@@ -35,36 +36,18 @@ export class ListaPago implements OnInit {
     Estado_Pago: 'Completado'
   };
 
-  ngOnInit(): void {
-    this.cargarPagos();
-  }
 
-  cargarPagos() {
-    this.loading = true;
+  ngOnInit(): void {
     this.pagoService.getPagos().subscribe({
       next: (data) => {
-        this.pagos = data;
-        this.loading = false;
+        this.pagos.set(data);
+        this.loading.set(false);
       },
-      error: (err) => {
-        console.error('Error al cargar los pagos', err);
-        this.loading = false;
+      error: () => {
+        this.error.set('Error al cargar las categorias');
+        this.loading.set(false);
       }
     });
-  }
-
-  abrirModal(pago: PagoDetallado) {
-    this.pagoSeleccionado = pago;
-    this.formPago = {
-      InstalacionId: pago.InstalacionId,
-      UsuarioId: this.obtenerUsuarioActual(),
-      Tipo_Pago: 'Efectivo',
-      Numero_cuenta: '',
-      Descuento: null,
-      Monto: null,
-      Estado_Pago: 'Completado'
-    };
-    this.mostrarModal = true;
   }
 
   cerrarModal() {
@@ -83,20 +66,34 @@ export class ListaPago implements OnInit {
       return;
     }
 
-    this.cargando = true;
+    this.cargando.set(true);
     this.pagoService.crearPago(this.formPago).subscribe({
       next: () => {
-        this.cargando = false;
+        this.cargando.set(false);
         this.cerrarModal();
-        this.cargarPagos();
+        this.ngOnInit();
         alert('Pago registrado correctamente.');
       },
       error: (err) => {
-        this.cargando = false;
+        this.cargando.set(false);
         console.error('Error al registrar el pago', err);
         alert('Ocurrió un error al registrar el pago.');
       }
     });
+  }
+
+  abrirModal(pago: PagoDetallado) {
+    this.pagoSeleccionado = pago;
+    this.formPago = {
+      InstalacionId: pago.InstalacionId,
+      UsuarioId: this.obtenerUsuarioActual(),
+      Tipo_Pago: 'Efectivo',
+      Numero_cuenta: '',
+      Descuento: null,
+      Monto: null,
+      Estado_Pago: 'Completado'
+    };
+    this.mostrarModal = true;
   }
 
   private obtenerUsuarioActual(): number | null {
@@ -107,4 +104,5 @@ export class ListaPago implements OnInit {
     }
     return null;
   }
+
 }
