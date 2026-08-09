@@ -27,7 +27,7 @@ const create = async (req, res) => {
         if(req.body.Ruta_Imagen && req.body.Ruta_Imagen.startsWith('data:image')){
             const base64Data = req.body.Ruta_Imagen.replace(/^data:image\/\w+;base64,/, "");
             const nombreArchivo = `evidencia_${Date.now()}.jpg`;
-            const dirUploads = path.join(__dirname, '../public/uploads');
+            const dirUploads = path.join(__dirname, '../../public/uploads');
             fs.mkdirSync(dirUploads, { recursive: true });
             const rutaFisica = path.join(dirUploads, nombreArchivo);
             fs.writeFileSync(rutaFisica, base64Data, { encoding: 'base64' });
