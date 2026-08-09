@@ -42,6 +42,7 @@ const Cliente = {
             c.Telefono,
             c.Active,
 
+            i.InstalacionId,
             i.OLTId,
             o.Nombre AS Nombre_OLT,
             o.Ubicacion AS Ubicacion_OLT,
@@ -50,24 +51,32 @@ const Cliente = {
             t.Nombre AS Nombre_Torre,
             t.Ubicacion AS Ubicacion_Torre,
 
+            i.LocalidadId,
+            lo.NombreLocalidad AS Localidad,
+
             i.Ubicacion_Maps,
             i.Nombre_Wifi,
             i.Password_Wifi,
             i.Active AS Instalacion_Activa,
             i.Tipo,
-            i.Localidad,
+            i.Plan,
+            i.Modalidad_Servicio,
             i.Fecha_Instalacion,
 
-            p.Modalidad_Servicio,
+            p.PagoId,
             p.Fecha_Pago,
             p.Estado_Pago,
             p.Monto,
-            p.Plan
+            p.Descuento,
+            p.Tipo_Pago
 
             FROM Instalacion i
 
             INNER JOIN Cliente c 
                 ON i.ClienteId = c.ClienteId
+
+            LEFT JOIN Localidad lo
+                ON i.LocalidadId = lo.LocalidadId
 
             LEFT JOIN OLT o 
                 ON i.OLTId = o.OLTId
@@ -76,7 +85,13 @@ const Cliente = {
                 ON i.TorreId = t.TorreId
 
             LEFT JOIN Pago p 
-                ON i.InstalacionId = p.InstalacionId;`);
+                ON i.InstalacionId = p.InstalacionId
+                AND p.Estado_Pago = 'Completado'
+                AND p.PagoId = (
+                    SELECT MAX(p2.PagoId) 
+                    FROM Pago p2 
+                    WHERE p2.InstalacionId = i.InstalacionId
+                );`);
                 
             return rows;
     }
