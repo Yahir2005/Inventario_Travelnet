@@ -55,11 +55,46 @@
       </div>
       <div class="col-md-4">
         <label class="form-label">Localidad</label>
-        <input type="text" class="form-control" name="Localidad" [(ngModel)]="instalacion.Localidad" required>
+        <select class="form-select" name="LocalidadId" [(ngModel)]="instalacion.LocalidadId" required>
+          <option value="null" disabled selected>Selecciona una Localidad...</option>
+          <option *ngFor="let localidad of localidades" [value]="localidad.LocalidadId">{{ localidad.NombreLocalidad }}</option>
+        </select>
       </div>
     </div>
 
-    <!-- Fila 4: Geolocalización -->
+    <!-- Fila 4: Plan y Modalidad de Servicio -->
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label class="form-label">Plan</label>
+        <select class="form-select" name="Plan" [(ngModel)]="instalacion.Plan" required>
+          <option value="20 MEGAS">20 MEGAS</option>
+          <option value="40 MEGAS">40 MEGAS</option>
+          <option value="60 MEGAS">60 MEGAS</option>
+          <option value="80 MEGAS">80 MEGAS</option>
+          <option value="100 MEGAS">100 MEGAS</option>
+        </select>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Modalidad de Servicio</label>
+        <select class="form-select" name="Modalidad_Servicio" [(ngModel)]="instalacion.Modalidad_Servicio" required>
+          <option value="Mensual">Mensual</option>
+          <option value="Bimestral">Bimestral</option>
+          <option value="Trimestral">Trimestral</option>
+          <option value="Cuatrimestral">Cuatrimestral</option>
+          <option value="Quinquemestral">Quinquemestral</option>
+          <option value="Semestral">Semestral</option>
+          <option value="Heptamestral">Heptamestral</option>
+          <option value="Octomestral">Octomestral</option>
+          <option value="Nonamestral">Nonamestral</option>
+          <option value="Decamestral">Decamestral</option>
+          <option value="Oncemestral">Oncemestral</option>
+          <option value="Anual">Anual</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Fila 5: Geolocalización -->
     <div class="mb-4 p-3 border rounded bg-light">
       <label class="form-label d-block fw-bold">Ubicación del Dispositivo</label>
       

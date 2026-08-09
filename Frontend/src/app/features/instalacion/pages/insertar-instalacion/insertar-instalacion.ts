@@ -22,6 +22,7 @@ export class InsertarInstalacionComponent implements OnInit{
   clientes: any[] =[];
   olts: any[] = [];
   torres: any[] = [];
+  localidades: any[] = [];
 
   instalacion = {
     UsuarioId: null as number | null,
@@ -32,7 +33,9 @@ export class InsertarInstalacionComponent implements OnInit{
     Nombre_Wifi: '',
     Password_Wifi: '',
     Tipo: '', // 'Fibra' o 'Antena'
-    Localidad: ''
+    LocalidadId: null as number | null,
+    Plan: '20 MEGAS',
+    Modalidad_Servicio: 'Mensual'
   };
 
   ubicacionObtenida: boolean = false;
@@ -43,6 +46,7 @@ export class InsertarInstalacionComponent implements OnInit{
     this.cargarCatalogos();
     this.cargarOlts();
     this.cargarTorre();
+    this.cargarLocalidades();
     this.obtenerClienteDeUrl();
   }
 
@@ -76,6 +80,10 @@ obtenerClienteDeUrl() {
 
   cargarTorre(){
     this.instalacionService.getTorre().subscribe(res => this.torres = res);
+  }
+
+  cargarLocalidades(){
+    this.instalacionService.getLocalidades().subscribe(res => this.localidades = res);
   }
 
   obtenerUbicacion(){
