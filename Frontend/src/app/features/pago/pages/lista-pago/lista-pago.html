@@ -1,1 +1,118 @@
-<p>lista-pago works!</p>
+<div class="container-fluid mt-3">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Pagos</h2>
+    <a class="btn btn-primary" routerLink="/pago/insertar">+ Registrar pago manual</a>
+  </div>
+
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2">Cargando pagos...</p>
+  </div>
+
+  <div *ngIf="!loading" class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Cliente</th>
+          <th>Teléfono</th>
+          <th>Localidad</th>
+          <th>Plan</th>
+          <th>Modalidad</th>
+          <th>Último pago</th>
+          <th>Estado</th>
+          <th>Status</th>
+          <th class="text-end">Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let pago of pagos">
+          <td>
+            <strong>{{ pago.Nombre_Cliente }}</strong>
+            <div class="small text-muted">Instalación #{{ pago.InstalacionId }}</div>
+          </td>
+          <td>{{ pago.Telefono }}</td>
+          <td>{{ pago.Localidad || '—' }}</td>
+          <td>{{ pago.Plan || '—' }}</td>
+          <td>{{ pago.Modalidad_Servicio || '—' }}</td>
+          <td>
+            <ng-template [ngIf]="pago.PagoId">
+              {{ pago.Fecha_Pago | date: 'dd/MM/yyyy' }}
+              <span class="badge text-bg-secondary ms-1">${{ pago.Monto }}</span>
+            </ng-template>
+            <span *ngIf="!pago.PagoId" class="text-muted">Sin pagos</span>
+          </td>
+          <td>
+            <span *ngIf="pago.Estado_Pago" class="badge text-bg-{{ pago.Estado_Pago === 'Completado' ? 'success' : (pago.Estado_Pago === 'Pendiente' ? 'warning' : 'secondary') }}">
+              {{ pago.Estado_Pago }}
+            </span>
+            <span *ngIf="!pago.Estado_Pago" class="badge text-bg-warning">Pendiente</span>
+          </td>
+          <td>
+            <span *ngIf="pago.Atrasado" class="badge text-bg-danger">Atrasado {{ pago.Dias_Atraso }} días</span>
+            <span *ngIf="!pago.Atrasado" class="badge text-bg-success">Al día</span>
+          </td>
+          <td class="text-end">
+            <button class="btn btn-sm btn-success" (click)="abrirModal(pago)">Registrar pago</button>
+          </td>
+        </tr>
+        <tr *ngIf="pagos.length === 0">
+          <td colspan="9" class="text-center text-muted py-4">No hay instalaciones con pagos.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal registrar pago -->
+<div class="modal" [class.show]="mostrarModal" [class.d-block]="mostrarModal" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Registrar pago</h5>
+        <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+      </div>
+      <form (ngSubmit)="registrarPago()">
+        <div class="modal-body">
+          <p class="mb-1"><strong>Cliente:</strong> {{ pagoSeleccionado?.Nombre_Cliente }}</p>
+          <p class="mb-3"><strong>Instalación:</strong> #{{ pagoSeleccionado?.InstalacionId }} · {{ pagoSeleccionado?.Plan }} · {{ pagoSeleccionado?.Modalidad_Servicio }}</p>
+
+          <div class="mb-3">
+            <label class="form-label">Tipo de Pago</label>
+            <select class="form-select" [(ngModel)]="formPago.Tipo_Pago" name="Tipo_Pago" required>
+              <option *ngFor="let t of tipoPagos" [value]="t">{{ t }}</option>
+            </select>
+          </div>
+
+          <div class="mb-3" *ngIf="formPago.Tipo_Pago !== 'Efectivo'">
+            <label class="form-label">Número de cuenta</label>
+            <input type="text" class="form-control" [(ngModel)]="formPago.Numero_cuenta" name="Numero_cuenta" placeholder="Cuenta / referencia">
+          </div>
+
+          <div class="row">
+            <div class="col-6 mb-3">
+              <label class="form-label">Monto</label>
+              <input type="number" step="0.01" min="0" class="form-control" [(ngModel)]="formPago.Monto" name="Monto" required>
+            </div>
+            <div class="col-6 mb-3">
+              <label class="form-label">Descuento</label>
+              <input type="number" step="0.01" min="0" class="form-control" [(ngModel)]="formPago.Descuento" name="Descuento">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Estado del Pago</label>
+            <select class="form-select" [(ngModel)]="formPago.Estado_Pago" name="Estado_Pago" required>
+              <option *ngFor="let e of estadosPago" [value]="e">{{ e }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn btn-success" [disabled]="cargando">
+            {{ cargando ? 'Guardando...' : 'Guardar pago' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
