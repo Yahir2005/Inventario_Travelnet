@@ -2,7 +2,7 @@ const Pago = require('../model/pago');
 
 const getAll = async (req,res) => {
     try {
-        const pago = await Pago.findAll(req.db);
+        const pago = await Pago.findAllDetallado(req.db);
         res.json(pago);
     } catch (error) {
         res.status(500).json({ error: error.message });
