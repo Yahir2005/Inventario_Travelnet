@@ -34,7 +34,7 @@ const update = async (req,res) => {
         const exist = await Cliente.findByPk(req.db,req.params.id);
         if(!exist) return res.status(404).json({ error: 'Cliente no encontrado'});
 
-        const clienteUpdated = await Cliente.update(req.params.id, req.body);
+        const clienteUpdated = await Cliente.update(req.db, req.params.id, req.body);
         res.json(clienteUpdated);
     } catch (error) {
         res.status(500).json({ error: error.message});
