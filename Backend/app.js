@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -5,6 +7,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
 var jwt = require('jsonwebtoken');
+var jwtConfig = require('./src/config/jwt');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -44,7 +47,7 @@ app.use(function(req, res, next) {
   if (authHeader) {
     const token = authHeader.split(' ')[1]; 
     try {
-      const decoded = jwt.verify(token, 'TU CLAVE SECRETA AQUÍ'); 
+      const decoded = jwt.verify(token, jwtConfig.getSecret()); 
       req.db = getDbPool(decoded.rol); 
       return next();
     } catch (error) {
