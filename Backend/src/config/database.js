@@ -1,39 +1,33 @@
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../..', '.env') });
 const mysql = require('mariadb');
 // Verifica que la ruta '../config/config.json' apunte exactamente donde guardaste el archivo
 const config = require('../config/config.json');
 
 const baseConfig = {
-    // Corregido: Ahora lee desde config en lugar de process.env
-    host: config.DB_HOST || 'localhost',
-    port: 3306,
-    database: config.DB_NAME || 'Travelnet',
+    host: process.env.DB_HOST || config.DB_HOST || 'localhost',
+    port: parseInt(process.env.DB_PORT, 10) || 3306,
+    database: process.env.DB_NAME || config.DB_NAME || 'Travelnet',
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
 };
 
-const pools = {
-    administrador: mysql.createPool({
+const credentials = [
+    ['administrador', 'ADMIN_USER', 'ADMIN_PASS'],
+    ['mostrador', 'MOSTRADOR_USER', 'MOSTRADOR_PASS'],
+    ['instalador', 'INSTALADOR_USER', 'INSTALADOR_PASS'],
+    ['login', 'LOGIN_USER', 'LOGIN_PASS']
+];
+
+const pools = {};
+for (const [rol, userKey, passKey] of credentials) {
+    pools[rol] = mysql.createPool({
         ...baseConfig,
-        user: config.ADMIN_USER,
-        password: config.ADMIN_PASS
-    }),
-    mostrador: mysql.createPool({
-        ...baseConfig,
-        user: config.MOSTRADOR_USER,
-        password: config.MOSTRADOR_PASS
-    }),
-    instalador: mysql.createPool({
-        ...baseConfig,
-        user: config.INSTALADOR_USER,
-        password: config.INSTALADOR_PASS
-    }),
-    login: mysql.createPool({
-        ...baseConfig,
-        user: config.LOGIN_USER,
-        password: config.LOGIN_PASS
-    })
-};
+        user: process.env[userKey] || config[userKey],
+        password: process.env[passKey] || config[passKey]
+    });
+}
 
 const getDbPool = (rol) => {
     switch (rol) {
