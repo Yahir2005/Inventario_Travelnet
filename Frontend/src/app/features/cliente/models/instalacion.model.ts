@@ -14,7 +14,10 @@ export interface Instalacion {
   Password_Wifi: string;
   Active?: boolean | number;
   Tipo: 'Fibra' | 'Antena';
-  Localidad: string;
+  LocalidadId?: number;
+  Plan?: '20 MEGAS' | '40 MEGAS' | '60 MEGAS' | '80 MEGAS' | '100 MEGAS' | null;
+  Modalidad_Servicio?: 'Mensual' | 'Bimestral' | 'Trimestral' | 'Cuatrimestral' | 'Quinquemestral' | 'Semestral' | 'Heptamestral' | 'Octomestral' | 'Nonamestral' | 'Decamestral' | 'Oncemestral' | 'Anual' | null;
+  Localidad?: string;
   Uuid_local?: string | null;
   Sincronizado?: boolean | number;
   Fecha_Instalacion?: string; 
