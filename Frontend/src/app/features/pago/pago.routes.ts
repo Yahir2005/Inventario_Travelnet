@@ -7,5 +7,12 @@ export const PAGO_ROUTES: Routes = [
             import('./pages/lista-pago/lista-pago').then(
                 (m) => m.ListaPago
             )
+    },
+    {
+        path: 'insertar',
+        loadComponent: () =>
+            import('./pages/insertar-pago/insertar-pago').then(
+                (m) => m.InsertarPago
+            )
     }
 ];
