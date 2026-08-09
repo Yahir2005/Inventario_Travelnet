@@ -12,19 +12,19 @@ const Instalacion = {
     },
 
     create: async (db, data) => {
-        const { UsuarioId, ClienteId, OLTId, TorreId, Ubicacion_Maps, Nombre_Wifi, Password_Wifi, Tipo, Localidad } = data;
+        const { UsuarioId, ClienteId, OLTId, TorreId, LocalidadId, Ubicacion_Maps, Nombre_Wifi, Password_Wifi, Tipo, Plan, Modalidad_Servicio } = data;
         const result = await db.query(
-            'INSERT INTO Instalacion (UsuarioId, ClienteId, OLTId, TorreId, Ubicacion_Maps, Nombre_Wifi, Password_Wifi, Tipo, Localidad) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [UsuarioId, ClienteId, OLTId, TorreId, Ubicacion_Maps, Nombre_Wifi, Password_Wifi, Tipo, Localidad]
+            'INSERT INTO Instalacion (UsuarioId, ClienteId, OLTId, TorreId, LocalidadId, Ubicacion_Maps, Nombre_Wifi, Password_Wifi, Tipo, Plan, Modalidad_Servicio) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [UsuarioId, ClienteId, OLTId, TorreId, LocalidadId, Ubicacion_Maps, Nombre_Wifi, Password_Wifi, Tipo, Plan, Modalidad_Servicio]
         );
         return { InstalacionId: result.insertId, ...data, Active: true };
     },
 
     update: async (db, id, data) => {
-        const { UsuarioId, ClienteId, OLTId, TorreId, Ubicacion_Maps, Nombre_Wifi, Password_Wifi, Tipo, Localidad } = data;
+        const { UsuarioId, ClienteId, OLTId, TorreId, LocalidadId, Ubicacion_Maps, Nombre_Wifi, Password_Wifi, Tipo, Plan, Modalidad_Servicio } = data;
         await db.query(
-            'UPDATE Instalacion SET UsuarioId = ?, ClienteId = ?, OLTId = ?, TorreId = ?, Ubicacion_Maps = ?, Nombre_Wifi = ?, Password_Wifi = ?, Tipo = ?, Localidad = ? WHERE InstalacionId = ?',
-            [UsuarioId, ClienteId, OLTId, TorreId, Ubicacion_Maps, Nombre_Wifi, Password_Wifi, Tipo, Localidad, id]
+            'UPDATE Instalacion SET UsuarioId = ?, ClienteId = ?, OLTId = ?, TorreId = ?, LocalidadId = ?, Ubicacion_Maps = ?, Nombre_Wifi = ?, Password_Wifi = ?, Tipo = ?, Plan = ?, Modalidad_Servicio = ? WHERE InstalacionId = ?',
+            [UsuarioId, ClienteId, OLTId, TorreId, LocalidadId, Ubicacion_Maps, Nombre_Wifi, Password_Wifi, Tipo, Plan, Modalidad_Servicio, id]
         );
         return { InstalacionId: id, ...data };
     },
