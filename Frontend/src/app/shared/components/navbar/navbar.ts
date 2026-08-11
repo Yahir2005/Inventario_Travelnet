@@ -13,6 +13,8 @@ export class Navbar implements OnInit{
   public ocupacionUsuario: string = 'Cargando ...';
 
   public esAdmin: boolean = false;
+  public esMostrador: boolean = false;
+  public esInstalador: boolean = false;
 
   ngOnInit(): void {
     this.obtenerOcupacion();
@@ -26,9 +28,13 @@ export class Navbar implements OnInit{
       this.ocupacionUsuario = usuario.Ocupacion;
 
       this.esAdmin = (usuario.Ocupacion === 'Administrador');
+      this.esMostrador = (usuario.Ocupacion === 'Mostrador');
+      this.esInstalador = (usuario.Ocupacion === 'Instalador');
     }else {
       this.ocupacionUsuario = 'Desconocido';
       this.esAdmin = false;
+      this.esMostrador = false;
+      this.esInstalador = false;
     }
   }
 
