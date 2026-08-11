@@ -79,10 +79,22 @@ const Pago = {
             FROM Instalacion i
             INNER JOIN Cliente c ON i.ClienteId = c.ClienteId
             LEFT JOIN Localidad lo ON i.LocalidadId = lo.LocalidadId
+            
+            -- CORRECCIÓN BUG 2: Ignorar el ticket de Pago si la mensualidad fue dada de baja
             LEFT JOIN Pago p ON p.InstalacionId = i.InstalacionId
-                AND p.PagoId = (SELECT MAX(p2.PagoId) FROM Pago p2 WHERE p2.InstalacionId = i.InstalacionId)
+                AND p.PagoId = (
+                    SELECT MAX(p2.PagoId) 
+                    FROM Pago p2 
+                    WHERE p2.InstalacionId = i.InstalacionId
+                    AND EXISTS (
+                        SELECT 1 FROM Pago_Detalle pd 
+                        INNER JOIN Mensualidad m3 ON m3.MensualidadId = pd.MensualidadId 
+                        WHERE pd.PagoId = p2.PagoId AND m3.Active = TRUE
+                    )
+                )
+                
             LEFT JOIN Mensualidad m ON m.MensualidadId = (
-                SELECT MAX(m2.MensualidadId) FROM Mensualidad m2 WHERE m2.InstalacionId = i.InstalacionId AND m2.Estado = 'Pagado'
+                SELECT MAX(m2.MensualidadId) FROM Mensualidad m2 WHERE m2.InstalacionId = i.InstalacionId AND m2.Estado = 'Pagado' AND (m2.Active = TRUE OR m2.Active IS NULL)
             )
             WHERE i.Active = TRUE
         `);
@@ -140,10 +152,19 @@ const Pago = {
             let mensualidadId;
             if (existing && existing.length > 0) {
                 mensualidadId = existing[0].MensualidadId;
+                
+                // CORRECCIÓN BUG 1: Agregamos Active = TRUE para revivir el mes
                 await db.query(
-                    'UPDATE Mensualidad SET Estado = ?, Monto = ?, Concepto = ? WHERE MensualidadId = ?',
+                    'UPDATE Mensualidad SET Estado = ?, Monto = ?, Concepto = ?, Active = TRUE WHERE MensualidadId = ?',
                     [estadoMensualidad, montoPorMes, conceptoMes, mensualidadId]
                 );
+                
+                // CORRECCIÓN BUG 1: Destruimos el motivo de cancelación fantasma para que no vuelva a aparecer
+                await db.query(
+                    'DELETE FROM PagoMesCancelado WHERE MensualidadId = ?',
+                    [mensualidadId]
+                );
+                
             } else {
                 const insertMensualidad = await db.query(
                     'INSERT INTO Mensualidad (InstalacionId, Mes, Anio, Concepto, Monto, Estado) VALUES (?, ?, ?, ?, ?, ?)',
@@ -151,11 +172,6 @@ const Pago = {
                 );
                 mensualidadId = insertMensualidad.insertId;
             }
-
-            await db.query(
-                'INSERT INTO Pago_Detalle (PagoId, MensualidadId, Monto_Abonado) VALUES (?, ?, ?)',
-                [pagoId, mensualidadId, montoPorMes]
-            );
 
             mensualidadesCreadas.push({ MensualidadId: mensualidadId, Mes: currentMes, Anio: currentAnio, Concepto: conceptoMes });
         }
