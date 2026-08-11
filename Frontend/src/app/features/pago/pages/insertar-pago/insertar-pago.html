@@ -10,12 +10,41 @@
 
     <div class="mb-4">
       <label class="form-label">Instalación</label>
-      <select class="form-select" name="InstalacionId" [(ngModel)]="pago.InstalacionId" required>
+      <select class="form-select" name="InstalacionId" [(ngModel)]="pago.InstalacionId" (change)="onInstalacionChange()" required>
         <option [ngValue]="0" disabled selected>Selecciona una instalación...</option>
         <option *ngFor="let inst of instalaciones" [ngValue]="inst.InstalacionId">
           {{ inst.Nombre_Cliente }} — Instalación #{{ inst.InstalacionId }} ({{ inst.Plan || 'sin plan' }} · {{ inst.Modalidad_Servicio || '—' }})
         </option>
       </select>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-md-4">
+        <label class="form-label">Mes de Inicio</label>
+        <select class="form-select" name="Mes" [(ngModel)]="pago.Mes" (change)="actualizarConcepto()" required>
+          <option *ngFor="let m of mesesLista" [value]="m.id">{{ m.nombre }}</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Año</label>
+        <input type="number" class="form-control" name="Anio" [(ngModel)]="pago.Anio" (change)="actualizarConcepto()" min="2000" max="2100" required>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Cantidad de Meses</label>
+        <select class="form-select" name="Cantidad_Meses" [(ngModel)]="pago.Cantidad_Meses" (change)="actualizarConcepto()" required>
+          <option [value]="1">1 mes</option>
+          <option [value]="2">2 meses</option>
+          <option [value]="3">3 meses</option>
+          <option [value]="4">4 meses</option>
+          <option [value]="6">6 meses</option>
+          <option [value]="12">12 meses (1 Año)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="mb-4">
+      <label class="form-label">Concepto</label>
+      <input type="text" class="form-control" name="Concepto" [(ngModel)]="pago.Concepto" placeholder="Ej. Mensualidad Junio 2026">
     </div>
 
     <div class="mb-4">
@@ -57,3 +86,4 @@
 
   </form>
 </div>
+
