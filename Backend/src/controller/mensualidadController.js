@@ -19,6 +19,15 @@ const getById = async (req, res) => {
     }
 };
 
+const getByInstalacion = async (req, res) => {
+    try {
+        const mensualidades = await Mensualidad.findByInstalacion(req.db, req.params.instalacionId);
+        res.json(mensualidades);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 const create = async (req, res) => {
     try {
         const mensualidad = await Mensualidad.create(req.db, req.body);
@@ -40,6 +49,22 @@ const update = async (req, res) => {
     }
 };
 
+const cancelar = async (req, res) => {
+    try {
+        const { MensualidadId, Motivo } = req.body;
+        if (!MensualidadId || !Motivo) {
+            return res.status(400).json({ error: 'MensualidadId y Motivo son requeridos' });
+        }
+        const exist = await Mensualidad.findByPk(req.db, MensualidadId);
+        if (!exist) return res.status(404).json({ error: 'Mensualidad no encontrada' });
+
+        const cancelacion = await Mensualidad.cancelar(req.db, MensualidadId, Motivo);
+        res.json({ message: 'Pago de mensualidad dado de baja correctamente', data: cancelacion });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 const remove = async (req, res) => {
     try {
         const removed = await Mensualidad.remove(req.db, req.params.id);
@@ -50,4 +75,4 @@ const remove = async (req, res) => {
     }
 };
 
-module.exports = { getAll, getById, create, update, remove };
+module.exports = { getAll, getById, getByInstalacion, create, update, cancelar, remove };
