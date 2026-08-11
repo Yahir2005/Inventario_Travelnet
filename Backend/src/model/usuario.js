@@ -26,11 +26,11 @@ const Usuario = {
     },
     
     create: async (db,data) => {
-        const {Nombre, Usuario, Password,Email,Telefono,Active,Ocupacion} = data;
+        const {Nombre, Usuario, Password,Email,Telefono,Ocupacion} = data;
         const passwordHash = bcrypt.hashSync(Password, SALT_ROUNDS);
         const result = await db.query(
-            'INSERT INTO Usuario (Nombre, Usuario, Password,Email,Telefono,Active,Ocupacion) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [Nombre,Usuario,passwordHash,Email,Telefono,Active,Ocupacion]
+            'INSERT INTO Usuario (Nombre, Usuario, Password,Email,Telefono,Ocupacion) VALUES (?, ?, ?, ?, ?, ?)',
+            [Nombre,Usuario,passwordHash,Email,Telefono,Ocupacion]
         );
         return sanitize({ UsuarioId: result.insertId, ...data,Active:true });
     },
