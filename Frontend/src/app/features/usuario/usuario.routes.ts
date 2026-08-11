@@ -7,5 +7,12 @@ export const USUARIO: Routes = [
             import('./pages/lista-usuario/lista-usuario').then(
                 (m) => m.ListaUsuario
             )
+    },
+    {
+        path: 'insertar-usuario',
+        loadComponent: () => 
+            import('./pages/insertar-usuario/insertar-usuario').then(
+                (m) => m.InsertarUsuario
+            )
     }
 ];
