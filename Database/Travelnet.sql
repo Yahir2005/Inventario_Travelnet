@@ -142,6 +142,7 @@ CREATE TABLE Mensualidad (
     Anio INT,
     Concepto VARCHAR (100),
     Monto DECIMAL(10,2),
+    Active BOOLEAN DEFAULT TRUE,
     Estado  ENUM('Pendiente','Pagado','Vencido'),
     FOREIGN KEY (InstalacionId) REFERENCES Instalacion(InstalacionId)
 );
@@ -169,6 +170,13 @@ CREATE TABLE Pago_Detalle (
     MensualidadId INT,
     Monto_Abonado DECIMAL(10,2),
     FOREIGN KEY (PagoId) REFERENCES Pago(PagoId),
+    FOREIGN KEY (MensualidadId) REFERENCES Mensualidad(MensualidadId)
+);
+
+CREATE TABLE PagoMesCancelado(
+    PagoMesCanceladoId INT AUTO_INCREMENT PRIMARY KEY,
+    MensualidadId INT,
+    Motivo VARCHAR(50),
     FOREIGN KEY (MensualidadId) REFERENCES Mensualidad(MensualidadId)
 );
 
