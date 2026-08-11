@@ -24,6 +24,10 @@ export class InsertarInstalacionComponent implements OnInit{
   torres: any[] = [];
   localidades: any[] = [];
 
+  esClientePreasignado: boolean = false;
+  terminoBusquedaCliente: string = '';
+  clientesFiltrados: any[] = [];
+
   instalacion = {
     UsuarioId: null as number | null,
     ClienteId: null as number | null,
@@ -54,11 +58,14 @@ obtenerClienteDeUrl() {
     this.route.queryParams.subscribe(params => {
       if (params['clienteId']) {
         this.instalacion.ClienteId = Number(params['clienteId']);
+        this.esClientePreasignado = true;
       } else {
-        alert('Advertencia: No se detectó un cliente reciente.');
+        this.esClientePreasignado = false;
       }
     });
   }
+
+
 
   obtenerUsuarioActual(){
     const usuarioString = localStorage.getItem('usuario');
@@ -69,7 +76,17 @@ obtenerClienteDeUrl() {
   }
 
   cargarCatalogos(){
-    this.clienteService.getClientes().subscribe(res => this.clientes = res);
+    this.clienteService.getClientes().subscribe(res => {
+      this.clientes = res;
+      this.clientesFiltrados = res;
+    });
+  }
+
+  filtrarClientes() {
+    const termino = this.terminoBusquedaCliente.toLowerCase();
+    this.clientesFiltrados = this.clientes.filter(cliente => 
+      cliente.Nombre_Cliente.toLowerCase().includes(termino)
+    );
   }
 
   cargarOlts(){

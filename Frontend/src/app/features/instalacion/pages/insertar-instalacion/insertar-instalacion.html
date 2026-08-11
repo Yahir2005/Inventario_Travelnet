@@ -5,11 +5,26 @@
 
     <!-- Fila 1: Cliente y Tipo -->
     <div class="row mb-3">
-      <div class="col-md-6">
+      <div class="col-md-6" *ngIf="esClientePreasignado">
         <label class="form-label">Cliente</label>
-        <!-- Campo bloqueado, el ClienteId ya viene en la URL -->
         <input type="text" class="form-control" value="✓ Cliente asignado automáticamente" disabled>
         <input type="hidden" name="ClienteId" [(ngModel)]="instalacion.ClienteId">
+      </div>
+
+      <div class="col-md-6" *ngIf="!esClientePreasignado">
+        <label class="form-label">Buscar y Seleccionar Cliente</label>
+        
+        <!-- Barra de búsqueda dinámica -->
+        <input type="search" class="form-control mb-2" placeholder="🔍 Escribe el nombre para buscar..." 
+               name="buscadorCliente" [(ngModel)]="terminoBusquedaCliente" (input)="filtrarClientes()">
+        
+        <!-- Lista de resultados que se filtra en vivo -->
+        <select class="form-select" name="ClienteId" [(ngModel)]="instalacion.ClienteId" required>
+          <option [ngValue]="null" disabled selected>Selecciona el cliente de la lista...</option>
+          <option *ngFor="let cliente of clientesFiltrados" [value]="cliente.ClienteId">
+            {{ cliente.Nombre_Cliente }} ({{ cliente.Telefono }})
+          </option>
+        </select>
       </div>
 
       <div class="col-md-6">
