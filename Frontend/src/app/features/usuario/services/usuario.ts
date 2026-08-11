@@ -28,4 +28,8 @@ export class UsuarioService{
   getUsuarios():Observable <Usuario[]>{
     return this.http.get<Usuario[]>(this.apiUrl);
   }
+
+  postCrearUsuario(datosUsuario:any){
+    return this.http.post(this.apiUrl,datosUsuario);
+  }
 }
