@@ -1,0 +1,34 @@
+<div class="container mt-4">
+     <h1>Agregar Nuevo Usuario</h1>
+<form (ngSubmit)="guardarUsuario()">
+<div class="mb-3">
+  <label for="Nombre" class="form-label">Nombre</label>
+  <input type="text" class="form-control" id="Nombre" name="Nombre" [(ngModel)]="usuario.Nombre" placeholder="ejemplo: Juárez Durán Luis Yahir" required>
+</div>
+<div class="mb-3">
+  <label for="Usuario" class="form-label">Usuario</label>
+  <input type="text" class="form-control" id="Usuario" name="Usuario" [(ngModel)]="usuario.Usuario" placeholder="JDLY2005" required>
+</div>
+<div class="mb-3">
+  <label for="Password" class="form-label">Password</label>
+  <input type="password" class="form-control" id="Password" name="Password" [(ngModel)]="usuario.Password" placeholder="Password123" required>
+</div>
+<div class="mb-3">
+  <label for="Email" class="form-label">Email</label>
+  <input type="email" class="form-control" id="Email" name="Email" [(ngModel)]="usuario.Email" placeholder="yahir@example.com" required>
+</div>
+<div class="mb-3">
+  <label for="Telefono" class="form-label">Teléfono</label>
+  <input type="tel" class="form-control" id="Telefono" name="Telefono" [(ngModel)]="usuario.Telefono" placeholder="23385247972" required>
+</div>
+    <div class="mb-3">
+     <select class="form-select" id="Ocupacion" name="Ocupacion" [(ngModel)]="usuario.Ocupacion" aria-label="Default select example" required>
+        <option value="" disabled selected>Selecciona una ocupación...</option>
+        <option value="Administrador">Administrador</option>
+        <option value="Instalador">Instalador</option>
+        <option value="Mostrador">Mostrador</option>
+    </select>
+    </div>
+<button type="submit" class="btn btn-primary">Guardar</button>
+</form>
+</div>
