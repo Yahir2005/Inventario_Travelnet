@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { PagoService } from '../../services/pago';
 import { PagoDetallado, PagoForm } from '../../models/pago.model';
+import { ListaMensualidad } from '../../../mensualidad/pages/lista-mensualidad/lista-mensualidad';
 
 @Component({
   selector: 'app-lista-pago',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, ListaMensualidad],
   templateUrl: './lista-pago.html',
   styleUrl: './lista-pago.scss',
 })
@@ -22,6 +23,9 @@ export class ListaPago implements OnInit {
 
   mostrarModal = false;
   pagoSeleccionado: PagoDetallado | null = null;
+
+  mostrarModalMensualidades = false;
+  pagoMensualidadesSeleccionado: PagoDetallado | null = null;
 
   tipoPagos = ['Efectivo', 'Transferencia', 'Cheque', 'Trueque', 'Paypal', 'MercadoPago', 'Pagaré'];
   estadosPago = ['Completado', 'Incompleto', 'Pendiente'];
@@ -76,8 +80,9 @@ export class ListaPago implements OnInit {
         this.pagos.set(data);
         this.loading.set(false);
       },
-      error: () => {
-        this.error.set('Error al cargar las categorías');
+      error: (err) => {
+        this.error.set('Error al cargar los pagos.');
+        console.error('Error al cargar los pagos', err);
         this.loading.set(false);
       }
     });
@@ -86,6 +91,21 @@ export class ListaPago implements OnInit {
   cerrarModal() {
     this.mostrarModal = false;
     this.pagoSeleccionado = null;
+  }
+
+  abrirModalMensualidades(pago: PagoDetallado) {
+    this.pagoMensualidadesSeleccionado = pago;
+    this.mostrarModalMensualidades = true;
+  }
+
+  cerrarModalMensualidades() {
+    this.mostrarModalMensualidades = false;
+    this.pagoMensualidadesSeleccionado = null;
+    this.ngOnInit();
+  }
+
+  onMensualidadActualizada() {
+    this.ngOnInit();
   }
 
   registrarPago() {
@@ -183,4 +203,5 @@ export class ListaPago implements OnInit {
     return null;
   }
 }
+
 

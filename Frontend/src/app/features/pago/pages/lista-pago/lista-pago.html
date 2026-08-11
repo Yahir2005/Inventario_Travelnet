@@ -1,4 +1,16 @@
 <div class="container-fluid mt-3">
+  @if (error()) {
+    <div class="alert alert-danger" role="alert">
+      {{ error() }}
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+    </div>
+  }
+
   <table class="table">
     <thead>
       <tr>
@@ -10,7 +22,8 @@
           <th>Último pago</th>
           <th>Estado</th>
           <th>Atraso</th>
-          <th class="text-end">Acción</th>
+          <th>Acción</th>
+          <th class="text-end">Meses Pagados</th>
       </tr>
     </thead>
     <tbody>
@@ -50,6 +63,7 @@
           }
         </td>
         <td class="text-end">
+            <button class="btn btn-sm btn-info text-white me-1" (click)="abrirModalMensualidades(pago)">Ver meses</button>
             <button class="btn btn-sm btn-success" (click)="abrirModal(pago)">Registrar pago</button>
         </td>
       </tr>
@@ -61,6 +75,37 @@
     </tbody>
   </table>
 </div>
+
+@if (mostrarModalMensualidades) {
+  <div class="modal fade show d-block" tabindex="-1" role="dialog" style="background: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            Historial de Mensualidades
+            @if (pagoMensualidadesSeleccionado) {
+              — {{ pagoMensualidadesSeleccionado.Nombre_Cliente }} ({{ pagoMensualidadesSeleccionado.Modalidad_Servicio }})
+            }
+          </h5>
+          <button type="button" class="btn-close" (click)="cerrarModalMensualidades()"></button>
+        </div>
+        <div class="modal-body">
+          @if (pagoMensualidadesSeleccionado) {
+            <app-lista-mensualidad
+              [instalacionId]="pagoMensualidadesSeleccionado.InstalacionId"
+              (mensualidadActualizada)="onMensualidadActualizada()"
+            ></app-lista-mensualidad>
+          }
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModalMensualidades()">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
 
 @if (mostrarModal) {
   <div class="modal fade show d-block" tabindex="-1" role="dialog" style="background: rgba(0,0,0,0.5);">
