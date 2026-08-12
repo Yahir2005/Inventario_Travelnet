@@ -2,6 +2,7 @@ import { Injectable,inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Instalacion } from '../models/instalacion.model';
+import { InstalacionDetallada } from '../models/instalacion-list-view.model';
 import { Olt } from '../models/olt.model';
 import { Torre } from '../models/torre.model';
 import { Cliente } from '../models/cliente.model';
@@ -19,6 +20,9 @@ export class InstalacionService {
 
   getInstalaciones(): Observable <Instalacion[]>{
     return this.http.get<Instalacion[]>(this.apiUrl);
+  }
+  getInstalacionesDetalladas(): Observable <InstalacionDetallada[]>{
+    return this.http.get<InstalacionDetallada[]>(`${this.apiUrl}/lista-detallada`);
   }
   crearInstalacion(datosInstalacion:any){
     return this.http.post(this.apiUrl,datosInstalacion);
