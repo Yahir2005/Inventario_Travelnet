@@ -9,6 +9,15 @@ const getAll = async (req, res) => {
     }
 };
 
+const getAllDetallado = async (req, res) => {
+    try {
+        const instalaciones = await Instalacion.findAllDetallado(req.db);
+        res.json(instalaciones);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 const getById = async (req, res) => {
     try {
         const instalacion = await Instalacion.findByPk(req.db, req.params.id);
@@ -51,4 +60,4 @@ const remove = async (req, res) => {
     }
 };
 
-module.exports = { getAll, getById, create, update, remove };
+module.exports = { getAll, getAllDetallado, getById, create, update, remove };
