@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var instalacionController = require('../src/controller/instalacionController');
 
+router.get('/lista-detallada',instalacionController.getAllDetallado);
 router.get('/',instalacionController.getAll);
 router.get('/:id',instalacionController.getById);
 router.post('/',instalacionController.create);
