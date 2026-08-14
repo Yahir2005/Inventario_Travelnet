@@ -20,6 +20,8 @@ export class ListaPago implements OnInit {
   loading = signal(true);
   cargando = signal(false);
   error = signal<string | null>(null);
+  pagosFiltrados: PagoDetallado[] = [];
+  terminoBusqueda = '';
 
   mostrarModal = false;
   pagoSeleccionado: PagoDetallado | null = null;
@@ -78,6 +80,7 @@ export class ListaPago implements OnInit {
     this.pagoService.getPagos().subscribe({
       next: (data) => {
         this.pagos.set(data);
+        this.pagosFiltrados = data;
         this.loading.set(false);
       },
       error: (err) => {
@@ -86,6 +89,28 @@ export class ListaPago implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  aplicarFiltro(){
+    const termino = this.terminoBusqueda.toLocaleLowerCase().trim();
+    if(!termino) {
+      this.pagosFiltrados = this.pagos();
+      return;
+    }
+    this.pagosFiltrados = this.pagos().filter( inst =>
+      (inst.Nombre_Cliente || '').toLocaleLowerCase().includes(termino) ||
+      (inst.Localidad || '').toLocaleLowerCase().includes(termino) ||
+      (inst.Telefono || '').toLocaleLowerCase().includes(termino)
+    );
+  }
+
+  buscarPagos(){
+    this.aplicarFiltro();
+  }
+
+  limpiarBusqueda(){
+    this.terminoBusqueda = '';
+    this.aplicarFiltro();
   }
 
   cerrarModal() {

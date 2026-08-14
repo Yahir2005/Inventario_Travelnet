@@ -11,6 +11,18 @@
     </div>
   }
 
+  <div class="col-md-4 mb-3">
+    <form class="d-flex" role="search" (ngSubmit)="buscarPagos()">
+          <input class="form-control me-2" type="search" name="buscar" [(ngModel)]="terminoBusqueda" 
+          (ngModelChange)="aplicarFiltro()"
+          placeholder="Search" aria-label="Search"/>
+          @if(terminoBusqueda) {
+            <button type="button" class="btn btn-outline-secondary me-1" (click)="limpiarBusqueda()">Limpiar</button>
+          }
+         <button class="btn btn-outline-success text-nowrap" type="submit">Buscar Pago</button>
+    </form>
+  </div>
+
   <table class="table">
     <thead>
       <tr>
@@ -27,7 +39,7 @@
       </tr>
     </thead>
     <tbody>
-      @for( pago of pagos(); track pago.InstalacionId){
+      @for( pago of pagosFiltrados; track pago.InstalacionId){
       <tr>
         <td>{{ pago.Nombre_Cliente }}</td>
         <td>{{ pago.Telefono }}</td>
@@ -69,7 +81,13 @@
       </tr>
       }@empty {
       <tr>
-        <td colspan="9" class="text-center py-4 text-muted">No hay pagos registrados.</td>
+        <td colspan="9" class="text-center py-4 text-muted">
+          @if (terminoBusqueda) {
+            No se encontraron pagos para "{{ terminoBusqueda }}".
+          } @else {
+            No hay pagos registrados.
+          }
+        </td>
       </tr>      
       }
     </tbody>
