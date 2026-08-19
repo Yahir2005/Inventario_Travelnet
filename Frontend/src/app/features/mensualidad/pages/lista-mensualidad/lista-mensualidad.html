@@ -45,9 +45,15 @@
           </td>
           <td class="text-end">
             @if (m.Active) {
-              <button class="btn btn-sm btn-outline-danger" (click)="abrirModalCancelar(m)">
-                Dar de baja
-              </button>
+              
+              @if (esAdmin) {
+                <button class="btn btn-sm btn-outline-danger" (click)="abrirModalCancelar(m)">
+                  Dar de baja
+                </button>
+              } @else {
+                
+                <span class="text-muted small">Solo visualización</span>
+              }
             } @else {
               <span class="text-muted small">Deshabilitado</span>
             }

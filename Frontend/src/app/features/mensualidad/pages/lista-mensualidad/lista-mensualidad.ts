@@ -25,12 +25,15 @@ export class ListaMensualidad implements OnInit, OnChanges {
   mensualidadACancelar: Mensualidad | null = null;
   motivoCancelar = '';
 
+  esAdmin: boolean =false;
+
   mesesNombre = [
     '', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
   ];
 
   ngOnInit(): void {
+    this.verificarPermisos();
     if (this.instalacionId) {
       this.cargarMensualidades();
     }
@@ -39,6 +42,14 @@ export class ListaMensualidad implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['instalacionId'] && this.instalacionId) {
       this.cargarMensualidades();
+    }
+  }
+
+  verificarPermisos(): void {
+    const usuarioString = localStorage.getItem('usuario');
+    if (usuarioString) {
+      const usuario = JSON.parse(usuarioString);
+      this.esAdmin = (usuario.Ocupacion === 'Administrador');
     }
   }
 
