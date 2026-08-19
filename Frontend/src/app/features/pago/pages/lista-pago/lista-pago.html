@@ -76,6 +76,9 @@
         </td>
         <td class="text-end">
             <button class="btn btn-sm btn-info text-white me-1" (click)="abrirModalMensualidades(pago)">Ver meses</button>
+            <hr class="bg-danger border-2 border-top border-success my-3">
+            <button class="btn btn-sm btn-warning me-1" (click)="imprimirTicket(pago)" title="Imprimir Ticket">🖨️</button>
+            <hr class="bg-danger border-2 border-top border-success my-3">
             <button class="btn btn-sm btn-success" (click)="abrirModal(pago)">Registrar pago</button>
         </td>
       </tr>
@@ -169,6 +172,11 @@
                   <option [value]="3">3 meses</option>
                   <option [value]="4">4 meses</option>
                   <option [value]="6">6 meses</option>
+                  <option [value]="7">7 meses</option>
+                  <option [value]="8">8 meses</option>
+                  <option [value]="9">9 meses</option>
+                  <option [value]="10">10 meses</option>
+                  <option [value]="11">11 meses</option>
                   <option [value]="12">12 meses (1 Año)</option>
                 </select>
               </div>

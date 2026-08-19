@@ -76,7 +76,10 @@ export class ListaPago implements OnInit {
     Concepto: ''
   };
 
+  esAdmin: boolean =false;
+
   ngOnInit(): void {
+    this.verificarPermisos();
     this.pagoService.getPagos().subscribe({
       next: (data) => {
         this.pagos.set(data);
@@ -89,6 +92,14 @@ export class ListaPago implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  verificarPermisos(): void {
+    const usuarioString = localStorage.getItem('usuario');
+    if (usuarioString) {
+      const usuario = JSON.parse(usuarioString);
+      this.esAdmin = (usuario.Ocupacion === 'Administrador');
+    }
   }
 
   aplicarFiltro(){
@@ -133,10 +144,99 @@ export class ListaPago implements OnInit {
     this.ngOnInit();
   }
 
+  imprimirTicket(pago: PagoDetallado){
+    if(!pago.Ultimo_Mes_Pagado || !pago.Ultimo_Anio_Pagado){
+      alert('Este cliente no tiene pagos recientes registrados para imprimir.');
+      return;
+    }
+    const fechaActual = new Date().toLocaleDateString('es-MX', { 
+      year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+    });
+
+    const nombreEmpresa = 'TravelNET'
+
+    const conceptoTicket = pago.Concepto_Ultimo_Pago || `Mensualidad ${this.obtenerNombreMes(pago.Ultimo_Mes_Pagado)} ${pago.Ultimo_Anio_Pagado}`;
+    const montoTicket = pago.Monto ? parseFloat(pago.Monto.toString()).toFixed(2) : '0.00';
+
+    const ticketHTML = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Ticket de Pago - ${pago.Nombre_Cliente}</title>
+          <style>
+            body {
+              font-family: 'Courier New', Courier, monospace;
+              width: 300px; /* Ajustable a 200px si tu impresora es de 58mm */
+              margin: 0 auto;
+              padding: 10px;
+              color: #000;
+              font-size: 14px;
+            }
+            h2, h3, p { margin: 5px 0; text-align: center; }
+            .divider { border-top: 1px dashed #000; margin: 10px 0; }
+            .text-left { text-align: left; }
+            .flex { display: flex; justify-content: space-between; }
+            .bold { font-weight: bold; }
+          </style>
+        </head>
+        <body>
+          <h2>${nombreEmpresa}</h2>
+          <p>Comprobante de Pago</p>
+          <p class="small">${fechaActual}</p>
+          
+          <div class="divider"></div>
+          
+          <div class="text-left">
+            <p><strong>Cliente:</strong> ${pago.Nombre_Cliente}</p>
+            <p><strong>Instalación:</strong> #${pago.InstalacionId}</p>
+            <p><strong>Plan:</strong> ${pago.Plan || 'N/A'}</p>
+            <p><strong>Localidad:</strong> ${pago.Localidad || 'N/A'}</p>
+          </div>
+          
+          <div class="divider"></div>
+          
+          <div class="text-left">
+            <p><strong>Concepto:</strong></p>
+            <p>${conceptoTicket}</p>
+          </div>
+          
+          <div class="divider"></div>
+          
+          <div class="flex bold" style="font-size: 16px;">
+            <span>TOTAL PAGADO:</span>
+            <span>$${montoTicket}</span>
+          </div>
+          
+          <div class="divider"></div>
+          
+          <p>¡Gracias por su preferencia!</p>
+          <p style="font-size: 12px;">Conserve este ticket para cualquier aclaración.</p>
+          
+          <!-- Script que lanza la ventana de impresión y luego la cierra -->
+          <script>
+            window.onload = function() { 
+              window.print(); 
+              setTimeout(() => { window.close(); }, 500);
+            }
+          </script>
+        </body>
+      </html>
+    `;
+    const ventanaImpresion = window.open('', '_blank', 'width=1000,height=600');
+    if (ventanaImpresion) {
+      ventanaImpresion.document.write(ticketHTML);
+      ventanaImpresion.document.close();
+    } else {
+      alert('Por favor, permite las ventanas emergentes (pop-ups) en tu navegador para imprimir el ticket.');
+    }
+  }
+
   registrarPago() {
     if (!this.formPago.Monto || this.formPago.Monto <= 0) {
-      alert('El monto es obligatorio y debe ser mayor a 0.');
-      return;
+      const confirmar = confirm('Estás a punto de efectuar un pago con cantidad cero. ¿Deseas continuar?');
+      if(!confirmar){
+        return;
+      }
     }
 
     if (this.formPago.Tipo_Pago !== 'Efectivo' && !this.formPago.Numero_cuenta) {
