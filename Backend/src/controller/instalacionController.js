@@ -42,8 +42,10 @@ const update = async (req, res) => {
         const exist = await Instalacion.findByPk(req.db, req.params.id);
         if(!exist) return res.status(404).json({ error: 'Instalacion no encontrada' });
 
-        // Se agregó req.db
-        const instalacionUpdated = await Instalacion.update(req.db, req.params.id, req.body);
+        const dataToUpdate = { ...exist, ...req.body };
+        
+        const instalacionUpdated = await Instalacion.update(req.db, req.params.id, dataToUpdate);
+        
         res.json(instalacionUpdated);
     } catch (error) {
         res.status(500).json({ error: error.message });
