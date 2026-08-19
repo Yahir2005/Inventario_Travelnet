@@ -67,6 +67,7 @@ const Pago = {
                 c.Nombre_Cliente,
                 c.Telefono,
                 lo.NombreLocalidad AS Localidad,
+                p.UsuarioId AS Pago_UsuarioId,
                 p.PagoId,
                 p.Fecha_Pago,
                 p.Estado_Pago,
@@ -169,7 +170,10 @@ const Pago = {
                 );
                 mensualidadId = insertMensualidad.insertId;
             }
-
+            await db.query(
+                'INSERT INTO Pago_Detalle (PagoId, MensualidadId, Monto_Abonado) VALUES (?, ?, ?)',
+                [pagoId, mensualidadId, montoPorMes]
+            );
             mensualidadesCreadas.push({ MensualidadId: mensualidadId, Mes: currentMes, Anio: currentAnio, Concepto: conceptoMes });
         }
 
