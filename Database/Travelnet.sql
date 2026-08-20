@@ -228,3 +228,13 @@ CREATE TABLE Inventario(
     FOREIGN KEY (HerramientaId) REFERENCES Herramienta(HerramientaId),
     FOREIGN KEY (MaterialId) REFERENCES Material(MaterialId)
 );
+
+CREATE TABLE CorteCaja(
+    CorteId INT AUTO_INCREMENT PRIMARY KEY,
+    UsuarioId INT,
+    Autorizador VARCHAR(50),
+    MontoTotal DECIMAL(10,2),
+    FechaCorte DATETIME DEFAULT CURRENT_TIMESTAMP,
+    Pagos_Incluidos JSON,
+    FOREIGN KEY (UsuarioId) REFERENCES Usuario(UsuarioId)
+)
