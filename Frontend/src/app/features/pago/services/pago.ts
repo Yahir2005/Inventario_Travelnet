@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Pago, PagoDetallado, PagoForm } from '../models/pago.model';
+import { CorteCaja } from '../models/corte-caja.model';
 
 @Injectable({
   providedIn: 'root',
@@ -9,6 +10,7 @@ import { Pago, PagoDetallado, PagoForm } from '../models/pago.model';
 export class PagoService {
   private http = inject(HttpClient);
   private apiUrl = 'http://localhost:3000/api/pago';
+  private datosCorte = 'http://localhost:3000/api/CorteCaja';
 
   getPagos(): Observable<PagoDetallado[]> {
     return this.http.get<PagoDetallado[]>(this.apiUrl);
@@ -24,5 +26,9 @@ export class PagoService {
 
   actualizarPago(id: number, datos: Partial<PagoForm>): Observable<Pago> {
     return this.http.put<Pago>(`${this.apiUrl}/${id}`, datos);
+  }
+
+  guardarCorteCaja(datos: CorteCaja | any): Observable<any>{
+    return this.http.post<CorteCaja>(this.datosCorte, datos);
   }
 }
