@@ -23,6 +23,7 @@ var localidadRouter = require('./routes/Localidad');
 var mensualidadRouter = require('./routes/Mensualidad');
 var pagoDetalleRouter = require('./routes/Pago_Detalle');
 var PagoMesCanceladoRouter = require('./routes/PagoMesCancelado');
+var corteCajaRouter = require('./routes/CorteCaja');
 var app = express();
 
 BigInt.prototype.toJSON = function() { return this.toString(); };
@@ -72,6 +73,7 @@ app.use('/api/localidad',localidadRouter);
 app.use('/api/mensualidad',mensualidadRouter);
 app.use('/api/pagoDetalle',pagoDetalleRouter);
 app.use('/api/pagoMesCancelado',PagoMesCanceladoRouter);
+app.use('/api/corteCaja',corteCajaRouter);
 
 // error handler
 app.use(function(err, req, res, next) {
