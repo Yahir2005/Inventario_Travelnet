@@ -22,7 +22,9 @@
          <button class="btn btn-outline-success text-nowrap" type="submit">Buscar Pago</button>
     </form>
   </div>
-
+  <button class="btn btn-primary text-nowrap" (click)="prepararCorteCaja()">
+       Corte de Caja
+    </button>
   <table class="table">
     <thead>
       <tr>
@@ -35,7 +37,6 @@
           <th>Estado</th>
           <th>Atraso</th>
           <th>Acción</th>
-          <th class="text-end">Meses Pagados</th>
       </tr>
     </thead>
     <tbody>
@@ -77,7 +78,7 @@
         <td class="text-end">
             <button class="btn btn-sm btn-info text-white me-1" (click)="abrirModalMensualidades(pago)">Ver meses</button>
             <hr class="bg-danger border-2 border-top border-success my-3">
-            <button class="btn btn-sm btn-warning me-1" (click)="imprimirTicket(pago)" title="Imprimir Ticket">🖨️</button>
+            <button class="btn btn-sm btn-warning me-1" (click)="imprimirTicket(pago)" title="Imprimir Ticket">Imprimir Último Pago</button>
             <hr class="bg-danger border-2 border-top border-success my-3">
             <button class="btn btn-sm btn-success" (click)="abrirModal(pago)">Registrar pago</button>
         </td>
@@ -262,6 +263,69 @@
             }
             Guardar
           </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+@if (mostrarModalCorte) {
+  <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.7);">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">Corte de Caja - Mis Cobros de Hoy</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="cerrarModalCorte()"></button>
+        </div>
+        <div class="modal-body text-center">
+          <h2 class="display-4 text-success my-3">${{ totalCorteCaja | number:'1.2-2' }}</h2>
+          <p class="text-muted">Total cobrado en efectivo por tu usuario el día de hoy.</p>
+          
+          <hr class="my-4">
+
+          
+          @if (!esAdmin) {
+            <h5 class="mb-3">Autorización de Administrador</h5>
+            <p class="small text-muted mb-3">Para imprimir el corte de caja, un administrador debe autorizar esta acción.</p>
+            
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" [(ngModel)]="authAdmin.Usuario" placeholder="Usuario Admin">
+              <label>Usuario Administrador</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="password" class="form-control" [(ngModel)]="authAdmin.Password" placeholder="Contraseña Admin">
+              <label>Contraseña</label>
+            </div>
+            
+            @if (errorAuth) {
+              <div class="text-danger small mb-2">{{ errorAuth }}</div>
+            }
+          } 
+          
+          @else {
+            <h5 class="mb-3">Corte de Administrador</h5>
+            <p class="small text-muted">Como tienes rol de Administrador, puedes generar e imprimir tu corte directamente sin autorización adicional.</p>
+          }
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModalCorte()">Cancelar</button>
+          
+          
+          @if (!esAdmin) {
+            <button type="button" class="btn btn-success" (click)="autorizarCorte()" [disabled]="cargandoAuth || !authAdmin.Usuario || !authAdmin.Password">
+              @if (cargandoAuth) {
+                <span class="spinner-border spinner-border-sm me-1"></span>
+              }
+              Autorizar e Imprimir
+            </button>
+          } 
+          
+          @else {
+            <button type="button" class="btn btn-success" (click)="imprimirCorteDirecto()">
+              🖨️ Imprimir Corte
+            </button>
+          }
         </div>
       </div>
     </div>

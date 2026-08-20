@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { PagoService } from '../../services/pago';
 import { PagoDetallado, PagoForm } from '../../models/pago.model';
 import { ListaMensualidad } from '../../../mensualidad/pages/lista-mensualidad/lista-mensualidad';
+import { UsuarioService } from '../../../usuario/services/usuario';
 
 @Component({
   selector: 'app-lista-pago',
@@ -15,6 +16,7 @@ import { ListaMensualidad } from '../../../mensualidad/pages/lista-mensualidad/l
 })
 export class ListaPago implements OnInit {
   private pagoService = inject(PagoService);
+  private usuarioService = inject(UsuarioService);
 
   pagos = signal<PagoDetallado[]>([]);
   loading = signal(true);
@@ -25,6 +27,14 @@ export class ListaPago implements OnInit {
 
   mostrarModal = false;
   pagoSeleccionado: PagoDetallado | null = null;
+
+  mostrarModalCorte = false;
+  totalCorteCaja = 0;
+  pagosDelCorte: any[] = [];
+  
+  authAdmin = { Usuario: '', Password: '' };
+  cargandoAuth = false;
+  errorAuth = '';
 
   mostrarModalMensualidades = false;
   pagoMensualidadesSeleccionado: PagoDetallado | null = null;
@@ -99,6 +109,128 @@ export class ListaPago implements OnInit {
     if (usuarioString) {
       const usuario = JSON.parse(usuarioString);
       this.esAdmin = (usuario.Ocupacion === 'Administrador');
+    }
+  }
+
+  prepararCorteCaja(){
+    const miUsuarioId = this.obtenerUsuarioActual();
+    const hoyISO = new Date().toISOString().split('T')[0];
+    this.totalCorteCaja = 0;
+    this.pagosDelCorte = []
+
+    this.pagosDelCorte = this.pagos().filter(p =>{
+      if (!p.Fecha_Pago || !p.Pago_UsuarioId) return false;
+      const fechaPagoStr = new Date(p.Fecha_Pago).toISOString().split('T')[0];
+
+      return (fechaPagoStr === hoyISO) && 
+             (Number(p.Pago_UsuarioId) === miUsuarioId) && 
+             (p.Tipo_Pago === 'Efectivo') &&
+             (p.Estado_Pago === 'Completado');
+    });
+
+    this.pagosDelCorte.forEach(p => {
+      this.totalCorteCaja += Number(p.Monto) || 0;
+    });
+
+    this.authAdmin = { Usuario: '', Password: '' };
+    this.errorAuth = '';
+    this.mostrarModalCorte = true;
+
+  }
+
+  cerrarModalCorte() {
+    this.mostrarModalCorte = false;
+  }
+
+  autorizarCorte(){
+    this.cargandoAuth = true;
+    this.errorAuth = '';
+
+    this.usuarioService.autorizarAdmin(this.authAdmin).subscribe({
+      next: (respuesta) => {
+        this.cargandoAuth = false;
+
+        const usuarioAdmin = respuesta.user;
+
+          if (usuarioAdmin && usuarioAdmin.Ocupacion === 'Administrador') {
+            this.cerrarModalCorte();
+            this.imprimirCorteDirecto();
+            
+          } else {
+            this.errorAuth = 'El usuario ingresado no tiene permisos de Administrador.';
+          }
+      },
+      error: () => {
+        this.cargandoAuth = false;
+        this.errorAuth = 'Credenciales inválidas. Inténtalo de nuevo.';
+      }
+    })
+  }
+
+  imprimirCorteDirecto() {
+    const usuarioLocalStorage = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const miNombre = usuarioLocalStorage.Nombre || 'Admin';
+    // El Admin se autoriza a sí mismo, por eso mandamos su propio nombre
+    this.ejecutarCorte(miNombre);
+  }
+
+imprimirTicketCorte(autorizador: string) {
+    const fechaActual = new Date().toLocaleString('es-MX');
+    const usuarioLocalStorage = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const empleado = usuarioLocalStorage.Nombre || 'Empleado';
+
+    let listaHTML = '';
+    this.pagosDelCorte.forEach(p => {
+      listaHTML += `
+        <div style="display: flex; justify-content: space-between; font-size: 12px;">
+          <span>${p.Nombre_Cliente.substring(0, 15)}...</span>
+          <span>$${Number(p.Monto).toFixed(2)}</span>
+        </div>
+      `;
+    });
+  
+    const ticketHTML = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Corte de Caja</title>
+          <style>
+            body { font-family: 'Courier New', Courier, monospace; width: 300px; margin: 0 auto; padding: 10px; color: #000; }
+            h2, h3, p { margin: 5px 0; text-align: center; }
+            .divider { border-top: 1px dashed #000; margin: 10px 0; }
+          </style>
+        </head>
+        <body>
+          <h2>TRAVELNET</h2>
+          <h3>CORTE DE CAJA AUTORIZADO</h3>
+          <p class="small">${fechaActual}</p>
+          <div class="divider"></div>
+          <p style="text-align: left;"><strong>Empleado:</strong> ${empleado}</p>
+          <p style="text-align: left;"><strong>Autorizó:</strong> ${autorizador}</p>
+          <div class="divider"></div>
+          
+          <h4 style="text-align: left; margin-bottom: 5px;">Movimientos Efectivo:</h4>
+          ${listaHTML || '<p>No hubo cobros en efectivo.</p>'}
+          
+          <div class="divider"></div>
+          <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 16px;">
+            <span>TOTAL EN CAJA:</span>
+            <span>$${this.totalCorteCaja.toFixed(2)}</span>
+          </div>
+          <div class="divider"></div>
+          <p>Cierre de turno exitoso.</p>
+          
+          <script>
+            window.onload = function() { window.print(); setTimeout(() => { window.close(); }, 500); }
+          </script>
+        </body>
+      </html>
+    `;
+
+    const ventana = window.open('', '_blank', 'width=400,height=600');
+    if (ventana) {
+      ventana.document.write(ticketHTML);
+      ventana.document.close();
     }
   }
 
@@ -327,6 +459,40 @@ export class ListaPago implements OnInit {
     }
     return null;
   }
+
+  ejecutarCorte(autorizador: string) {
+    this.cargandoAuth = true;
+
+    const usuarioLocalStorage = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const miUsuarioId = usuarioLocalStorage.UsuarioId;
+
+    const payloadCorte = {
+      UsuarioId: miUsuarioId,
+      Autorizador: autorizador,
+      MontoTotal: this.totalCorteCaja,
+
+      Pagos_Incluidos: JSON.stringify(
+        this.pagosDelCorte.map(p => ({
+          PagoId: p.PagoId, 
+          Cliente: p.Nombre_Cliente, 
+          Monto: p.Monto
+        }))
+      )
+    };
+
+    this.pagoService.guardarCorteCaja(payloadCorte).subscribe({
+      next: (res) => {
+        this.cargandoAuth = false;
+        this.cerrarModalCorte();
+        
+        // Llamamos al ticket pasándole el nombre del autorizador
+        this.imprimirTicketCorte(autorizador);
+      },
+      error: (err) => {
+        this.cargandoAuth = false;
+        console.error('Error al guardar el corte:', err);
+        alert('Hubo un error al registrar el corte en la base de datos.');
+      }
+    });
+  }
 }
-
-
