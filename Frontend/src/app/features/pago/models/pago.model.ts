@@ -16,6 +16,7 @@ export interface PagoDetallado {
     Modalidad_Servicio: 'Mensual' | 'Bimestral' | 'Trimestral' | 'Cuatrimestral' | 'Quinquemestral' | 'Semestral' | 'Heptamestral' | 'Octomestral' | 'Nonamestral' | 'Decamestral' | 'Oncemestral' | 'Anual' | null;
     Fecha_Instalacion: string;
     Instalacion_Activa?: boolean | null;
+    Pago_UsuarioId?:number;
 
     ClienteId: number;
     Nombre_Cliente: string;
