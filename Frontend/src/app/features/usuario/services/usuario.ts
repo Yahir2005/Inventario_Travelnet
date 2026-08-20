@@ -25,6 +25,10 @@ export class UsuarioService{
     return !!localStorage.getItem('token');
   }
 
+  autorizarAdmin(credenciales: {Usuario: string, Password:string}){
+    return this.http.post<any>(`${this.apiUrl}/login`,credenciales);
+  }
+
   getUsuarios():Observable <Usuario[]>{
     return this.http.get<Usuario[]>(this.apiUrl);
   }
