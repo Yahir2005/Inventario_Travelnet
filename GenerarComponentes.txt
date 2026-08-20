@@ -1,0 +1,55 @@
+PASO 1 = MODEL
+Archivo: src/app/features/modelNombre/models/modelNombre.model.ts
+
+export interface Nombre{
+    IdentificadoId: numbre;
+    Active: boolean;
+    nombre: string;
+    enum: 'uno' | 'dos';
+}
+
+PASO 2 = SERVICE
+
+ng generate service features/serviceNombre/service/serviceNombre
+
+PASO 3 = COMPONENTE
+
+ng generate component features/componenteNombre/pages/componenteNombre
+
+PASO 4 = RUTAS
+
+import { Routes } from '@angular/router';
+export const NOMBRE_ROUTES: Routes = [
+    {
+      path: '',
+      loadComponent: () =>
+        import('./pages/lista-componente/lista-componente').then(
+          (m) => m.ListaComponenteComponent
+        )
+    }
+  ];
+
+PASO 5 = REGISTRAR EN app.routes.ts
+
+  {
+    path: 'tipo-componente',
+    loadChildren: () =>
+      import('./features/tipo-componente/tipo-componente.routes').then(
+        (m) => m.TIPO_COMPONENTE_ROUTES
+      )
+  }
+
+----------------------------------------
+ESTRUCTURA FINAL DEL FEATURE
+----------------------------------------
+src/app/features/componente/
+  models/
+    component.model.ts         ← PASO 1 (a mano)
+  services/
+    component.service.ts       ← PASO 2 (CLI)
+  pages/
+    lista-componente/
+      lista-componente.component.ts    ← PASO 3 (CLI)
+      lista-componente.component.html  ← PASO 3 (CLI)
+      lista-componente.component.scss  ← PASO 3 (CLI)
+  componente.routes.ts          ← PASO 4 (a mano)
