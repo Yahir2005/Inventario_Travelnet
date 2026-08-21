@@ -1,0 +1,54 @@
+<div class="container-fluid mt-3">
+        <div class="col-md-4">
+            <h6>Ordenar pagos por</h6>
+        </div>
+<div class="col-md-4">
+    <select class="form-select" aria-label="Ver Corte Por">
+        <option selected>Selecciona una opción</option>
+        <option value="1">Dia</option>
+        <option value="2">Semana</option>
+        <option value="3">Mes</option>
+        <option value="3">Año</option>
+    </select>
+</div>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Corte ID</th>
+      <th scope="col">Nombre Usuario</th>
+      <th scope="col">Autorizo</th>
+      <th scope="col">Monto Corte</th>
+      <th scope="col">Fecha Corte</th>
+      <th scope="col">Pagos Incluidos</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (corte of cortes(); track corte.CorteId){
+    <tr>
+      <th scope="row">#{{corte.CorteId}}</th>
+      <td>{{ corte.Nombre_Usuario || 'Desconocido' }}</td>
+      <td>{{ corte.Autorizador }}</td>
+      <td class="text-success fw-bold">${{ corte.MontoTotal | number:'1.2-2' }}</td>
+      <td>{{ corte.FechaCorte | date:'dd/MM/yyyy HH:mm' }}</td>
+      <td class="text-center">
+            <span class="badge text-bg-primary">
+              {{ contarPagos(corte.Pagos_Incluidos) }} pagos
+            </span>
+        </td>
+    </tr>
+    }@empty {
+        <tr>
+        <td colspan="6" class="text-center py-5 text-muted">
+          @if (loading()) {
+            <div class="spinner-border text-primary" role="status"></div>
+          } @else {
+            No hay cortes de caja registrados en el sistema.
+          }
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
+
+</div>
