@@ -16,6 +16,9 @@ export class ListaCorteCajaComponent {
   loading = signal(true);
   error = signal<string | null>(null);
 
+  filtrosSelecionado: string = '0';
+  cortesAgrupados: any[] = [];
+
   ngOnInit(): void {
     this.loading.set(true);
     this.corteCajaService.getCorteCaja().subscribe({
@@ -39,5 +42,48 @@ export class ListaCorteCajaComponent {
     } catch (error) {
       return 0;
     }
+  }
+
+  agruparCortes(){
+    if(this.filtrosSelecionado === '0'){
+      this.cortesAgrupados = [];
+      return;
+    }
+
+    const grupos = new Map<string,any>();
+    const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+    this.cortes().forEach( corte => {
+      const fecha = new Date(corte.FechaCorte);
+      let llaveGrupo = '';
+
+      if(this.filtrosSelecionado === '1'){
+        llaveGrupo = fecha.toLocaleDateString('es-MX');
+      } else if (this.filtrosSelecionado === '2'){
+        const primerDiaDelAnio = new Date(fecha.getFullYear(), 0, 1);
+        const diasPasados = (fecha.getTime() - primerDiaDelAnio.getTime()) / 86400000;
+        const numeroSemana = Math.ceil((diasPasados + primerDiaDelAnio.getDay() + 1) / 7);
+        llaveGrupo = `Semana ${numeroSemana} - ${fecha.getFullYear()}`;
+      } else if (this.filtrosSelecionado === '3'){
+        llaveGrupo = `${meses[fecha.getMonth()]} ${fecha.getFullYear()}`;
+      } else if (this.filtrosSelecionado === '4'){
+        llaveGrupo = `${fecha.getFullYear()}`;
+      }
+
+      if(!grupos.has(llaveGrupo)){
+        grupos.set(llaveGrupo,{
+          nombre: llaveGrupo,
+          totalMonto: 0,
+          totalCortes: 0,
+          expandido: false,
+          cortes: []
+        });
+      }
+      const grupoActual = grupos.get(llaveGrupo);
+      grupoActual.totalMonto += Number(corte.MontoTotal) || 0;
+      grupoActual.totalCortes++;
+      grupoActual.cortes.push(corte);
+    });
+    this.cortesAgrupados = Array.from(grupos.values());
   }
 }
