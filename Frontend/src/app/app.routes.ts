@@ -59,5 +59,13 @@ export const routes: Routes = [
             import('./features/imagen_instalacion/imagen_instalacion.routes').then(
                 (m) => m.IMAGEN_INSTALACION_ROUTES
             )
+    },
+    {
+        path: 'Corte-Caja',
+        canActivate:[authGuard],
+        loadChildren: () =>
+            import('./features/corte-caja/corte-caja.routes').then(
+                (m) => m.CORTE_CAJA_ROUTES
+            )
     }
 ];
