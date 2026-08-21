@@ -25,6 +25,17 @@
                     </ul>
                 </li>
 
+                <li class="nav-item dropdown" *ngIf="esAdmin">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownAdmin" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Corte de Caja
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" routerLink="/Corte-Caja/lista" routerLinkActive="active">Listar Corte de Caja</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                    </ul>
+                </li>
+
                 <li class="nav-item dropdown" *ngIf="esInstalador || esAdmin">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownClientes" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
