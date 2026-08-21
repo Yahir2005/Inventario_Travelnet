@@ -2,7 +2,12 @@ const db = require('../config/database');
 
 const corteCaja = {
     findAll: async (db) => {
-        const rows = await db.query('SELECT * FROM CorteCaja');
+        const rows = await db.query(`
+            SELECT c.*, u.Nombre AS Nombre_Usuario 
+            FROM CorteCaja c 
+            LEFT JOIN Usuario u ON c.UsuarioId = u.UsuarioId 
+            ORDER BY c.FechaCorte DESC
+        `);
         return rows;
     },
 
