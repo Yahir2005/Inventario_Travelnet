@@ -21,6 +21,14 @@ export class ClienteService {
     return this.http.get<Cliente[]>(this.apiUrl);
   }
 
+  getClientePorId(id: number): Observable<Cliente>{
+    return this.http.get<Cliente>(`${this.apiUrl}/${id}`);
+  }
+
+  putCliente(id: number, datosActualizados: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, datosActualizados);
+  }
+
   crearCliente(datosCliente:any) {
     return this.http.post(this.apiUrl,datosCliente);
   }
