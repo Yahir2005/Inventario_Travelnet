@@ -14,7 +14,8 @@
           <th>Fecha de Pago</th>
           <th>Tipo Pago</th>
           <th>Estado</th>
-          <th class="text-end">Acciones</th>
+          <th >Cancelar</th>
+          <th class="text-end">Editar</th>
         </tr>
       </thead>
       <tbody>
@@ -58,10 +59,21 @@
               <span class="text-muted small">Deshabilitado</span>
             }
           </td>
+          <td class="text-end">
+            @if (m.Active && esAdmin) {
+              <button type="button" class="btn btn-dark btn-sm" (click)="editarMensualidad(m)">
+                Editar Mes
+              </button>
+            } @else if (!m.Active) {
+              <span class="text-muted small">Deshabilitado</span>
+            } @else {
+              <span class="text-muted small">Solo administrador</span>
+            }
+          </td>
         </tr>
         } @empty {
         <tr>
-          <td colspan="7" class="text-center py-4 text-muted">
+          <td colspan="8" class="text-center py-4 text-muted">
             No hay mensualidades registradas para este cliente.
           </td>
         </tr>

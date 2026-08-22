@@ -1,6 +1,7 @@
 import { Component, EventEmitter, inject, Input, OnChanges, OnInit, Output, SimpleChanges, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { MensualidadService } from '../../services/mensualidad';
 import { Mensualidad } from '../../model/mensualidad.model';
 
@@ -13,6 +14,7 @@ import { Mensualidad } from '../../model/mensualidad.model';
 })
 export class ListaMensualidad implements OnInit, OnChanges {
   private mensualidadService = inject(MensualidadService);
+  private router = inject(Router);
 
   @Input() instalacionId?: number;
   @Output() mensualidadActualizada = new EventEmitter<void>();
@@ -70,6 +72,10 @@ export class ListaMensualidad implements OnInit, OnChanges {
 
   obtenerNombreMes(numMes: number): string {
     return this.mesesNombre[numMes] || `Mes ${numMes}`;
+  }
+
+  editarMensualidad(mensualidad: Mensualidad): void {
+    this.router.navigate(['/mensualidad/actualizar-mensualidad', mensualidad.MensualidadId]);
   }
 
   abrirModalCancelar(mensualidad: Mensualidad): void {
