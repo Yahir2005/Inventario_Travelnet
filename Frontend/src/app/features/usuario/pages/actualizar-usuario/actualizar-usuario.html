@@ -1,0 +1,54 @@
+<div class="container mt-4">
+        <h1>Actualizar Usuario ID: <span class = "text-dark">#{{ usuarioForm.UsuarioId }}</span> </h1> 
+
+        <form (ngSubmit)="guardarCambios()" #formActualizar="ngForm">
+
+        <div class="mb-3">
+                <label class="form-label fw-bold">Nombre Completo</label>
+                <input type="text" class="form-control" name="nombre" 
+               [(ngModel)]="usuarioForm.Nombre" placeholder="Ej. Juan Pérez" required>
+        </div>
+
+        <div class="mb-3">
+                <label class="form-label fw-bold">Usuario (Login)</label>
+                <input type="text" class="form-control" name="usuario" 
+                [(ngModel)]="usuarioForm.Usuario" placeholder="Ej. jperez" required>
+        </div>
+        
+        <div class="mb-3">
+                <label class="form-label fw-bold">Nueva Contraseña</label>
+                <input type="password" class="form-control" name="password" 
+                [(ngModel)]="usuarioForm.Password" placeholder="Dejar en blanco si no deseas cambiarla">
+                <div class="form-text">Solo escribe aquí si necesitas resetear la contraseña de este usuario.</div>
+        </div>
+        
+        <div class="mb-3">
+                <label class="form-label fw-bold">Email</label>
+                <input type="email" class="form-control" name="email" 
+               [(ngModel)]="usuarioForm.Email" placeholder="correo@ejemplo.com">
+        </div>
+        
+        <div class="mb-3">
+                <label class="form-label fw-bold">Teléfono</label>
+                <input type="tel" class="form-control" name="telefono" 
+               [(ngModel)]="usuarioForm.Telefono" placeholder="10 dígitos">
+        </div>
+        
+        <div class="mb-4">
+            <label class="form-label fw-bold">Ocupación (Rol)</label>
+            <select class="form-select" name="ocupacion" [(ngModel)]="usuarioForm.Ocupacion" required>
+                <option value="" disabled>Selecciona el rol del usuario</option>
+                <option value="Administrador">Administrador</option>
+                <option value="Instalador">Instalador</option>
+                <option value="Mostrador">Mostrador</option>
+            </select>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mb-5">
+            <button type="button" class="btn btn-secondary" routerLink="/usuario">Cancelar</button>
+            <button type="submit" class="btn btn-success" [disabled]="formActualizar.invalid">
+                Guardar Cambios
+            </button>
+        </div>
+        </form>
+</div>
