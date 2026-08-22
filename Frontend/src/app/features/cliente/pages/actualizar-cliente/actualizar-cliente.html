@@ -1,0 +1,52 @@
+<div class="container-fluid mt-3" style="max-width: 760px;">
+  @if (cargando()) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-2 text-muted">Cargando información del cliente</p>
+    </div>
+  } @else {
+    <h2>Actualizar Cliente <span class="text-dark">#{{ clienteId }}</span></h2>
+
+    <form (ngSubmit)="guardarCambios()" #formCliente="ngForm">
+
+      <div class="mb-4">
+        <label for="nombre_cliente" class="form-label fw-bold">Nombre Cliente</label>
+        <input type="text" class="form-control" id="nombre_cliente" name="Nombre"
+          [(ngModel)]="cliente.Nombre_Cliente" placeholder="Ejemplo: Juarez Perez Antonio" required>
+      </div>
+
+      <div class="mb-4">
+        <label for="Telefono" class="form-label fw-bold">Teléfono</label>
+        <input type="tel" class="form-control" id="Telefono" name="Telefono"
+          [(ngModel)]="cliente.Telefono" placeholder="Ejemplo: 2341049080" required>
+      </div>
+
+      <div class="mb-4">
+        <label for="Direccion" class="form-label fw-bold">Dirección</label>
+        <textarea class="form-control" id="Direccion" name="Direccion" rows="3"
+          [(ngModel)]="cliente.Direccion" required></textarea>
+      </div>
+
+      <div class="mb-4">
+        <label for="TipoCliente" class="form-label fw-bold">Tipo cliente</label>
+        <select class="form-select" id="TipoCliente" name="Tipo" [(ngModel)]="cliente.TipoCliente" required>
+          <option value="" disabled>Selecciona un tipo...</option>
+          <option value="Fisica">Física</option>
+          <option value="Moral">Moral</option>
+        </select>
+      </div>
+
+      <div class="d-flex gap-2 mb-5">
+        <button type="button" class="btn btn-secondary" routerLink="/cliente">Cancelar</button>
+
+        <button type="submit" class="btn btn-primary" [disabled]="formCliente.invalid || guardando()">
+          @if (guardando()) {
+            <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+          }
+          Guardar Cambios
+        </button>
+      </div>
+
+    </form>
+  }
+</div>
