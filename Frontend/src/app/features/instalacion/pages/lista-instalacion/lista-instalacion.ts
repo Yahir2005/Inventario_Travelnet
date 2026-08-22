@@ -74,6 +74,10 @@ export class ListaInstalacion implements OnInit {
     });
   }
 
+  modificarInstalacion(instalacion: InstalacionDetallada) {
+    this.router.navigate(['/instalacion/actualizar-instalacion', instalacion.InstalacionId]);
+  }
+
   agregarUbicacion(instalacionTarget: InstalacionDetallada){
 
     let mensaje = 'Estas seguro que deseas capturar y guardar tu ubicación actual para esta instalación?'
