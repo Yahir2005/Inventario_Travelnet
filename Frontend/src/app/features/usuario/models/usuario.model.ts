@@ -5,8 +5,8 @@ export interface Usuario {
     Password: string,
     Email: string,
     Telefono: string,
-    Activo: boolean,
+    Active: boolean,
     accesos_count: number;
     ultimo_acceso: string | null;
-    ocupacion: 'Administrador' | 'Instalador' | 'Mostrador';
+    Ocupacion: 'Administrador' | 'Instalador' | 'Mostrador';
 }
