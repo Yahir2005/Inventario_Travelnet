@@ -4,6 +4,7 @@ export interface Instalacion{
     ClienteId: number;
     OLTId: number | null;
     TorreId: number | null;
+    LocalidadId: number | null;
     Ubicacion_Maps: string;
     Nombre_Wifi: string;
     Password_Wifi: string;
