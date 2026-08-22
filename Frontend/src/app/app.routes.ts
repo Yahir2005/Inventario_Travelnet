@@ -37,6 +37,14 @@ export const routes: Routes = [
             )
     },
     {
+        path: 'mensualidad',
+        canActivate:[authGuard],
+        loadChildren: () =>
+            import('./features/mensualidad/mensualidad.routes').then(
+                (m) => m.MENSUALIDAD_ROUTES
+            )
+    },
+    {
         path: 'instalacion',
         canActivate:[authGuard],
         loadChildren: () =>
