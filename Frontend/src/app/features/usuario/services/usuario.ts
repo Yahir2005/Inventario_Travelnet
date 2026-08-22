@@ -33,6 +33,14 @@ export class UsuarioService{
     return this.http.get<Usuario[]>(this.apiUrl);
   }
 
+  getByIdUsuario(id: number): Observable <Usuario>{
+    return this.http.get<Usuario>(`${this.apiUrl}/${id}`);
+  }
+
+  putUsuario(id: number,datosActualizados: Partial<Usuario>):Observable<any>{
+    return this.http.put(`${this.apiUrl}/${id}`, datosActualizados);
+  }
+
   postCrearUsuario(datosUsuario:any){
     return this.http.post(this.apiUrl,datosUsuario);
   }
