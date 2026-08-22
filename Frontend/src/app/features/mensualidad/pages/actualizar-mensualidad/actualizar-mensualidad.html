@@ -1,0 +1,74 @@
+<div class="container mt-4" style="max-width: 680px;">
+  @if (cargando()) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-2 text-muted">Cargando información de la mensualidad</p>
+    </div>
+  } @else {
+    <h2>Actualizar Mensualidad <span class="text-dark">#{{ mensualidadId }}</span></h2>
+    <p class="text-muted">Instalación asociada: #{{ form.InstalacionId }} (no modificable)</p>
+
+    <form (ngSubmit)="guardarCambios()" #formActualizar="ngForm">
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label class="form-label fw-bold">Mes</label>
+          <select class="form-select" name="Mes" [(ngModel)]="form.Mes" required>
+            <option [ngValue]="null" disabled>Selecciona el mes...</option>
+            @for (mes of mesesLista; track mes.id) {
+              <option [ngValue]="mes.id">{{ mes.nombre }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-bold">Año</label>
+          <input type="number" class="form-control" name="Anio"
+            [(ngModel)]="form.Anio" min="2000" max="2100" required>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label fw-bold">Concepto</label>
+        <input type="text" class="form-control" name="Concepto"
+          [(ngModel)]="form.Concepto" maxlength="100" required
+          placeholder="Ej. Mensualidad Enero 2026">
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label class="form-label fw-bold">Monto</label>
+          <div class="input-group">
+            <span class="input-group-text">$</span>
+            <input type="number" class="form-control" name="Monto"
+              [(ngModel)]="form.Monto" min="0" step="0.01" required>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-bold">Estado</label>
+          <select class="form-select" name="Estado" [(ngModel)]="form.Estado" required>
+            @for (estado of estadosLista; track estado) {
+              <option [value]="estado">{{ estado }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="alert alert-warning small">
+        Nota: para dar de baja este pago usa la opción "Dar de baja" desde el historial de mensualidades.
+      </div>
+
+      <div class="d-flex justify-content-end gap-2 mb-5">
+        <button type="button" class="btn btn-secondary" routerLink="/pago">Cancelar</button>
+        <button type="submit" class="btn btn-success" [disabled]="formActualizar.invalid || guardando()">
+          @if (guardando()) {
+            <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+          }
+          Guardar Cambios
+        </button>
+      </div>
+
+    </form>
+  }
+</div>
