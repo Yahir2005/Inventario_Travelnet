@@ -25,6 +25,10 @@ export class InstalacionService {
     return this.http.get<InstalacionDetallada[]>(`${this.apiUrl}/lista-detallada`);
   }
 
+  getInstalacionPorId(id: number): Observable<Instalacion>{
+    return this.http.get<Instalacion>(`${this.apiUrl}/${id}`);
+  }
+
   putInstalaciones(id: number, datosActualizados: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}`, datosActualizados);
   }
