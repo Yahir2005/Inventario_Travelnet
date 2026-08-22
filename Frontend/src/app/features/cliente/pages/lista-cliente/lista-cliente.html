@@ -41,7 +41,7 @@
             <th scope="col">Pagos</th>
             <th scope="col">Modalidad</th>
             <th scope="col">Instalación</th>
-            <th scope="col">Detalles</th>
+            <th scope="col">Acciones</th>
             </tr>
         </thead>
             <tbody>
@@ -74,6 +74,9 @@
                     <td class="text-center">
                         <button class="btn btn-primary btn-sm" (click)="verDetalles(cliente)">
                             Detalles
+                        </button>
+                        <button class="btn btn-warning btn-sm" (click)="editarCliente(cliente)">
+                            Editar Cliente
                         </button>
                     </td>
                 </tr>

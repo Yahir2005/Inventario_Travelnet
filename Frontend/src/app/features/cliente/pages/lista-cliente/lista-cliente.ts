@@ -1,6 +1,7 @@
 import { Component, inject, Inject, OnInit,signal,Signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
+import { Router } from "@angular/router";
 import { ClienteService } from "../../services/cliente";
 import { ClienteDetallado } from "../../models/cliente-list-view.model";
 
@@ -14,6 +15,7 @@ import { ClienteDetallado } from "../../models/cliente-list-view.model";
 
 export class ListaClienteComponent implements OnInit {
   private clienteService = inject(ClienteService);
+  private router = inject(Router);
 
   clientes = signal<ClienteDetallado[]>([]);
   loading = signal<boolean>(true);
@@ -38,5 +40,9 @@ export class ListaClienteComponent implements OnInit {
 
   verDetalles(cliente:ClienteDetallado){
     console.log('Motrando detalles del cliente: ',cliente.Nombre_Cliente);
+  }
+
+  editarCliente(cliente:ClienteDetallado){
+    this.router.navigate(['/cliente/actualizar-cliente', cliente.ClienteId]);
   }
 }
