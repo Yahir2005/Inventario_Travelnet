@@ -14,5 +14,12 @@ export const USUARIO: Routes = [
             import('./pages/insertar-usuario/insertar-usuario').then(
                 (m) => m.InsertarUsuario
             )
+    },
+    {
+        path: 'actualizar-usuario/:id',
+        loadComponent: () =>
+            import('./pages/actualizar-usuario/actualizar-usuario').then(
+                (m) => m.ActualizarUsuario
+            )
     }
 ];
