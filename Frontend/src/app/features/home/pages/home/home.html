@@ -1,0 +1,106 @@
+<div class="container mt-4">
+
+    @if (esAdmin) {
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Panel de Control (Dashboard)</h2>
+      </div>
+
+      <div class="row g-4">
+        <!-- Clientes -->
+        <div class="col-md-4 col-sm-6">
+          <div class="card shadow-sm border-0 h-100 bg-primary text-white">
+            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+              <h5 class="card-title">Clientes Totales</h5>
+              <h2 class="display-4 fw-bold">{{ totalClientes }}</h2>
+            </div>
+            <div class="card-footer bg-transparent border-0 text-center">
+              <a routerLink="/cliente" class="text-white text-decoration-none small">Ver Clientes ➔</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Instalaciones -->
+        <div class="col-md-4 col-sm-6">
+          <div class="card shadow-sm border-0 h-100 bg-info text-white">
+            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+              <h5 class="card-title">Instalaciones Totales</h5>
+              <h2 class="display-4 fw-bold">{{ totalInstalaciones }}</h2>
+            </div>
+            <div class="card-footer bg-transparent border-0 text-center">
+              <a routerLink="/instalacion" class="text-white text-decoration-none small">Ver Instalaciones ➔</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagos Hoy -->
+        <div class="col-md-4 col-sm-6">
+          <div class="card shadow-sm border-0 h-100 bg-success text-white">
+            <div class="card-body d-flex flex-column justify-content-center align-items-center text-center">
+              <h5 class="card-title">Pagos del Día (Completados)</h5>
+              <h2 class="display-5 fw-bold mb-0">${{ pagosHoyMonto | number:'1.2-2' }}</h2>
+              <p class="mb-0 mt-1">{{ pagosHoyConteo }} pagos realizados hoy</p>
+            </div>
+            <div class="card-footer bg-transparent border-0 text-center">
+              <a routerLink="/pago" class="text-white text-decoration-none small">Ver Pagos ➔</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Usuarios y Roles -->
+        <div class="col-md-4 col-sm-6">
+          <div class="card shadow-sm border-0 h-100 bg-dark text-white">
+            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+              <h5 class="card-title">Usuarios Registrados</h5>
+              <h2 class="display-4 fw-bold">{{ totalUsuarios }}</h2>
+            </div>
+            <div class="card-footer bg-transparent border-top text-center" style="border-color: rgba(255,255,255,0.2) !important;">
+              <div class="d-flex justify-content-around small">
+                @for (item of rolesResumen; track item.rol) {
+                  <div>
+                    <strong>{{ item.total }}</strong><br>
+                    <span class="text-muted" style="color: #adb5bd !important;">{{ item.rol }}</span>
+                  </div>
+                }
+              </div>
+              <a routerLink="/usuario" class="text-white text-decoration-none small d-block mt-2 pt-2 border-top" style="border-color: rgba(255,255,255,0.2) !important;">Ver Usuarios ➔</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- OLTs -->
+        <div class="col-md-4 col-sm-6">
+          <div class="card shadow-sm border-0 h-100" style="background-color: #6f42c1; color: white;">
+            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+              <h5 class="card-title">OLTs Registradas</h5>
+              <h2 class="display-4 fw-bold">{{ totalOlt }}</h2>
+            </div>
+            <div class="card-footer bg-transparent border-0 text-center">
+              <a routerLink="/OLT/lista-olts" class="text-white text-decoration-none small">Ver OLTs ➔</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Torres -->
+        <div class="col-md-4 col-sm-6">
+          <div class="card shadow-sm border-0 h-100 bg-secondary text-white">
+            <div class="card-body d-flex flex-column justify-content-center align-items-center">
+              <h5 class="card-title">Torres Registradas</h5>
+              <h2 class="display-4 fw-bold">{{ totalTorres }}</h2>
+            </div>
+            <div class="card-footer bg-transparent border-0 text-center">
+              <a routerLink="/Torre/listar-torres" class="text-white text-decoration-none small">Ver Torres ➔</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <!-- Vista para Instaladores y Mostradores -->
+      <div class="p-5 mb-4 bg-light rounded-3 shadow-sm border text-center mt-5">
+        <div class="container-fluid py-5">
+          <h1 class="display-5 fw-bold text-primary mb-3">¡Bienvenido al sistema!</h1>
+          <p class="col-md-8 mx-auto fs-4 text-muted">Hola <strong>{{ nombreUsuario }}</strong>, usa el menú superior para navegar a las herramientas de tu perfil.</p>
+        </div>
+      </div>
+    }
+
+</div>
