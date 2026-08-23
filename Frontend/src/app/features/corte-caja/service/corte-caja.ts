@@ -16,6 +16,10 @@ export class CorteCajaService {
     return this.http.get<CorteCaja[]>(this.apiUrl);
   }
 
+  getCortePorId(id: number): Observable<CorteCaja>{
+    return this.http.get<CorteCaja>(`${this.apiUrl}/${id}`);
+  }
+
   postCorteCaja(datos: CorteCaja | any): Observable<any>{
     return this.http.post<CorteCaja>(this.apiUrl, datos);
   }
