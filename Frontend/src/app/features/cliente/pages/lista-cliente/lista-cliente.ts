@@ -45,8 +45,14 @@ export class ListaClienteComponent implements OnInit {
   soloConAdeudo = false;
 
   terminoBusqueda = '';
+  esAdmin = false;
 
   ngOnInit(): void {
+    const usuarioString = localStorage.getItem('usuario');
+    if (usuarioString) {
+      const usuario = JSON.parse(usuarioString);
+      this.esAdmin = usuario.Ocupacion === 'Administrador';
+    }
     this.cargarClientes();
   }
 

@@ -50,71 +50,73 @@
             <button type="button" class="btn btn-outline-secondary text-nowrap" (click)="limpiarFiltros()">Limpiar</button>
         </div>
 
-    <table class="table table-bordered mt-3">
-        <thead>
-            <tr>
-            <th scope="col">ClienteId</th>
-            <th scope="col">Nombre</th>
-            <th scope="col">Maps</th>
-            <th scope="col">Pagos</th>
-            <th scope="col">Modalidad</th>
-            <th scope="col">Instalación</th>
-            <th scope="col">Acciones</th>
-            </tr>
-        </thead>
-            <tbody>
-               @for (cliente of clientesVista(); track cliente.ClienteId) {
+    <div class="table-responsive mt-3">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
                 <tr>
-                    <td>{{ cliente.ClienteId }}</td>
-                    <td>{{ cliente.Nombre_Cliente }}</td>
-                    <td>
-                        @if (cliente.Ubicacion_Maps) {
-                            <a [href]="cliente.Ubicacion_Maps" target="_blank" class="text-decoration-none fw-bold">Enlace</a>
-                        } @else {
-                            <span class="text-muted">Sin enlace</span>
-                        }
-                    </td>
-                    <td>
-                        @if (cliente.Atrasado) {
-                            <span class="badge text-bg-danger">Atrasado {{ cliente.Dias_Atraso }} días</span>
-                        } @else if (cliente.Estado_Pago) {
-                            Al día
-                        } @else {
-                            Sin pagos
-                        }
-
-                        @if (cliente.Atrasado) {
-                            <button class="btn btn-success btn-sm ms-2" style="font-size: 0.75rem;" (click)="registrarPago(cliente)">Registrar Pago</button>
-                        }
-                    </td>
-                    <td>{{ cliente.Modalidad_Servicio || 'N/A' }}</td>
-                    <td>{{ cliente.Tipo || 'Pendiente' }}</td>
-                    <td class="text-center">
-                        <button class="btn btn-primary btn-sm" (click)="verDetalles(cliente)">
-                            Detalles
-                        </button>
-                        <button class="btn btn-warning btn-sm" (click)="editarCliente(cliente)">
-                            Editar Cliente
-                        </button>
-                    </td>
+                <th scope="col">ClienteId</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Maps</th>
+                <th scope="col">Pagos</th>
+                <th scope="col">Modalidad</th>
+                <th scope="col">Instalación</th>
+                <th scope="col">Acciones</th>
                 </tr>
-               } @empty {
-                <tr>
-                    <td colspan="7" class="text-center py-4">
-                        @if (loading()) {
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Cargando...</span>
-                            </div>
-                        } @else if (clientes().length === 0) {
-                            No hay clientes para mostrar.
-                        } @else {
-                            Ningún cliente coincide con los filtros o la búsqueda.
-                        }
-                    </td>
-                </tr>
-               }
-            </tbody>
-    </table>
+            </thead>
+                <tbody>
+                   @for (cliente of clientesVista(); track cliente.ClienteId) {
+                    <tr>
+                        <td>{{ cliente.ClienteId }}</td>
+                        <td>{{ cliente.Nombre_Cliente }}</td>
+                        <td>
+                            @if (cliente.Ubicacion_Maps) {
+                                <a [href]="cliente.Ubicacion_Maps" target="_blank" class="text-decoration-none fw-bold">Enlace</a>
+                            } @else {
+                                <span class="text-muted">Sin enlace</span>
+                            }
+                        </td>
+                        <td>
+                            @if (cliente.Atrasado) {
+                                <span class="badge text-bg-danger">Atrasado {{ cliente.Dias_Atraso }} días</span>
+                            } @else if (cliente.Estado_Pago) {
+                                Al día
+                            } @else {
+                                Sin pagos
+                            }
+    
+                            @if (cliente.Atrasado) {
+                                <button class="btn btn-success btn-sm ms-2" style="font-size: 0.75rem;" (click)="registrarPago(cliente)">Registrar Pago</button>
+                            }
+                        </td>
+                        <td>{{ cliente.Modalidad_Servicio || 'N/A' }}</td>
+                        <td>{{ cliente.Tipo || 'Pendiente' }}</td>
+                        <td class="text-center">
+                            <button class="btn btn-primary btn-sm" (click)="verDetalles(cliente)">
+                                Detalles
+                            </button>
+                            <button class="btn btn-warning btn-sm" (click)="editarCliente(cliente)" *ngIf="esAdmin">
+                                Editar Cliente
+                            </button>
+                        </td>
+                    </tr>
+                   } @empty {
+                    <tr>
+                        <td colspan="7" class="text-center py-4">
+                            @if (loading()) {
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                            } @else if (clientes().length === 0) {
+                                No hay clientes para mostrar.
+                            } @else {
+                                Ningún cliente coincide con los filtros o la búsqueda.
+                            }
+                        </td>
+                    </tr>
+                   }
+                </tbody>
+        </table>
+    </div>
     <p class="text-muted small" *ngIf="!loading()">Mostrando {{ clientesVista().length }} de {{ clientes().length }} clientes</p>
     </div>
 </div>
