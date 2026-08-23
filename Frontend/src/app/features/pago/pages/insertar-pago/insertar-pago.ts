@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core'; 
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -17,8 +17,9 @@ export class InsertarPago implements OnInit {
   private router = inject(Router);
 
   instalaciones: PagoDetallado[] = [];
-  loading = true;
-  guardando = false;
+  
+  loading = signal(true);
+  guardando = signal(false);
 
   tipoPagos = ['Efectivo', 'Transferencia', 'Cheque', 'Trueque', 'Paypal', 'MercadoPago', 'Pagaré'];
   estadosPago = ['Completado', 'Incompleto', 'Pendiente'];
@@ -39,18 +40,9 @@ export class InsertarPago implements OnInit {
   ];
 
   modalidadMesesMap: Record<string, number> = {
-    'Mensual': 1,
-    'Bimestral': 2,
-    'Trimestral': 3,
-    'Cuatrimestral': 4,
-    'Quinquemestral': 5,
-    'Semestral': 6,
-    'Heptamestral': 7,
-    'Octomestral': 8,
-    'Nonamestral': 9,
-    'Decamestral': 10,
-    'Oncemestral': 11,
-    'Anual': 12
+    'Mensual': 1, 'Bimestral': 2, 'Trimestral': 3, 'Cuatrimestral': 4,
+    'Quinquemestral': 5, 'Semestral': 6, 'Heptamestral': 7, 'Octomestral': 8,
+    'Nonamestral': 9, 'Decamestral': 10, 'Oncemestral': 11, 'Anual': 12
   };
 
   pago: PagoForm = {
@@ -73,15 +65,15 @@ export class InsertarPago implements OnInit {
   }
 
   cargarInstalaciones() {
-    this.loading = true;
+    this.loading.set(true); 
     this.pagoService.getPagos().subscribe({
       next: (data) => {
         this.instalaciones = data;
-        this.loading = false;
+        this.loading.set(false); 
       },
       error: (err) => {
         console.error('Error al cargar las instalaciones', err);
-        this.loading = false;
+        this.loading.set(false);
       }
     });
   }
@@ -140,15 +132,15 @@ export class InsertarPago implements OnInit {
       return;
     }
 
-    this.guardando = true;
+    this.guardando.set(true);
     this.pagoService.crearPago(this.pago).subscribe({
       next: () => {
-        this.guardando = false;
+        this.guardando.set(false);
         alert('Pago registrado correctamente.');
         this.router.navigate(['/pago']);
       },
       error: (err) => {
-        this.guardando = false;
+        this.guardando.set(false);
         console.error('Error al registrar el pago', err);
         alert('Ocurrió un error al registrar el pago.');
       }
@@ -164,4 +156,3 @@ export class InsertarPago implements OnInit {
     return null;
   }
 }
-

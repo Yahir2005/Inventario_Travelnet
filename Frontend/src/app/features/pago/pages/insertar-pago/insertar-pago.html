@@ -1,89 +1,100 @@
 <div class="container-fluid mt-3">
-  <h2>Registrar Pago</h2>
-
-  <div *ngIf="loading" class="text-center py-5">
-    <div class="spinner-border text-primary" role="status"></div>
-    <p class="mt-2">Cargando instalaciones...</p>
-  </div>
-
-  <form *ngIf="!loading" (ngSubmit)="guardarPago()">
-
-    <div class="mb-4">
-      <label class="form-label">Instalación</label>
-      <select class="form-select" name="InstalacionId" [(ngModel)]="pago.InstalacionId" (change)="onInstalacionChange()" required>
-        <option [ngValue]="0" disabled selected>Selecciona una instalación...</option>
-        <option *ngFor="let inst of instalaciones" [ngValue]="inst.InstalacionId">
-          {{ inst.Nombre_Cliente }} — Instalación #{{ inst.InstalacionId }} ({{ inst.Plan || 'sin plan' }} · {{ inst.Modalidad_Servicio || '—' }})
-        </option>
-      </select>
+  @if (loading()) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-2 text-muted">Cargando catálogo de instalaciones...</p>
     </div>
+  } @else {
+    <h2>Registrar Pago</h2>
 
-    <div class="row mb-4">
-      <div class="col-md-4">
-        <label class="form-label">Mes de Inicio</label>
-        <select class="form-select" name="Mes" [(ngModel)]="pago.Mes" (change)="actualizarConcepto()" required>
-          <option *ngFor="let m of mesesLista" [value]="m.id">{{ m.nombre }}</option>
+    <form (ngSubmit)="guardarPago()">
+
+      <div class="mb-4">
+        <label class="form-label">Instalación</label>
+        <select class="form-select" name="InstalacionId" [(ngModel)]="pago.InstalacionId" (change)="onInstalacionChange()" required>
+          <option [ngValue]="0" disabled selected>Selecciona una instalación...</option>
+          @for (inst of instalaciones; track inst.InstalacionId) {
+            <option [ngValue]="inst.InstalacionId">
+              {{ inst.Nombre_Cliente }} — Instalación #{{ inst.InstalacionId }} ({{ inst.Plan || 'sin plan' }} · {{ inst.Modalidad_Servicio || '—' }})
+            </option>
+          }
         </select>
       </div>
-      <div class="col-md-4">
-        <label class="form-label">Año</label>
-        <input type="number" class="form-control" name="Anio" [(ngModel)]="pago.Anio" (change)="actualizarConcepto()" min="2000" max="2100" required>
+
+      <div class="row mb-4">
+        <div class="col-md-4">
+          <label class="form-label">Mes de Inicio</label>
+          <select class="form-select" name="Mes" [(ngModel)]="pago.Mes" (change)="actualizarConcepto()" required>
+            @for (m of mesesLista; track m.id) {
+              <option [value]="m.id">{{ m.nombre }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Año</label>
+          <input type="number" class="form-control" name="Anio" [(ngModel)]="pago.Anio" (change)="actualizarConcepto()" min="2000" max="2100" required>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Cantidad de Meses</label>
+          <select class="form-select" name="Cantidad_Meses" [(ngModel)]="pago.Cantidad_Meses" (change)="actualizarConcepto()" required>
+            <option [value]="1">1 mes</option>
+            <option [value]="2">2 meses</option>
+            <option [value]="3">3 meses</option>
+            <option [value]="4">4 meses</option>
+            <option [value]="6">6 meses</option>
+            <option [value]="12">12 meses (1 Año)</option>
+          </select>
+        </div>
       </div>
-      <div class="col-md-4">
-        <label class="form-label">Cantidad de Meses</label>
-        <select class="form-select" name="Cantidad_Meses" [(ngModel)]="pago.Cantidad_Meses" (change)="actualizarConcepto()" required>
-          <option [value]="1">1 mes</option>
-          <option [value]="2">2 meses</option>
-          <option [value]="3">3 meses</option>
-          <option [value]="4">4 meses</option>
-          <option [value]="6">6 meses</option>
-          <option [value]="12">12 meses (1 Año)</option>
+
+      <div class="mb-4">
+        <label class="form-label">Concepto</label>
+        <input type="text" class="form-control" name="Concepto" [(ngModel)]="pago.Concepto" placeholder="Ej. Mensualidad Junio 2026">
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label">Tipo de Pago</label>
+        <select class="form-select" name="Tipo_Pago" [(ngModel)]="pago.Tipo_Pago" required>
+          @for (t of tipoPagos; track t) {
+            <option [value]="t">{{ t }}</option>
+          }
         </select>
       </div>
-    </div>
 
-    <div class="mb-4">
-      <label class="form-label">Concepto</label>
-      <input type="text" class="form-control" name="Concepto" [(ngModel)]="pago.Concepto" placeholder="Ej. Mensualidad Junio 2026">
-    </div>
+      @if (pago.Tipo_Pago !== 'Efectivo') {
+        <div class="mb-4">
+          <label class="form-label">Número de cuenta</label>
+          <input type="text" class="form-control" name="Numero_cuenta" [(ngModel)]="pago.Numero_cuenta" placeholder="Cuenta / referencia">
+        </div>
+      }
 
-    <div class="mb-4">
-      <label class="form-label">Tipo de Pago</label>
-      <select class="form-select" name="Tipo_Pago" [(ngModel)]="pago.Tipo_Pago" required>
-        <option *ngFor="let t of tipoPagos" [value]="t">{{ t }}</option>
-      </select>
-    </div>
-
-    <div class="mb-4" *ngIf="pago.Tipo_Pago !== 'Efectivo'">
-      <label class="form-label">Número de cuenta</label>
-      <input type="text" class="form-control" name="Numero_cuenta" [(ngModel)]="pago.Numero_cuenta" placeholder="Cuenta / referencia">
-    </div>
-
-    <div class="row mb-4">
-      <div class="col-md-6">
-        <label class="form-label">Monto</label>
-        <input type="number" step="0.01" min="0" class="form-control" name="Monto" [(ngModel)]="pago.Monto" required>
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <label class="form-label">Monto</label>
+          <input type="number" step="0.01" min="0" class="form-control" name="Monto" [(ngModel)]="pago.Monto" required>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">Descuento</label>
+          <input type="number" step="0.01" min="0" class="form-control" name="Descuento" [(ngModel)]="pago.Descuento">
+        </div>
       </div>
-      <div class="col-md-6">
-        <label class="form-label">Descuento</label>
-        <input type="number" step="0.01" min="0" class="form-control" name="Descuento" [(ngModel)]="pago.Descuento">
+
+      <div class="mb-4">
+        <label class="form-label">Estado del Pago</label>
+        <select class="form-select" name="Estado_Pago" [(ngModel)]="pago.Estado_Pago" required>
+          @for (e of estadosPago; track e) {
+            <option [value]="e">{{ e }}</option>
+          }
+        </select>
       </div>
-    </div>
 
-    <div class="mb-4">
-      <label class="form-label">Estado del Pago</label>
-      <select class="form-select" name="Estado_Pago" [(ngModel)]="pago.Estado_Pago" required>
-        <option *ngFor="let e of estadosPago" [value]="e">{{ e }}</option>
-      </select>
-    </div>
+      <div class="mt-4">
+        <button type="submit" class="btn btn-primary" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando...' : 'Guardar pago' }}
+        </button>
+        <button type="button" class="btn btn-secondary ms-2" routerLink="/pago">Cancelar</button>
+      </div>
 
-    <div class="mt-4">
-      <button type="submit" class="btn btn-primary" [disabled]="guardando">
-        {{ guardando ? 'Guardando...' : 'Guardar pago' }}
-      </button>
-      <button type="button" class="btn btn-secondary ms-2" routerLink="/pago">Cancelar</button>
-    </div>
-
-  </form>
+    </form>
+  }
 </div>
-
