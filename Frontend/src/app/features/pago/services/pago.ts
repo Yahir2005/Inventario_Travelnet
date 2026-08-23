@@ -24,8 +24,8 @@ export class PagoService {
     return this.http.post<Pago>(this.apiUrl, datos);
   }
 
-  actualizarPago(id: number, datos: Partial<PagoForm>): Observable<Pago> {
-    return this.http.put<Pago>(`${this.apiUrl}/${id}`, datos);
+  actualizarPago(id: number, datosActualizados: any): Observable<Pago> {
+    return this.http.put<Pago>(`${this.apiUrl}/${id}`, datosActualizados);
   }
 
   guardarCorteCaja(datos: CorteCaja | any): Observable<any>{
