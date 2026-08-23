@@ -18,8 +18,14 @@ export class ListaUsuario implements OnInit {
   usuario = signal<Usuario[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
+  esAdmin = false;
 
   ngOnInit(): void {
+    const usuarioString = localStorage.getItem('usuario');
+    if (usuarioString) {
+      const usuario = JSON.parse(usuarioString);
+      this.esAdmin = usuario.Ocupacion === 'Administrador';
+    }
     this.loading.set(true);
     this.usuarioService.getUsuarios().subscribe({
       next: (data: Usuario[]) => {
