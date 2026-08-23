@@ -15,9 +15,23 @@ export class Navbar implements OnInit{
   public esAdmin: boolean = false;
   public esMostrador: boolean = false;
   public esInstalador: boolean = false;
+  public isDarkMode: boolean = false;
 
   ngOnInit(): void {
     this.obtenerOcupacion();
+    this.checkCurrentTheme();
+  }
+
+  checkCurrentTheme(): void {
+    const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+    this.isDarkMode = currentTheme === 'dark';
+  }
+
+  toggleTheme(): void {
+    this.isDarkMode = !this.isDarkMode;
+    const newTheme = this.isDarkMode ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-bs-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
   }
 
   obtenerOcupacion(): void {
