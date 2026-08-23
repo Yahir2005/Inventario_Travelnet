@@ -3,6 +3,8 @@ import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { PagoService } from '../../services/pago';
+import { AppDB } from '../../../../db/app.db';
+import { SyncService } from '../../services/sync.service';
 import { PagoDetallado, PagoForm } from '../../models/pago.model';
 
 @Component({
@@ -15,6 +17,8 @@ import { PagoDetallado, PagoForm } from '../../models/pago.model';
 export class InsertarPago implements OnInit {
   private pagoService = inject(PagoService);
   private router = inject(Router);
+  private db = inject(AppDB);
+  private syncService = inject(SyncService);
 
   instalaciones: PagoDetallado[] = [];
   
@@ -118,7 +122,8 @@ export class InsertarPago implements OnInit {
     }
   }
 
-  guardarPago() {
+async guardarPago() {
+    // 1. VALIDACIONES ORIGINALES
     if (!this.pago.InstalacionId) {
       alert('Selecciona una instalación.');
       return;
@@ -133,18 +138,44 @@ export class InsertarPago implements OnInit {
     }
 
     this.guardando.set(true);
-    this.pagoService.crearPago(this.pago).subscribe({
-      next: () => {
-        this.guardando.set(false);
-        alert('Pago registrado correctamente.');
-        this.router.navigate(['/pago']);
-      },
-      error: (err) => {
-        this.guardando.set(false);
-        console.error('Error al registrar el pago', err);
-        alert('Ocurrió un error al registrar el pago.');
-      }
-    });
+
+    if (this.syncService.estaEnLinea()) {
+      this.pagoService.crearPago(this.pago).subscribe({
+        next: () => {
+          this.guardando.set(false);
+          alert('Pago registrado correctamente en el servidor.');
+          this.router.navigate(['/pago']);
+        },
+        error: async (err) => {
+          console.error('Error al registrar el pago', err);
+          // Si el servidor está caído o hay fallo de red (status 0, 503, 504)
+          if (err.status === 0 || err.status >= 500) {
+             console.warn('El servidor no respondió, guardando localmente como fallback...');
+             await this.guardarLocalmente();
+          } else {
+             this.guardando.set(false);
+             alert('Ocurrió un error al registrar el pago en el servidor.');
+          }
+        }
+      });
+    } else {
+      await this.guardarLocalmente();
+    }
+  }
+
+  private async guardarLocalmente() {
+    try {
+      const pagoLocal = JSON.parse(JSON.stringify(this.pago)); 
+      
+      await this.db.pagosPendientes.add(pagoLocal);
+      this.guardando.set(false);
+      alert('Sin conexión o servidor caído: El pago se guardó localmente. Se sincronizará al recuperar la conexión.');
+      this.router.navigate(['/pago']);
+    } catch (error) {
+      this.guardando.set(false);
+      console.error('Error de Dexie:', error);
+      alert('Error al guardar localmente.');
+    }
   }
 
   private obtenerUsuarioActual(): number | null {
