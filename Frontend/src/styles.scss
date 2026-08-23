@@ -42,10 +42,3 @@ $enable-shadows: true;
   --bs-btn-bg: #D0BCFF;
   --bs-btn-color: #381E72;
 }
-
-// Ensure the navbar adopts the theme background correctly
-.navbar {
-  background-color: var(--bs-body-bg) !important;
-  color: var(--bs-body-color) !important;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
