@@ -181,13 +181,13 @@ const Pago = {
     },
 
     update: async (db, id, data) => {
-        const { InstalacionId, UsuarioId, Tipo_Pago, Numero_cuenta, Descuento, Estado_Pago, Monto, Ultima_modificacion } = data;
+        const { InstalacionId, UsuarioId, Tipo_Pago, Numero_cuenta, Descuento, Estado_Pago, Monto } = data;
         await db.query(
-            'UPDATE Pago SET InstalacionId=?,UsuarioId=?,Tipo_Pago=?,Numero_cuenta=?,Descuento=?,Estado_Pago=?,Monto=?,Ultima_modificacion=? WHERE PagoId = ?',
-            [InstalacionId, UsuarioId, Tipo_Pago, Numero_cuenta, Descuento, Estado_Pago, Monto, Ultima_modificacion, id]
+            'UPDATE Pago SET InstalacionId=?,UsuarioId=?,Tipo_Pago=?,Numero_cuenta=?,Descuento=?,Estado_Pago=?,Monto=? WHERE PagoId = ?',
+            [InstalacionId, UsuarioId, Tipo_Pago, Numero_cuenta, Descuento, Estado_Pago, Monto, id]
         );
         return { PagoId: id, ...data };
     }
 };
 
-module.exports = Pago;
+module.exports = { ...Pago, calcularAtraso };
