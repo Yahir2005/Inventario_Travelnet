@@ -1,0 +1,40 @@
+<div class="container mt-4" style="max-width: 640px;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Actualizar Torre #{{ torreId }}</h2>
+        <button type="button" class="btn btn-outline-secondary" (click)="cancelar()">Volver al listado</button>
+    </div>
+
+    @if (loading()) {
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+        </div>
+    } @else if (errorCarga()) {
+        <div class="alert alert-danger">{{ errorCarga() }}</div>
+    } @else if (!esAdmin) {
+        <div class="alert alert-warning">Solo el Administrador puede editar torres.</div>
+    } @else {
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form (submit)="$event.preventDefault(); guardar()">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nombre <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" [(ngModel)]="form.Nombre" name="Nombre"
+                               maxlength="50"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Ubicación</label>
+                        <textarea class="form-control" rows="3" [(ngModel)]="form.Ubicacion" name="Ubicacion"></textarea>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-secondary" (click)="cancelar()" [disabled]="guardando()">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" [disabled]="guardando()">
+                            {{ guardando() ? 'Guardando...' : 'Guardar cambios' }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+</div>
