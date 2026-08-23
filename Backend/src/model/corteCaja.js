@@ -33,10 +33,18 @@ const corteCaja = {
 
     update: async (db,id,data) => {
         const {UsuarioId,Autorizador,MontoTotal,FechaCorte,Pagos_Incluidos} = data;
-        const result = await db.query(
-            'UPDATE CorteCaja SET UsuarioId = ?,Autorizador = ?,MontoTotal = ?,FechaCorte = ?,Pagos_Incluidos = ? WHERE CorteId = ?',
-            [UsuarioId,Autorizador,MontoTotal,FechaCorte,Pagos_Incluidos,id]
-        );
+        let result;
+        if (FechaCorte) {
+            result = await db.query(
+                'UPDATE CorteCaja SET UsuarioId = ?,Autorizador = ?,MontoTotal = ?,FechaCorte = ?,Pagos_Incluidos = ? WHERE CorteId = ?',
+                [UsuarioId,Autorizador,MontoTotal,FechaCorte,Pagos_Incluidos,id]
+            );
+        } else {
+            result = await db.query(
+                'UPDATE CorteCaja SET UsuarioId = ?,Autorizador = ?,MontoTotal = ?,Pagos_Incluidos = ? WHERE CorteId = ?',
+                [UsuarioId,Autorizador,MontoTotal,Pagos_Incluidos,id]
+            );
+        }
         return {CorteId:  id,...data};
     },
 
