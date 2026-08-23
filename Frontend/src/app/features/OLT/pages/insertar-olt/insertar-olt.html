@@ -1,0 +1,33 @@
+<div class="container mt-4" style="max-width: 640px;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Agregar OLT</h2>
+        <button type="button" class="btn btn-outline-secondary" (click)="cancelar()">Volver al listado</button>
+    </div>
+
+    @if (!esAdmin) {
+        <div class="alert alert-warning">Solo el Administrador puede registrar OLTs.</div>
+    } @else {
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form (submit)="$event.preventDefault(); guardar()">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nombre <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" [(ngModel)]="form.Nombre" name="Nombre"
+                               maxlength="50" placeholder="Ej. OLT Centro"/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Ubicación</label>
+                        <textarea class="form-control" rows="3" [(ngModel)]="form.Ubicacion" name="Ubicacion"
+                                  placeholder="Colonia, zona o referencia de la OLT"></textarea>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-secondary" (click)="cancelar()" [disabled]="guardando()">Cancelar</button>
+                        <button type="submit" class="btn btn-success" [disabled]="guardando()">
+                            {{ guardando() ? 'Guardando...' : 'Registrar OLT' }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+</div>
