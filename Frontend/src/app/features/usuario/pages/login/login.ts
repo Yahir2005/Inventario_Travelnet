@@ -26,7 +26,7 @@ export class Login {
   onLogin(){
     this.authService.login(this.credenciales).subscribe({
       next: (res) => {
-        this.router.navigate(['/cliente']);
+        this.router.navigate(['/home']);
       },
       error: (err) => {
         this.mensajeError = "Credenciales incorrectas. Intenta de nuevo";
