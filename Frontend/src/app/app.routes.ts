@@ -75,5 +75,21 @@ export const routes: Routes = [
             import('./features/corte-caja/corte-caja.routes').then(
                 (m) => m.CORTE_CAJA_ROUTES
             )
+    },
+    {
+        path: 'Torre',
+        canActivate: [authGuard],
+        loadChildren: () =>
+            import('./features/Torre/torre.routes').then(
+                (m) => m.TORRE_ROUTES
+            )
+    },
+    {
+        path: 'OLT',
+        canActivate: [authGuard],
+        loadChildren:() =>
+            import('./features/OLT/olt.routes').then(
+                (m) => m.OLT_ROUTES
+            )
     }
 ];
