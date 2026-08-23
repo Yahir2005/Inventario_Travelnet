@@ -2,8 +2,8 @@
     <div class="row mb-4 align-items-end gap-3">
 
         <div class="col-auto">
-            <select class="form-select" aria-label="Default select example">
-                <option selected>Ordenar Por</option>
+            <select class="form-select" [(ngModel)]="ordenCampo" aria-label="Ordenar por">
+                <option value="">Ordenar Por</option>
                 <option value="nombre">Nombre</option>
                 <option value="id">ID</option>
                 <option value="adeudo">Adeudo</option>
@@ -11,27 +11,45 @@
             </select>
         </div>
         <div class="col-auto">
-            <button type="submit" class="btn btn-dark">Ordenar Por</button>
+            <button type="button" class="btn btn-dark" (click)="alternarOrden()"
+                    [disabled]="!ordenCampo"
+                    [title]="ordenDireccion === 'asc' ? 'Ascendente' : 'Descendente'">
+                {{ ordenDireccion === 'asc' ? '↑ Ascendente' : '↓ Descendente' }}
+            </button>
         </div>
+
         <div class="col-auto">
-            <select class="form-select" aria-label="Default select example">
-                <option selected>Filtros</option>
-                <option value="antena">Antena</option>
-                <option value="fibra">Fibra</option>
-                <option value="adeudo">Adeudo</option>
-                <option value="modalidad">Modalidad</option>
+            <select class="form-select" [(ngModel)]="filtroTipo" aria-label="Filtrar por tipo">
+                <option value="">Tipo: Todos</option>
+                <option value="Antena">Antena</option>
+                <option value="Fibra">Fibra</option>
             </select>
         </div>
         <div class="col-auto">
-            <button type="submit" class="btn btn-danger">Filtrar</button>
+            <select class="form-select" [(ngModel)]="filtroModalidad" aria-label="Filtrar por modalidad">
+                <option value="">Modalidad: Todas</option>
+                @for (modalidad of modalidades; track modalidad) {
+                    <option [value]="modalidad">{{ modalidad }}</option>
+                }
+            </select>
         </div>
-        <div class="col-md-4">
-            <form class="d-flex" role="search">
-                <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search"/>
+        <div class="col-auto form-check form-switch mb-1">
+            <input class="form-check-input" type="checkbox" role="switch" id="filtroAdeudo" [(ngModel)]="soloConAdeudo">
+            <label class="form-check-label" for="filtroAdeudo">Solo con adeudo</label>
+        </div>
+
+        <div class="col-md-3">
+            <form class="d-flex" role="search" (submit)="$event.preventDefault()">
+                <input class="form-control me-2" type="search" placeholder="Buscar por nombre o teléfono"
+                       aria-label="Search" [(ngModel)]="terminoBusqueda" name="terminoBusqueda"/>
                 <button class="btn btn-outline-success text-nowrap" type="submit">Buscar Cliente</button>
             </form>
         </div>
-        
+
+        <div class="col-auto">
+            <button type="button" class="btn btn-outline-secondary text-nowrap" (click)="limpiarFiltros()">Limpiar</button>
+        </div>
+
     <table class="table table-bordered mt-3">
         <thead>
             <tr>
@@ -45,7 +63,7 @@
             </tr>
         </thead>
             <tbody>
-               @for (cliente of clientes(); track cliente.ClienteId) {
+               @for (cliente of clientesVista(); track cliente.ClienteId) {
                 <tr>
                     <td>{{ cliente.ClienteId }}</td>
                     <td>{{ cliente.Nombre_Cliente }}</td>
@@ -57,16 +75,16 @@
                         }
                     </td>
                     <td>
-                        @if (cliente.Estado_Pago) {
-                            <!-- Ejemplo: Próximo pago (18/02/2027) -->
-                            {{ cliente.Estado_Pago }} 
+                        @if (cliente.Atrasado) {
+                            <span class="badge text-bg-danger">Atrasado {{ cliente.Dias_Atraso }} días</span>
+                        } @else if (cliente.Estado_Pago) {
+                            Al día
                         } @else {
                             Sin pagos
                         }
-                        
-                        <!-- Si el estado es Incompleto o Pendiente, muestra el botón -->
-                        @if (cliente.Estado_Pago === 'Pendiente' || cliente.Estado_Pago === 'Incompleto') {
-                            <button class="btn btn-success btn-sm ms-2" style="font-size: 0.75rem;">Registrar Pago</button>
+
+                        @if (cliente.Atrasado) {
+                            <button class="btn btn-success btn-sm ms-2" style="font-size: 0.75rem;" (click)="registrarPago(cliente)">Registrar Pago</button>
                         }
                     </td>
                     <td>{{ cliente.Modalidad_Servicio || 'N/A' }}</td>
@@ -87,13 +105,16 @@
                             <div class="spinner-border text-primary" role="status">
                                 <span class="visually-hidden">Cargando...</span>
                             </div>
-                        } @else {
+                        } @else if (clientes().length === 0) {
                             No hay clientes para mostrar.
+                        } @else {
+                            Ningún cliente coincide con los filtros o la búsqueda.
                         }
                     </td>
                 </tr>
                }
             </tbody>
     </table>
+    <p class="text-muted small" *ngIf="!loading()">Mostrando {{ clientesVista().length }} de {{ clientes().length }} clientes</p>
     </div>
 </div>

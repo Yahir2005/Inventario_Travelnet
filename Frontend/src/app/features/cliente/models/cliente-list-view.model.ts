@@ -31,4 +31,9 @@ export interface ClienteDetallado {
   Monto?: string | number | null;
   Descuento?: string | number | null;
   Tipo_Pago?: 'Efectivo' | 'Transferencia' | 'Cheque' | 'Trueque' | 'Paypal' | 'MercadoPago' | 'Pagaré' | null;
+
+  Ultimo_Mes_Pagado?: number | null;
+  Ultimo_Anio_Pagado?: number | null;
+  Atrasado?: boolean;
+  Dias_Atraso?: number;
 }
