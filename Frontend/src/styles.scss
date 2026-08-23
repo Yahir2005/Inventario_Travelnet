@@ -1,1 +1,51 @@
-@use "bootstrap/scss/bootstrap";
+// Material You Colors (Light Mode Defaults)
+$primary: #6750A4;
+$secondary: #625B71;
+$success: #386A20;
+$danger: #B3261E;
+
+// Material You Border Radii (More rounded)
+$border-radius: 1rem;
+$border-radius-sm: 0.5rem;
+$border-radius-lg: 1.5rem;
+
+// Specific Component Radii
+$btn-border-radius: 2rem;
+$card-border-radius: 1.5rem;
+$input-border-radius: 1rem;
+
+// Enable default Bootstrap shadows to simulate Material Elevation
+$enable-shadows: true;
+
+@use "bootstrap/scss/bootstrap" with (
+  $primary: $primary,
+  $secondary: $secondary,
+  $success: $success,
+  $danger: $danger,
+  $border-radius: $border-radius,
+  $border-radius-sm: $border-radius-sm,
+  $border-radius-lg: $border-radius-lg,
+  $btn-border-radius: $btn-border-radius,
+  $card-border-radius: $card-border-radius,
+  $input-border-radius: $input-border-radius,
+  $enable-shadows: $enable-shadows
+);
+
+// Material 3 Dark Mode Overrides
+[data-bs-theme="dark"] {
+  --bs-body-bg: #141218;
+  --bs-body-color: #E6E1E5;
+  --bs-primary: #D0BCFF;
+  --bs-secondary: #CCC2DC;
+  
+  // Update button colors for dark mode to match Material 3
+  --bs-btn-bg: #D0BCFF;
+  --bs-btn-color: #381E72;
+}
+
+// Ensure the navbar adopts the theme background correctly
+.navbar {
+  background-color: var(--bs-body-bg) !important;
+  color: var(--bs-body-color) !important;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
