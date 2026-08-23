@@ -23,8 +23,14 @@ export class ListaInstalacion implements OnInit {
   terminoBusqueda = '';
   cargandoUbicacion: boolean = false;
   ubicacionObtenida: boolean = false;
+  esAdmin = false;
 
   ngOnInit(): void {
+    const usuarioString = localStorage.getItem('usuario');
+    if (usuarioString) {
+      const usuario = JSON.parse(usuarioString);
+      this.esAdmin = usuario.Ocupacion === 'Administrador';
+    }
     this.cargarInstalaciones();
   }
 

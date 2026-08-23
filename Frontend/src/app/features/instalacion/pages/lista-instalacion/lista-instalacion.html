@@ -16,73 +16,75 @@
         </form>
     </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Nombre Cliente</th>
-                <th scope="col">Ubicación Maps</th>
-                <th scope="col">Tipo</th>
-                <th scope="col">Localidad</th>
-                <th scope="col">Fecha Instalación</th>
-                <th scope="col">Imagen Instalación</th>
-                <th scope="col">Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @for (instalacion of instalacionesFiltradas; track instalacion.InstalacionId) {
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-dark">
                 <tr>
-                    <td>{{ instalacion.Nombre_Cliente || 'Sin cliente' }}</td>
-                    <td>
-                        @if (instalacion.Ubicacion_Maps) {
-                            <a [href]="instalacion.Ubicacion_Maps" target="_blank" class="text-decoration-none fw-bold">Enlace</a>
-                        } @else {
-                            <span class="text-muted">Sin enlace</span>
-                        }
-                    </td>
-                    <td>{{ instalacion.Tipo || '—' }}</td>
-                    <td>{{ instalacion.Localidad_Nombre || '—' }}</td>
-                    <td>
-                        @if (instalacion.Fecha_Instalacion) {
-                            {{ instalacion.Fecha_Instalacion | date: 'dd/MM/yyyy' }}
-                        } @else {
-                            <span class="text-muted">—</span>
-                        }
-                    </td>
-                    <td>
-                        @if (instalacion.Ultima_Imagen) {
-                            <a [href]="obtenerUrlImagen(instalacion.Ultima_Imagen)" target="_blank"
-                                title="Ver imagen en grande">
-                                <img [src]="obtenerUrlImagen(instalacion.Ultima_Imagen)" alt="Evidencia"
-                                    class="img-thumbnail" style="width: 80px; height: 60px; object-fit: cover;">
-                            </a>
-                            @if ((instalacion.Cantidad_Imagenes ?? 0) > 1) {
-                                <span class="badge text-bg-secondary ms-1">{{ instalacion.Cantidad_Imagenes }}</span>
+                    <th scope="col">Nombre Cliente</th>
+                    <th scope="col">Ubicación Maps</th>
+                    <th scope="col">Tipo</th>
+                    <th scope="col">Localidad</th>
+                    <th scope="col">Fecha Instalación</th>
+                    <th scope="col">Imagen Instalación</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (instalacion of instalacionesFiltradas; track instalacion.InstalacionId) {
+                    <tr>
+                        <td>{{ instalacion.Nombre_Cliente || 'Sin cliente' }}</td>
+                        <td>
+                            @if (instalacion.Ubicacion_Maps) {
+                                <a [href]="instalacion.Ubicacion_Maps" target="_blank" class="text-decoration-none fw-bold">Enlace</a>
+                            } @else {
+                                <span class="text-muted">Sin enlace</span>
                             }
-                        } @else {
-                            <span class="badge text-bg-secondary me-2">Sin imagen</span>
-                            <button class="btn btn-sm btn-outline-primary" (click)="agregarImagen(instalacion)">
-                                Agregar imagen
-                            </button>
-                        }
-                    </td>
-                    <td>
-                        <button class="btn btn-sm btn-info text-white me-1" (click)="agregarImagen(instalacion)">Agregar Imagen</button>
-                        <button class="btn btn-sm btn-warning me-1" (click)="modificarInstalacion(instalacion)">Modificar Instalación</button>
-                        <button class="btn btn-sm btn-primary text-white me-1" (click)="agregarUbicacion(instalacion)">Agregar Ubicacion</button>
-                        <button class="btn btn-sm btn-success" (click)="registrarPago(instalacion)">Registrar pago</button>
-                    </td>
-                </tr>
-            } @empty {
-                <tr>
-                    <td colspan="7" class="text-center py-4">
-                        @if (loading()) {
-                            <div class="spinner-border text-primary" role="status"></div>
-                        } @else {
-                            <span class="text-muted">No hay instalaciones registradas.</span>
-                        }
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                        </td>
+                        <td>{{ instalacion.Tipo || '—' }}</td>
+                        <td>{{ instalacion.Localidad_Nombre || '—' }}</td>
+                        <td>
+                            @if (instalacion.Fecha_Instalacion) {
+                                {{ instalacion.Fecha_Instalacion | date: 'dd/MM/yyyy' }}
+                            } @else {
+                                <span class="text-muted">—</span>
+                            }
+                        </td>
+                        <td>
+                            @if (instalacion.Ultima_Imagen) {
+                                <a [href]="obtenerUrlImagen(instalacion.Ultima_Imagen)" target="_blank"
+                                    title="Ver imagen en grande">
+                                    <img [src]="obtenerUrlImagen(instalacion.Ultima_Imagen)" alt="Evidencia"
+                                        class="img-thumbnail" style="width: 80px; height: 60px; object-fit: cover;">
+                                </a>
+                                @if ((instalacion.Cantidad_Imagenes ?? 0) > 1) {
+                                    <span class="badge text-bg-secondary ms-1">{{ instalacion.Cantidad_Imagenes }}</span>
+                                }
+                            } @else {
+                                <span class="badge text-bg-secondary me-2">Sin imagen</span>
+                                <button class="btn btn-sm btn-outline-primary" (click)="agregarImagen(instalacion)">
+                                    Agregar imagen
+                                </button>
+                            }
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-info text-white me-1" (click)="agregarImagen(instalacion)">Agregar Imagen</button>
+                            <button class="btn btn-sm btn-warning me-1" (click)="modificarInstalacion(instalacion)" *ngIf="esAdmin">Modificar Instalación</button>
+                            <button class="btn btn-sm btn-primary text-white me-1" (click)="agregarUbicacion(instalacion)">Agregar Ubicacion</button>
+                            <button class="btn btn-sm btn-success" (click)="registrarPago(instalacion)">Registrar pago</button>
+                        </td>
+                    </tr>
+                } @empty {
+                    <tr>
+                        <td colspan="7" class="text-center py-4">
+                            @if (loading()) {
+                                <div class="spinner-border text-primary" role="status"></div>
+                            } @else {
+                                <span class="text-muted">No hay instalaciones registradas.</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
