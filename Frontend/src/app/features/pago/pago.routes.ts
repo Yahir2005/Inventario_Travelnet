@@ -14,5 +14,12 @@ export const PAGO_ROUTES: Routes = [
             import('./pages/insertar-pago/insertar-pago').then(
                 (m) => m.InsertarPago
             )
+    },
+    {
+        path:'actualizar-pago/:id',
+        loadComponent: () => 
+            import('./pages/actualizar-pago/actualizar-pago').then(
+                (m) => m.ActualizarPago
+            )
     }
 ];
