@@ -81,6 +81,10 @@
             <button class="btn btn-sm btn-warning me-1" (click)="imprimirTicket(pago)" title="Imprimir Ticket">Imprimir Último Pago</button>
             <hr class="bg-danger border-2 border-top border-success my-3">
             <button class="btn btn-sm btn-success" (click)="abrirModal(pago)">Registrar pago</button>
+            <hr class="bg-danger border-2 border-top border-success my-3">
+            @if (pago.PagoId) {
+              <button type="button" class="btn btn-dark ms-1" (click)="editarPago(pago)">Editar pago</button>
+            }
         </td>
       </tr>
       }@empty {
@@ -278,7 +282,7 @@
           <button type="button" class="btn-close btn-close-white" (click)="cerrarModalCorte()"></button>
         </div>
         <div class="modal-body text-center">
-          <h2 class="display-4 text-success my-3">${{ totalCorteCaja | number:'1.2-2' }}</h2>
+          <h2 class="display-4 text-success my-3"*ngIf="esAdmin" >${{ totalCorteCaja | number:'1.2-2' }}</h2>
           <p class="text-muted">Total cobrado en efectivo por tu usuario el día de hoy.</p>
           
           <hr class="my-4">
@@ -304,7 +308,7 @@
           
           @else {
             <h5 class="mb-3">Corte de Administrador</h5>
-            <p class="small text-muted">Como tienes rol de Administrador, puedes generar e imprimir tu corte directamente sin autorización adicional.</p>
+            <p class="small text-muted">Generar e imprime tu corte .</p>
           }
         </div>
         

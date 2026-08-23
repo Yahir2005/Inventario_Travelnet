@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { PagoService } from '../../services/pago';
 import { PagoDetallado, PagoForm } from '../../models/pago.model';
 import { ListaMensualidad } from '../../../mensualidad/pages/lista-mensualidad/lista-mensualidad';
@@ -17,6 +17,7 @@ import { UsuarioService } from '../../../usuario/services/usuario';
 export class ListaPago implements OnInit {
   private pagoService = inject(PagoService);
   private usuarioService = inject(UsuarioService);
+  private router = inject(Router);
 
   pagos = signal<PagoDetallado[]>([]);
   loading = signal(true);
@@ -24,7 +25,7 @@ export class ListaPago implements OnInit {
   error = signal<string | null>(null);
   pagosFiltrados: PagoDetallado[] = [];
   terminoBusqueda = '';
-
+  
   mostrarModal = false;
   pagoSeleccionado: PagoDetallado | null = null;
 
@@ -363,6 +364,11 @@ imprimirTicketCorte(autorizador: string) {
     }
   }
 
+  editarPago(pago: PagoDetallado) {
+    if (!pago.PagoId) return;
+    this.router.navigate(['/pago/actualizar-pago', pago.PagoId]);
+  }
+
   registrarPago() {
     if (!this.formPago.Monto || this.formPago.Monto <= 0) {
       const confirmar = confirm('Estás a punto de efectuar un pago con cantidad cero. ¿Deseas continuar?');
@@ -494,5 +500,20 @@ imprimirTicketCorte(autorizador: string) {
         alert('Hubo un error al registrar el corte en la base de datos.');
       }
     });
+  }
+
+    obtenerOcupacion(): void {
+    const usuarioString = localStorage.getItem('usuario');
+
+    if(usuarioString){
+      const usuario = JSON.parse(usuarioString);
+
+      this.esAdmin = (usuario.Ocupacion === 'Administrador');
+
+    }else {
+
+      this.esAdmin = false;
+
+    }
   }
 }
