@@ -28,6 +28,32 @@
                 <li class="nav-item dropdown" *ngIf="esAdmin">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownAdmin" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
+                        Torres
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" routerLink="/Torre/listar-torres" routerLinkActive="active">Listar Torres</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" routerLink="/Torre/insertar-torre" routerLinkActive="active">Agregar Torres</a></li>
+                        
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown" *ngIf="esAdmin">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownAdmin" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        OLT
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" routerLink="/OLT/lista-olts" routerLinkActive="active">Listar OLT</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" routerLink="/OLT/insertar-olt" routerLinkActive="active">Agregar OLT</a></li>
+                        
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown" *ngIf="esAdmin">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownAdmin" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
                         Corte de Caja
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
