@@ -1,6 +1,7 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, HostListener, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { CorteCajaService } from '../../service/corte-caja';
 
 @Component({
@@ -12,14 +13,27 @@ import { CorteCajaService } from '../../service/corte-caja';
 })
 export class ListaCorteCajaComponent {
   private corteCajaService = inject(CorteCajaService);
+  private router = inject(Router);
   cortes = signal<any[]>([]);
   loading = signal(true);
   error = signal<string | null>(null);
 
+  esAdmin = false;
+
   filtrosSelecionado: string = '0';
   cortesAgrupados: any[] = [];
 
+  mostrarModalDetalles = false;
+  corteSeleccionado: any = null;
+  pagosDelCorteSeleccionado: any[] =[];
+
   ngOnInit(): void {
+    const usuarioString = localStorage.getItem('usuario');
+    if (usuarioString) {
+      const usuario = JSON.parse(usuarioString);
+      this.esAdmin = usuario.Ocupacion === 'Administrador';
+    }
+
     this.loading.set(true);
     this.corteCajaService.getCorteCaja().subscribe({
       next: (data) => {
@@ -34,14 +48,43 @@ export class ListaCorteCajaComponent {
     });
   }
 
-  contarPagos(jsonString: string): number {
+  editarCorte(corte: any){
+    if (!this.esAdmin) return;
+    this.router.navigate(['/Corte-Caja/actualizar-corte-caja', corte.CorteId]);
+  }
+
+  parsearPagos(valor: any): any[] {
+    if (!valor) return [];
+    if (Array.isArray(valor)) return valor;
     try {
-      if(!jsonString) return 0;
-      const arreglo = JSON.parse(jsonString);
-      return Array.isArray(arreglo) ? arreglo.length: 0;
-    } catch (error) {
-      return 0;
+      const resultado = JSON.parse(valor);
+      return Array.isArray(resultado) ? resultado : [];
+    } catch {
+      return [];
     }
+  }
+
+  abrirModalDetalles(corte: any){
+    this.corteSeleccionado = corte;
+    this.pagosDelCorteSeleccionado = this.parsearPagos(corte.Pagos_Incluidos);
+    this.mostrarModalDetalles = true;
+  }
+
+  cerrarModalDetalles(){
+    this.mostrarModalDetalles = false;
+    this.corteSeleccionado = null;
+    this.pagosDelCorteSeleccionado = [];
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(){
+    if (this.mostrarModalDetalles) {
+      this.cerrarModalDetalles();
+    }
+  }
+
+  contarPagos(jsonString: string): number {
+    return this.parsearPagos(jsonString).length;
   }
 
   agruparCortes(){

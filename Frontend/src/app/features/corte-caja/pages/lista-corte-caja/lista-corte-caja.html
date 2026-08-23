@@ -22,6 +22,7 @@
             <th scope="col">Monto Corte</th>
             <th scope="col">Fecha Corte</th>
             <th scope="col" class="text-center">Pagos Incluidos</th>
+            <th scope="col">Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -37,10 +38,18 @@
                     {{ contarPagos(corte.Pagos_Incluidos) }} pagos
                   </span>
               </td>
+              <td class="text-center">
+                  <button type="button" class="btn btn-info btn-sm me-1" (click)="abrirModalDetalles(corte)">Detalles</button>
+                  @if (esAdmin) {
+                      <button type="button" class="btn btn-primary btn-sm" (click)="editarCorte(corte)">Editar Corte</button>
+                  } @else {
+                      <span class="text-muted small">Solo administrador</span>
+                  }
+              </td>
             </tr>
           } @empty {
               <tr>
-              <td colspan="6" class="text-center py-5 text-muted">
+              <td colspan="7" class="text-center py-5 text-muted">
                 @if (loading()) {
                   <div class="spinner-border text-primary" role="status"></div>
                 } @else {
@@ -79,6 +88,7 @@
                     <th scope="col">Autorizó</th>
                     <th scope="col">Monto</th>
                     <th scope="col">Fecha Exacta</th>
+                    <th scope="col" class="text-center">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -89,6 +99,12 @@
                       <td>{{ corte.Autorizador }}</td>
                       <td class="fw-bold">${{ corte.MontoTotal | number:'1.2-2' }}</td>
                       <td>{{ corte.FechaCorte | date:'dd/MM/yyyy HH:mm' }}</td>
+                      <td class="text-center">
+                          <button type="button" class="btn btn-info btn-sm me-1" (click)="abrirModalDetalles(corte)">Detalles</button>
+                          @if (esAdmin) {
+                              <button type="button" class="btn btn-primary btn-sm" (click)="editarCorte(corte)">Editar Corte</button>
+                          }
+                      </td>
                     </tr>
                   }
                 </tbody>
@@ -102,4 +118,71 @@
         </div>
       }
     }
+
+@if (mostrarModalDetalles && corteSeleccionado) {
+  <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.6);" (click)="cerrarModalDetalles()">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" (click)="$event.stopPropagation()">
+      <div class="modal-content">
+        
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">Detalles del Corte #{{ corteSeleccionado.CorteId }}</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="cerrarModalDetalles()"></button>
+        </div>
+        
+        <div class="modal-body">
+          <!-- Información General del Corte -->
+          <div class="row mb-4 bg-light p-3 rounded">
+            <div class="col-md-6">
+              <p class="mb-1"><strong>Empleado:</strong> {{ corteSeleccionado.Nombre_Usuario || 'Desconocido' }}</p>
+              <p class="mb-1"><strong>Autorizó:</strong> {{ corteSeleccionado.Autorizador }}</p>
+              <p class="mb-0"><strong>Fecha:</strong> {{ corteSeleccionado.FechaCorte | date:'dd/MM/yyyy hh:mm a' }}</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+              <p class="text-muted mb-0">Total del Corte</p>
+              <h3 class="text-success fw-bold">${{ corteSeleccionado.MontoTotal | number:'1.2-2' }}</h3>
+            </div>
+          </div>
+
+          <h6 class="fw-bold border-bottom pb-2 text-secondary">
+            Desglose de Pagos ({{ pagosDelCorteSeleccionado.length }})
+          </h6>
+          
+          <!-- Tabla extraída directamente del JSON -->
+          <div class="table-responsive mt-3">
+            <table class="table table-sm table-hover border">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col" class="text-center">ID Pago</th>
+                  <th scope="col">Nombre del Cliente</th>
+                  <th scope="col" class="text-end">Monto Cobrado</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (pago of pagosDelCorteSeleccionado; track pago.PagoId) {
+                  <tr>
+                    <td class="text-center fw-bold text-secondary">#{{ pago.PagoId }}</td>
+                    <td>{{ pago.Cliente }}</td>
+                    <td class="text-end text-success fw-bold">${{ pago.Monto | number:'1.2-2' }}</td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="3" class="text-center py-4 text-muted">
+                      No hay detalles guardados para este corte de caja.
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+          
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModalDetalles()">Cerrar</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+}
 </div>
