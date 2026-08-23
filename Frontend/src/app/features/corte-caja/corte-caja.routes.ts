@@ -9,7 +9,7 @@ export const CORTE_CAJA_ROUTES: Routes = [
             )
     },
     {
-        path: 'actualizar-corte-caja',
+        path: 'actualizar-corte-caja/:id',
         loadComponent: () =>
             import('./pages/actualizar-corte-caja/actualizar-corte-caja').then(
                 (m) => m.ActualizarCorteCaja
