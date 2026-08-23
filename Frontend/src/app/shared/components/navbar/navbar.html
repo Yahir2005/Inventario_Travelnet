@@ -1,6 +1,8 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
-        <a class="navbar-brand" routerLink="/">Travelnet</a>
+        <a class="navbar-brand" routerLink="/">
+            <img src="/assets/images/TravelNet.png" alt="Travelnet Logo" height="50" class="d-inline-block align-text-top">
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -9,7 +11,7 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0" >
                 <li class="nav-item" *ngIf="esAdmin">
-                    <a class="nav-link" routerLink="/home" routerLinkActive="active">Home</a>
+                    <a class="nav-link" routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
                 </li>
 
                 <li class="nav-item dropdown" *ngIf="esAdmin">
@@ -17,47 +19,47 @@
                         data-bs-toggle="dropdown" aria-expanded="false">
                         Usuarios
                     </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" routerLink="/usuario" routerLinkActive="active">Listar Usuarios</a></li>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownAdmin">
+                        <li><a class="dropdown-item" routerLink="/usuario" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Listar Usuarios</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" routerLink="/usuario/insertar-usuario" routerLinkActive="active">Agregar Usuarios</a></li>
+                        <li><a class="dropdown-item" routerLink="/usuario/insertar-usuario" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Agregar Usuarios</a></li>
                         
                     </ul>
                 </li>
 
                 <li class="nav-item dropdown" *ngIf="esAdmin">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownAdmin" role="button"
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownTorres" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         Torres
                     </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" routerLink="/Torre/listar-torres" routerLinkActive="active">Listar Torres</a></li>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownTorres">
+                        <li><a class="dropdown-item" routerLink="/Torre/listar-torres" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Listar Torres</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" routerLink="/Torre/insertar-torre" routerLinkActive="active">Agregar Torres</a></li>
+                        <li><a class="dropdown-item" routerLink="/Torre/insertar-torre" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Agregar Torres</a></li>
                         
                     </ul>
                 </li>
 
                 <li class="nav-item dropdown" *ngIf="esAdmin">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownAdmin" role="button"
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownOLT" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         OLT
                     </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" routerLink="/OLT/lista-olts" routerLinkActive="active">Listar OLT</a></li>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownOLT">
+                        <li><a class="dropdown-item" routerLink="/OLT/lista-olts" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Listar OLT</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" routerLink="/OLT/insertar-olt" routerLinkActive="active">Agregar OLT</a></li>
+                        <li><a class="dropdown-item" routerLink="/OLT/insertar-olt" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Agregar OLT</a></li>
                         
                     </ul>
                 </li>
 
                 <li class="nav-item dropdown" *ngIf="esAdmin">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownAdmin" role="button"
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownCorte" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         Corte de Caja
                     </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" routerLink="/Corte-Caja/lista" routerLinkActive="active">Listar Corte de Caja</a></li>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownCorte">
+                        <li><a class="dropdown-item" routerLink="/Corte-Caja/lista" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Listar Corte de Caja</a></li>
                         <li><hr class="dropdown-divider"></li>
                     </ul>
                 </li>
@@ -67,10 +69,10 @@
                         data-bs-toggle="dropdown" aria-expanded="false">
                         Clientes
                     </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" routerLink="/cliente" routerLinkActive="active">Listar Clientes</a></li>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownClientes">
+                        <li><a class="dropdown-item" routerLink="/cliente" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Listar Clientes</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" routerLink="/cliente/insertar" routerLinkActive="active">Agregar Clientes</a></li>
+                        <li><a class="dropdown-item" routerLink="/cliente/insertar" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Agregar Clientes</a></li>
                     </ul>
                 </li>
 
@@ -80,9 +82,9 @@
                         Pagos
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownPagos">
-                        <li><a class="dropdown-item" routerLink="/pago" routerLinkActive="active">Listar Pagos</a></li>
+                        <li><a class="dropdown-item" routerLink="/pago" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Listar Pagos</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" routerLink="/pago/insertar" routerLinkActive="active">Registrar Pago</a></li>
+                        <li><a class="dropdown-item" routerLink="/pago/insertar" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Registrar Pago</a></li>
                     </ul>
                 </li>
 
@@ -92,9 +94,9 @@
                         Instalaciones
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownInstalaciones">
-                        <li><a class="dropdown-item" routerLink="/instalacion" routerLinkActive="active">Listar Instalaciones</a></li>
+                        <li><a class="dropdown-item" routerLink="/instalacion" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Listar Instalaciones</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" routerLink="/instalacion/insertar-instalacion" routerLinkActive="active">Registrar Instalaciones</a></li>
+                        <li><a class="dropdown-item" routerLink="/instalacion/insertar-instalacion" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Registrar Instalaciones</a></li>
                     </ul>
                 </li>
 
@@ -104,9 +106,9 @@
                         Imagen Clientes
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownImagenes">
-                        <li><a class="dropdown-item" routerLink="/cliente" routerLinkActive="active">Listar Imagenes cliente</a></li>
+                        <li><a class="dropdown-item" routerLink="/cliente" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Listar Imagenes cliente</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" routerLink="/imagen-instalacion/insertar-imagen-instalacion" routerLinkActive="active">Agregar Imagen cliente</a></li>
+                        <li><a class="dropdown-item" routerLink="/imagen-instalacion/insertar-imagen-instalacion" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Agregar Imagen cliente</a></li>
                     </ul>
                 </li>
             </ul>
