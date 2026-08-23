@@ -7,5 +7,12 @@ export const CORTE_CAJA_ROUTES: Routes = [
             import('./pages/lista-corte-caja/lista-corte-caja').then(
                 (m) => m.ListaCorteCajaComponent
             )
+    },
+    {
+        path: 'actualizar-corte-caja',
+        loadComponent: () =>
+            import('./pages/actualizar-corte-caja/actualizar-corte-caja').then(
+                (m) => m.ActualizarCorteCaja
+            )
     }
 ]
