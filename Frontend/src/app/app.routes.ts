@@ -8,8 +8,13 @@ export const routes: Routes = [
         component: Login
     },
     {
+        path: 'home',
+        canActivate: [authGuard],
+        loadComponent: () => import('./features/home/pages/home/home').then(m => m.Home)
+    },
+    {
         path: '',
-        redirectTo: '/login',
+        redirectTo: '/home',
         pathMatch: 'full'
     },
     {
