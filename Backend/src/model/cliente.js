@@ -1,5 +1,6 @@
 const db = require('../config/database');
 const { findByPk, create } = require('./usuario');
+const { calcularAtraso } = require('./pago');
 
 const Cliente = {
     findAll: async (db) => {
@@ -68,12 +69,15 @@ const Cliente = {
             p.Estado_Pago,
             p.Monto,
             p.Descuento,
-            p.Tipo_Pago
+            p.Tipo_Pago,
+            m.Mes AS Ultimo_Mes_Pagado,
+            m.Anio AS Ultimo_Anio_Pagado
 
-            FROM Instalacion i
+            FROM Cliente c
 
-            INNER JOIN Cliente c 
-                ON i.ClienteId = c.ClienteId
+            LEFT JOIN Instalacion i 
+                ON c.ClienteId = i.ClienteId
+                AND i.Active = TRUE
 
             LEFT JOIN Localidad lo
                 ON i.LocalidadId = lo.LocalidadId
@@ -91,9 +95,17 @@ const Cliente = {
                     SELECT MAX(p2.PagoId) 
                     FROM Pago p2 
                     WHERE p2.InstalacionId = i.InstalacionId
+                )
+
+            LEFT JOIN Mensualidad m
+                ON m.MensualidadId = (
+                    SELECT MAX(m2.MensualidadId)
+                    FROM Pago_Detalle pd
+                    INNER JOIN Mensualidad m2 ON m2.MensualidadId = pd.MensualidadId
+                    WHERE pd.PagoId = p.PagoId
                 );`);
                 
-            return rows;
+            return rows.map(row => ({ ...row, ...calcularAtraso(row) }));
     }
 
 };
