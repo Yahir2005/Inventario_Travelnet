@@ -36,11 +36,35 @@ const Usuario = {
     },
 
     update: async(db,id,data) => {
-        const {Nombre,Usuario,Password,Email,Telefono} = data;
-        const passwordHash = Password ? bcrypt.hashSync(Password, SALT_ROUNDS) : undefined;
+        const camposEditables = ['Nombre','Usuario','Email','Telefono','Ocupacion'];
+        const sets = [];
+        const params = [];
+
+        for (const campo of camposEditables) {
+            if (data[campo] !== undefined) {
+                sets.push(`${campo} = ?`);
+                params.push(data[campo]);
+            }
+        }
+
+        if (data.Active !== undefined) {
+            sets.push('Active = ?');
+            params.push(data.Active ? 1 : 0);
+        }
+
+        if (data.Password) {
+            sets.push('Password = ?');
+            params.push(bcrypt.hashSync(data.Password, SALT_ROUNDS));
+        }
+
+        if (sets.length === 0) {
+            return sanitize({UsuarioId: Number(id), ...data});
+        }
+
+        params.push(id);
         await db.query(
-            'UPDATE Usuario SET Nombre = ?, Usuario = ?, Password = ?, Email = ?, Telefono = ? WHERE UsuarioId = ?',
-            [Nombre, Usuario, Password ? passwordHash : Password, Email, Telefono, id]
+            `UPDATE Usuario SET ${sets.join(', ')} WHERE UsuarioId = ?`,
+            params
         );
         return sanitize({UsuarioId: id, ...data});
     },
