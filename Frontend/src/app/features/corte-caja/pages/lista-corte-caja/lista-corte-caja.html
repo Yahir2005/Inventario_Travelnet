@@ -13,8 +13,9 @@
     </div>
 
     @if (filtrosSelecionado === '0') {
-      <table class="table table-hover">
-        <thead class="table-light">
+      <div class="table-responsive">
+      <table class="table table-striped table-hover align-middle">
+        <thead class="table-dark">
           <tr>
             <th scope="col">Corte ID</th>
             <th scope="col">Nombre Usuario</th>
@@ -60,6 +61,7 @@
           }
         </tbody>
       </table>
+      </div>
     } 
     
     @else {
@@ -80,8 +82,9 @@
           
           @if (grupo.expandido) {
             <div class="card-body p-0 border-top">
-              <table class="table table-striped table-hover mb-0">
-                <thead>
+              <div class="table-responsive">
+              <table class="table table-striped table-hover align-middle mb-0">
+                <thead class="table-dark">
                   <tr>
                     <th scope="col" class="ps-4">Corte ID</th>
                     <th scope="col">Usuario</th>
@@ -109,6 +112,7 @@
                   }
                 </tbody>
               </table>
+              </div>
             </div>
           }
         </div>
@@ -149,8 +153,8 @@
           
           <!-- Tabla extraída directamente del JSON -->
           <div class="table-responsive mt-3">
-            <table class="table table-sm table-hover border">
-              <thead class="table-light">
+            <table class="table table-striped table-hover align-middle border">
+              <thead class="table-dark">
                 <tr>
                   <th scope="col" class="text-center">ID Pago</th>
                   <th scope="col">Nombre del Cliente</th>
