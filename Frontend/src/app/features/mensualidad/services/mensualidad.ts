@@ -14,6 +14,14 @@ export class MensualidadService {
     return this.http.get<Mensualidad[]>(`${this.apiUrl}/instalacion/${instalacionId}`);
   }
 
+  getMensualidadPorId(id: number): Observable<Mensualidad> {
+    return this.http.get<Mensualidad>(`${this.apiUrl}/${id}`);
+  }
+
+  actualizarMensualidad(id: number, datosActualizados: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, datosActualizados);
+  }
+
   cancelarMensualidad(datos: { MensualidadId: number; Motivo: string }): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/cancelar`, datos);
   }
