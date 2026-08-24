@@ -85,7 +85,7 @@
                             }
     
                             @if (cliente.Atrasado) {
-                                <button class="btn btn-success btn-sm ms-2" style="font-size: 0.75rem;" (click)="registrarPago(cliente)">Registrar Pago</button>
+                                <button class="btn btn-success btn-sm ms-2" style="font-size: 0.75rem;" (click)="registrarPago(cliente)"*ngIf="esAdmin">Registrar Pago</button>
                             }
                         </td>
                         <td>{{ cliente.Modalidad_Servicio || 'N/A' }}</td>
