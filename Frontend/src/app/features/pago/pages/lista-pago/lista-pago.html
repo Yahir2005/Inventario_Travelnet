@@ -104,6 +104,27 @@
   </div>
 </div>
 
+<!-- Modal Confirmar Impresión Post-Pago -->
+@if (mostrarModalImprimir()) {
+  <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5); z-index: 1060;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title">¡Pago Registrado Exitosamente!</h5>
+        </div>
+        <div class="modal-body text-center">
+          <p class="fs-5 mt-3">El pago se ha guardado correctamente.</p>
+          <p>¿Deseas imprimir el ticket de comprobante con el desglose de meses?</p>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-secondary" (click)="finalizarSinImprimirNuevo()">No, terminar</button>
+          <button type="button" class="btn btn-primary" (click)="finalizarEImprimirNuevo()">Sí, imprimir ticket</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
 @if (mostrarModalMensualidades) {
   <div class="modal fade show d-block" tabindex="-1" role="dialog" style="background: rgba(0,0,0,0.5);">
     <div class="modal-dialog modal-xl">
@@ -317,9 +338,14 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" (click)="cerrarModalCorte()">Cancelar</button>
           
-          
           @if (!esAdmin) {
-            <button type="button" class="btn btn-success" (click)="autorizarCorte()" [disabled]="cargandoAuth || !authAdmin.Usuario || !authAdmin.Password">
+            <button type="button" class="btn btn-primary" (click)="autorizarCorte(false)" [disabled]="cargandoAuth || !authAdmin.Usuario || !authAdmin.Password">
+              @if (cargandoAuth) {
+                <span class="spinner-border spinner-border-sm me-1"></span>
+              }
+              Realizar Corte
+            </button>
+            <button type="button" class="btn btn-success" (click)="autorizarCorte(true)" [disabled]="cargandoAuth || !authAdmin.Usuario || !authAdmin.Password">
               @if (cargandoAuth) {
                 <span class="spinner-border spinner-border-sm me-1"></span>
               }
@@ -328,6 +354,9 @@
           } 
           
           @else {
+            <button type="button" class="btn btn-primary" (click)="realizarCorteDirecto()">
+              Realizar Corte
+            </button>
             <button type="button" class="btn btn-success" (click)="imprimirCorteDirecto()">
               🖨️ Imprimir Corte
             </button>

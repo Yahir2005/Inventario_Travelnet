@@ -143,7 +143,7 @@ export class ListaPago implements OnInit {
     this.mostrarModalCorte = false;
   }
 
-  autorizarCorte(){
+  autorizarCorte(imprimir: boolean = true){
     this.cargandoAuth = true;
     this.errorAuth = '';
 
@@ -155,7 +155,7 @@ export class ListaPago implements OnInit {
 
           if (usuarioAdmin && usuarioAdmin.Ocupacion === 'Administrador') {
             this.cerrarModalCorte();
-            this.imprimirCorteDirecto();
+            this.ejecutarCorte(usuarioAdmin.Nombre, imprimir);
             
           } else {
             this.errorAuth = 'El usuario ingresado no tiene permisos de Administrador.';
@@ -172,21 +172,33 @@ export class ListaPago implements OnInit {
     const usuarioLocalStorage = JSON.parse(localStorage.getItem('usuario') || '{}');
     const miNombre = usuarioLocalStorage.Nombre || 'Admin';
     // El Admin se autoriza a sí mismo, por eso mandamos su propio nombre
-    this.ejecutarCorte(miNombre);
+    this.ejecutarCorte(miNombre, true);
   }
 
-imprimirTicketCorte(autorizador: string) {
+  realizarCorteDirecto() {
+    const usuarioLocalStorage = JSON.parse(localStorage.getItem('usuario') || '{}');
+    const miNombre = usuarioLocalStorage.Nombre || 'Admin';
+    this.ejecutarCorte(miNombre, false);
+  }
+
+  imprimirTicketCorte(autorizador: string) {
     const fechaActual = new Date().toLocaleString('es-MX');
     const usuarioLocalStorage = JSON.parse(localStorage.getItem('usuario') || '{}');
     const empleado = usuarioLocalStorage.Nombre || 'Empleado';
 
     let listaHTML = '';
     this.pagosDelCorte.forEach(p => {
+      let concepto = p.Concepto_Ultimo_Pago || 'Pago';
+      if (p.Ultimo_Mes_Pagado && p.Ultimo_Anio_Pagado) {
+        concepto += ` (${this.obtenerNombreMes(p.Ultimo_Mes_Pagado)} ${p.Ultimo_Anio_Pagado})`;
+      }
+
       listaHTML += `
-        <div style="display: flex; justify-content: space-between; font-size: 12px;">
-          <span>${p.Nombre_Cliente.substring(0, 15)}...</span>
+        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-top: 4px;">
+          <span>${p.Nombre_Cliente.substring(0, 18)}...<br><small style="font-size: 10px; color: #555;">${concepto}</small></span>
           <span>$${Number(p.Monto).toFixed(2)}</span>
         </div>
+        <div style="border-bottom: 1px dashed #ccc; margin-top: 2px;"></div>
       `;
     });
   
@@ -288,7 +300,10 @@ imprimirTicketCorte(autorizador: string) {
 
     const nombreEmpresa = 'TravelNET'
 
-    const conceptoTicket = pago.Concepto_Ultimo_Pago || `Mensualidad ${this.obtenerNombreMes(pago.Ultimo_Mes_Pagado)} ${pago.Ultimo_Anio_Pagado}`;
+    let conceptoTicket = pago.Concepto_Ultimo_Pago || `Mensualidad`;
+    if (pago.Ultimo_Mes_Pagado && pago.Ultimo_Anio_Pagado) {
+      conceptoTicket += ` (${this.obtenerNombreMes(pago.Ultimo_Mes_Pagado)} ${pago.Ultimo_Anio_Pagado})`;
+    }
     const montoTicket = pago.Monto ? parseFloat(pago.Monto.toString()).toFixed(2) : '0.00';
 
     const ticketHTML = `
@@ -369,6 +384,10 @@ imprimirTicketCorte(autorizador: string) {
     this.router.navigate(['/pago/actualizar-pago', pago.PagoId]);
   }
 
+  mostrarModalImprimir = signal(false);
+  pagoReciente: PagoForm | null = null;
+  instReciente: PagoDetallado | null = null;
+
   registrarPago() {
     if (!this.formPago.Monto || this.formPago.Monto <= 0) {
       const confirmar = confirm('Estás a punto de efectuar un pago con cantidad cero. ¿Deseas continuar?');
@@ -386,9 +405,14 @@ imprimirTicketCorte(autorizador: string) {
     this.pagoService.crearPago(this.formPago).subscribe({
       next: () => {
         this.cargando.set(false);
+        this.pagoReciente = JSON.parse(JSON.stringify(this.formPago));
+        this.instReciente = this.pagoSeleccionado ? JSON.parse(JSON.stringify(this.pagoSeleccionado)) : null;
+        
         this.cerrarModal();
         this.ngOnInit();
-        alert('Pago registrado correctamente.');
+        
+        // Disparar modal en lugar de alert
+        this.mostrarModalImprimir.set(true);
       },
       error: (err) => {
         this.cargando.set(false);
@@ -396,6 +420,136 @@ imprimirTicketCorte(autorizador: string) {
         alert('Ocurrió un error al registrar el pago.');
       }
     });
+  }
+
+  finalizarSinImprimirNuevo() {
+    this.mostrarModalImprimir.set(false);
+    this.pagoReciente = null;
+    this.instReciente = null;
+  }
+
+  finalizarEImprimirNuevo() {
+    this.mostrarModalImprimir.set(false);
+    if (this.instReciente && this.pagoReciente) {
+      this.imprimirTicketGuardado(this.instReciente, this.pagoReciente);
+    }
+    this.pagoReciente = null;
+    this.instReciente = null;
+  }
+
+  imprimirTicketGuardado(inst: PagoDetallado, pago: PagoForm) {
+    const fechaActual = new Date().toLocaleDateString('es-MX', { 
+      year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+    });
+
+    const nombreCliente = inst ? inst.Nombre_Cliente : 'Cliente Desconocido';
+    const plan = inst ? inst.Plan : 'N/A';
+    const localidad = inst ? inst.Localidad : 'N/A';
+
+    const conceptoTicket = pago.Concepto || 'Mensualidad';
+    const montoTicket = pago.Monto !== null ? parseFloat(pago.Monto.toString()).toFixed(2) : '0.00';
+
+    const cant = Number(pago.Cantidad_Meses) || 1;
+    const montoTotal = Number(pago.Monto) || 0;
+    const montoPorMes = montoTotal / cant;
+    
+    const startMes = Number(pago.Mes) || 1;
+    const startAnio = Number(pago.Anio) || new Date().getFullYear();
+
+    let desgloseHTML = '';
+    for (let i = 0; i < cant; i++) {
+      const mesIndex = (startMes - 1 + i) % 12;
+      const anio = startAnio + Math.floor((startMes - 1 + i) / 12);
+      const nombreMes = this.mesesLista[mesIndex].nombre;
+      
+      desgloseHTML += `
+        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 2px;">
+          <span>${nombreMes} ${anio}</span>
+          <span>$${montoPorMes.toFixed(2)}</span>
+        </div>
+      `;
+    }
+
+    const logoUrl = `${window.location.origin}/assets/images/TravelNet.png`;
+
+    const ticketHTML = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Ticket de Pago - ${nombreCliente}</title>
+          <style>
+            body {
+              font-family: 'Courier New', Courier, monospace;
+              width: 300px; 
+              margin: 0 auto;
+              padding: 10px;
+              color: #000;
+              font-size: 14px;
+            }
+            h2, h3, p { margin: 5px 0; text-align: center; }
+            .divider { border-top: 1px dashed #000; margin: 10px 0; }
+            .text-left { text-align: left; }
+            .flex { display: flex; justify-content: space-between; }
+            .bold { font-weight: bold; }
+          </style>
+        </head>
+        <body>
+          <div style="text-align: center; margin-bottom: 5px;">
+            <img src="${logoUrl}" alt="TravelNET" style="max-width: 180px; max-height: 80px;">
+          </div>
+          <p>Comprobante de Pago</p>
+          <p style="font-size: 12px; text-align: center;">${fechaActual}</p>
+          
+          <div class="divider"></div>
+          
+          <div class="text-left">
+            <p><strong>Cliente:</strong> ${nombreCliente}</p>
+            <p><strong>Instalación:</strong> #${pago.InstalacionId}</p>
+            <p><strong>Plan:</strong> ${plan}</p>
+            <p><strong>Localidad:</strong> ${localidad}</p>
+            <p><strong>Método:</strong> ${pago.Tipo_Pago}</p>
+          </div>
+          
+          <div class="divider"></div>
+          
+          <div class="text-left">
+            <p class="bold">Concepto:</p>
+            <p>${conceptoTicket}</p>
+          </div>
+          
+          <div class="divider"></div>
+          
+          <div class="text-left">
+            <p class="bold" style="margin-bottom: 5px;">Detalle de Meses:</p>
+            ${desgloseHTML}
+          </div>
+          
+          <div class="divider"></div>
+          
+          <div class="flex bold" style="font-size: 16px;">
+            <span>TOTAL:</span>
+            <span>$${montoTicket}</span>
+          </div>
+          
+          <div class="divider"></div>
+          <p style="font-size: 12px; text-align: center;">¡Gracias por tu pago!</p>
+          <p style="font-size: 12px; text-align: center;">Conserva este ticket para cualquier aclaración.</p>
+          
+          <script>
+            window.onload = function() {
+              window.print();
+              setTimeout(function() { window.close(); }, 500);
+            }
+          </script>
+        </body>
+      </html>
+    `;
+
+    const printWindow = window.open('', '_blank', 'width=400,height=600');
+    if (printWindow) {
+      printWindow.document.write(ticketHTML);
+      printWindow.document.close();
+    }
   }
 
   abrirModal(pago: PagoDetallado) {
@@ -466,7 +620,7 @@ imprimirTicketCorte(autorizador: string) {
     return null;
   }
 
-  ejecutarCorte(autorizador: string) {
+  ejecutarCorte(autorizador: string, imprimir: boolean = true) {
     this.cargandoAuth = true;
 
     const usuarioLocalStorage = JSON.parse(localStorage.getItem('usuario') || '{}');
@@ -491,13 +645,15 @@ imprimirTicketCorte(autorizador: string) {
         this.cargandoAuth = false;
         this.cerrarModalCorte();
         
-        // Llamamos al ticket pasándole el nombre del autorizador
-        this.imprimirTicketCorte(autorizador);
+        if (imprimir) {
+          // Llamamos al ticket pasándole el nombre del autorizador
+          this.imprimirTicketCorte(autorizador);
+        }
       },
       error: (err) => {
         this.cargandoAuth = false;
         console.error('Error al guardar el corte:', err);
-        alert('Hubo un error al registrar el corte en la base de datos.');
+        this.errorAuth = 'Ocurrió un error al intentar guardar el corte.';
       }
     });
   }
