@@ -11,6 +11,7 @@ export class CorteCajaService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = 'http://localhost:3000/api/CorteCaja';
   private readonly apiUrlUsuario = 'http://localhost:3000/api/usuarios';
+  private readonly apiUrlPago ='http://localhost:3000/api/pago/desglose';
 
   getCorteCaja(): Observable<CorteCaja[]>{
     return this.http.get<CorteCaja[]>(this.apiUrl);
@@ -30,6 +31,10 @@ export class CorteCajaService {
 
   getUsuarios():Observable<Usuario[]>{
     return this.http.get<Usuario[]>(this.apiUrlUsuario);
+  }
+
+  getDesglosePagos(pagoIds: number[]): Observable<any[]> {
+    return this.http.post<any[]>(`${this.apiUrlPago}`, { pagoIds });
   }
   
 }
