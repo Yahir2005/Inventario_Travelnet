@@ -97,17 +97,31 @@
         </div>
       </div>
 
-      <div class="mb-4 p-3 border rounded bg-light">
-        <label class="form-label d-block fw-bold">Ubicación del Dispositivo</label>
-
-        <button type="button" class="btn btn-info mb-2" (click)="obtenerUbicacion()" [disabled]="cargandoUbicacion">
-          {{ cargandoUbicacion ? 'Obteniendo coordenadas...' : '📍 Recapturar mi ubicación actual' }}
-        </button>
-
+      <div class="mb-4 p-3 border rounded bg-body-tertiary">
+        <label class="form-label d-block fw-bold">Ubicación del Dispositivo (Google Maps)</label>
+        
+        <div class="input-group mb-2">
+          <span class="input-group-text">📍</span>
+          <input type="url" class="form-control" name="Ubicacion_Maps" 
+                 [(ngModel)]="instalacion.Ubicacion_Maps" 
+                 placeholder="Pega el enlace de Google Maps aquí..." required>
+          
+          <button type="button" class="btn btn-info text-white" 
+                  (click)="obtenerUbicacion()" [disabled]="cargandoUbicacion">
+            {{ cargandoUbicacion ? 'Obteniendo...' : 'Capturar GPS' }}
+          </button>
+        </div>
+        
+        <div class="form-text text-muted mb-2">
+          Puedes presionar "Capturar GPS" para obtener tu ubicación actual o pegar manualmente un enlace.
+        </div>
+        
         @if (instalacion.Ubicacion_Maps) {
           <div class="alert alert-success mt-2 p-2">
-            Ubicación registrada: <br>
-            <a [href]="instalacion.Ubicacion_Maps" target="_blank" class="small text-break">{{ instalacion.Ubicacion_Maps }}</a>
+            Ubicación lista para guardar: <br>
+            <a [href]="instalacion.Ubicacion_Maps" target="_blank" class="small text-break">
+              {{ instalacion.Ubicacion_Maps }}
+            </a>
           </div>
         }
       </div>
