@@ -4,10 +4,17 @@
   <div class="mb-4" *ngIf="!fotoCapturada">
     <video #videoElement autoplay playsinline style="width: 100%; max-width: 600px; border: 2px solid #ccc; border-radius: 8px;"></video>
     
-    <div class="mt-3">
-      <button type="button" class="btn btn-secondary me-2" (click)="iniciarCamara()" *ngIf="!mediaStream">
+    <div class="mt-3 d-flex gap-2 flex-wrap">
+      <button type="button" class="btn btn-secondary" (click)="iniciarCamara()" *ngIf="!mediaStream">
         📷 Activar Cámara
       </button>
+
+      <!-- Botón para subir archivo manual -->
+      <button type="button" class="btn btn-outline-secondary" (click)="fileInput.click()" *ngIf="!mediaStream">
+        📁 Subir Imagen
+      </button>
+      <input type="file" #fileInput accept="image/*" style="display: none;" (change)="cargarImagenManual($event)">
+
       <button type="button" class="btn btn-primary" (click)="capturarFoto()" *ngIf="mediaStream" [disabled]="!coordenadasObtenidas">
         {{ coordenadasObtenidas ? '📸 Tomar Fotografía' : '⏳ Obteniendo ubicación...' }}
       </button>

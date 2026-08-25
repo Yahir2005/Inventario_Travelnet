@@ -220,5 +220,51 @@ obtenerCoordenadasYDireccion() {
       }
     });
   }
+
+  cargarImagenManual(event: Event) {
+    const element = event.target as HTMLInputElement;
+    const file = element.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = this.canvasElement.nativeElement;
+        
+        let width = img.width;
+        let height = img.height;
+        const max_dim = 1920;
+        
+        if (width > height) {
+          if (width > max_dim) {
+            height = Math.round((height * max_dim) / width);
+            width = max_dim;
+          }
+        } else {
+          if (height > max_dim) {
+            width = Math.round((width * max_dim) / height);
+            height = max_dim;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          this.fotoCapturada = canvas.toDataURL('image/jpeg', 0.8);
+          this.imagen_instalacion.Ruta_Imagen = this.fotoCapturada;
+          this.detenerCamara(); 
+        }
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+    
+    // Limpiar el input para permitir subir la misma imagen nuevamente si se elimina
+    element.value = '';
+  }
   
 }
