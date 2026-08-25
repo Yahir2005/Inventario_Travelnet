@@ -122,14 +122,16 @@ export class InsertarPago implements OnInit {
     }
   }
 
+  mostrarModalImprimir = signal(false);
+
 async guardarPago() {
     // 1. VALIDACIONES ORIGINALES
     if (!this.pago.InstalacionId) {
       alert('Selecciona una instalación.');
       return;
     }
-    if (!this.pago.Monto || this.pago.Monto <= 0) {
-      alert('El monto es obligatorio y debe ser mayor a 0.');
+    if (this.pago.Monto === null || this.pago.Monto === undefined || this.pago.Monto < 0) {
+      alert('El monto es obligatorio y debe ser mayor o igual a 0.');
       return;
     }
     if (this.pago.Tipo_Pago !== 'Efectivo' && !this.pago.Numero_cuenta) {
@@ -143,8 +145,7 @@ async guardarPago() {
       this.pagoService.crearPago(this.pago).subscribe({
         next: () => {
           this.guardando.set(false);
-          alert('Pago registrado correctamente en el servidor.');
-          this.router.navigate(['/pago']);
+          this.mostrarModalImprimir.set(true);
         },
         error: async (err) => {
           console.error('Error al registrar el pago', err);
@@ -169,12 +170,140 @@ async guardarPago() {
       
       await this.db.pagosPendientes.add(pagoLocal);
       this.guardando.set(false);
-      alert('Sin conexión o servidor caído: El pago se guardó localmente. Se sincronizará al recuperar la conexión.');
-      this.router.navigate(['/pago']);
+      this.mostrarModalImprimir.set(true);
     } catch (error) {
       this.guardando.set(false);
       console.error('Error de Dexie:', error);
       alert('Error al guardar localmente.');
+    }
+  }
+
+  finalizarSinImprimir() {
+    this.mostrarModalImprimir.set(false);
+    this.router.navigate(['/pago']);
+  }
+
+  finalizarEImprimir() {
+    this.mostrarModalImprimir.set(false);
+    const inst = this.instalaciones.find(i => i.InstalacionId === Number(this.pago.InstalacionId));
+    if (inst) {
+      this.imprimirTicketGuardado(inst, this.pago);
+    }
+    this.router.navigate(['/pago']);
+  }
+
+  imprimirTicketGuardado(inst: PagoDetallado, pago: PagoForm) {
+    const fechaActual = new Date().toLocaleDateString('es-MX', { 
+      year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+    });
+
+    const nombreCliente = inst ? inst.Nombre_Cliente : 'Cliente Desconocido';
+    const plan = inst ? inst.Plan : 'N/A';
+    const localidad = inst ? inst.Localidad : 'N/A';
+
+    const conceptoTicket = pago.Concepto || 'Mensualidad';
+    const montoTicket = pago.Monto !== null ? parseFloat(pago.Monto.toString()).toFixed(2) : '0.00';
+
+    const cant = Number(pago.Cantidad_Meses) || 1;
+    const montoTotal = Number(pago.Monto) || 0;
+    const montoPorMes = montoTotal / cant;
+    
+    const startMes = Number(pago.Mes) || 1;
+    const startAnio = Number(pago.Anio) || new Date().getFullYear();
+
+    let desgloseHTML = '';
+    for (let i = 0; i < cant; i++) {
+      const mesIndex = (startMes - 1 + i) % 12;
+      const anio = startAnio + Math.floor((startMes - 1 + i) / 12);
+      const nombreMes = this.mesesLista[mesIndex].nombre;
+      
+      desgloseHTML += `
+        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 2px;">
+          <span>${nombreMes} ${anio}</span>
+          <span>$${montoPorMes.toFixed(2)}</span>
+        </div>
+      `;
+    }
+
+    const logoUrl = `${window.location.origin}/assets/images/TravelNet.png`;
+
+    const ticketHTML = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Ticket de Pago - ${nombreCliente}</title>
+          <style>
+            body {
+              font-family: 'Courier New', Courier, monospace;
+              width: 300px; 
+              margin: 0 auto;
+              padding: 10px;
+              color: #000;
+              font-size: 14px;
+            }
+            h2, h3, p { margin: 5px 0; text-align: center; }
+            .divider { border-top: 1px dashed #000; margin: 10px 0; }
+            .text-left { text-align: left; }
+            .flex { display: flex; justify-content: space-between; }
+            .bold { font-weight: bold; }
+          </style>
+        </head>
+        <body>
+          <div style="text-align: center; margin-bottom: 5px;">
+            <img src="${logoUrl}" alt="TravelNET" style="max-width: 180px; max-height: 80px;">
+          </div>
+          <p>Comprobante de Pago</p>
+          <p style="font-size: 12px; text-align: center;">${fechaActual}</p>
+          
+          <div class="divider"></div>
+          
+          <div class="text-left">
+            <p><strong>Cliente:</strong> ${nombreCliente}</p>
+            <p><strong>Instalación:</strong> #${pago.InstalacionId}</p>
+            <p><strong>Plan:</strong> ${plan}</p>
+            <p><strong>Localidad:</strong> ${localidad}</p>
+            <p><strong>Método:</strong> ${pago.Tipo_Pago}</p>
+          </div>
+          
+          <div class="divider"></div>
+          
+          <div class="text-left">
+            <p class="bold">Concepto:</p>
+            <p>${conceptoTicket}</p>
+          </div>
+          
+          <div class="divider"></div>
+          
+          <div class="text-left">
+            <p class="bold" style="margin-bottom: 5px;">Detalle de Meses:</p>
+            ${desgloseHTML}
+          </div>
+          
+          <div class="divider"></div>
+          
+          <div class="flex bold" style="font-size: 16px;">
+            <span>TOTAL:</span>
+            <span>$${montoTicket}</span>
+          </div>
+          
+          <div class="divider"></div>
+          <p style="font-size: 12px; text-align: center;">¡Gracias por tu pago!</p>
+          <p style="font-size: 12px; text-align: center;">Conserva este ticket para cualquier aclaración.</p>
+          
+          <script>
+            window.onload = function() {
+              window.print();
+              setTimeout(function() { window.close(); }, 500);
+            }
+          </script>
+        </body>
+      </html>
+    `;
+
+    const printWindow = window.open('', '_blank', 'width=400,height=600');
+    if (printWindow) {
+      printWindow.document.write(ticketHTML);
+      printWindow.document.close();
     }
   }
 

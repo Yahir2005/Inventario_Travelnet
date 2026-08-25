@@ -98,3 +98,24 @@
     </form>
   }
 </div>
+
+<!-- Modal Confirmar Impresión -->
+@if (mostrarModalImprimir()) {
+  <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title">¡Pago Registrado Exitosamente!</h5>
+        </div>
+        <div class="modal-body text-center">
+          <p class="fs-5 mt-3">El pago se ha guardado correctamente.</p>
+          <p>¿Deseas imprimir el ticket de comprobante con el desglose de meses?</p>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-secondary" (click)="finalizarSinImprimir()">No, terminar</button>
+          <button type="button" class="btn btn-primary" (click)="finalizarEImprimir()">Sí, imprimir ticket</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
