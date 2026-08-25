@@ -27,6 +27,9 @@ export class ListaCorteCajaComponent {
   corteSeleccionado: any = null;
   pagosDelCorteSeleccionado: any[] =[];
 
+  cargandoDesglose = signal(false);
+  desglosePagos = signal<any[]>([]);
+
   ngOnInit(): void {
     const usuarioString = localStorage.getItem('usuario');
     if (usuarioString) {
@@ -68,12 +71,31 @@ export class ListaCorteCajaComponent {
     this.corteSeleccionado = corte;
     this.pagosDelCorteSeleccionado = this.parsearPagos(corte.Pagos_Incluidos);
     this.mostrarModalDetalles = true;
+    this.desglosePagos.set([]);
+    this.cargandoDesglose.set(true);
+
+    const pagoIds = this.pagosDelCorteSeleccionado.map(p => p.PagoId).filter(id => !!id);
+    if (pagoIds.length > 0) {
+      this.corteCajaService.getDesglosePagos(pagoIds).subscribe({
+        next: (data) => {
+          this.desglosePagos.set(data);
+          this.cargandoDesglose.set(false);
+        },
+        error: (err) => {
+          console.error('Error al desglosar pagos:', err);
+          this.cargandoDesglose.set(false);
+        }
+      });
+    } else {
+      this.cargandoDesglose.set(false);
+    }
   }
 
   cerrarModalDetalles(){
     this.mostrarModalDetalles = false;
     this.corteSeleccionado = null;
     this.pagosDelCorteSeleccionado = [];
+    this.desglosePagos.set([]);
   }
 
   @HostListener('document:keydown.escape')
@@ -128,5 +150,14 @@ export class ListaCorteCajaComponent {
       grupoActual.cortes.push(corte);
     });
     this.cortesAgrupados = Array.from(grupos.values());
+  }
+
+  corteTienePagosEnCero(pagos: any[]): boolean {
+    return pagos.some(p => Number(p.Monto) === 0);
+  }
+
+  obtenerNombreMes(mes: number | string): string {
+    const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    return meses[Number(mes) - 1] || 'Desconocido';
   }
 }

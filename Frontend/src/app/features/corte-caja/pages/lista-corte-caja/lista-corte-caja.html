@@ -67,7 +67,7 @@
     @else {
       @for (grupo of cortesAgrupados; track grupo.nombre) {
         <div class="card mb-3 shadow-sm border-0">
-          <div class="card-header bg-white d-flex justify-content-between align-items-center py-3" 
+          <div class="card-header d-flex justify-content-between align-items-center py-3" 
                style="cursor: pointer;" 
                (click)="grupo.expandido = !grupo.expandido">
             <h5 class="mb-0 text-primary fw-bold">
@@ -135,7 +135,7 @@
         
         <div class="modal-body">
           <!-- Información General del Corte -->
-          <div class="row mb-4 bg-light p-3 rounded">
+          <div class="row mb-4 bg-body-tertiary p-3 rounded">
             <div class="col-md-6">
               <p class="mb-1"><strong>Empleado:</strong> {{ corteSeleccionado.Nombre_Usuario || 'Desconocido' }}</p>
               <p class="mb-1"><strong>Autorizó:</strong> {{ corteSeleccionado.Autorizador }}</p>
@@ -147,37 +147,65 @@
             </div>
           </div>
 
-          <h6 class="fw-bold border-bottom pb-2 text-secondary">
-            Desglose de Pagos ({{ pagosDelCorteSeleccionado.length }})
-          </h6>
-          
-          <!-- Tabla extraída directamente del JSON -->
-          <div class="table-responsive mt-3">
-            <table class="table table-striped table-hover align-middle border">
-              <thead class="table-dark">
-                <tr>
-                  <th scope="col" class="text-center">ID Pago</th>
-                  <th scope="col">Nombre del Cliente</th>
-                  <th scope="col" class="text-end">Monto Cobrado</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (pago of pagosDelCorteSeleccionado; track pago.PagoId) {
-                  <tr>
-                    <td class="text-center fw-bold text-secondary">#{{ pago.PagoId }}</td>
-                    <td>{{ pago.Cliente }}</td>
-                    <td class="text-end text-success fw-bold">${{ pago.Monto | number:'1.2-2' }}</td>
-                  </tr>
-                } @empty {
-                  <tr>
-                    <td colspan="3" class="text-center py-4 text-muted">
-                      No hay detalles guardados para este corte de caja.
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
+          <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+            <h6 class="fw-bold text-secondary mb-0">
+              Desglose de Pagos ({{ pagosDelCorteSeleccionado.length }} cobros)
+            </h6>
           </div>
+
+          @if (cargandoDesglose()) {
+            <div class="text-center py-4">
+              <div class="spinner-border text-info" role="status"></div>
+              <p class="mt-2 text-muted">Cargando desglose de pagos...</p>
+            </div>
+          } @else {
+
+            @if (corteTienePagosEnCero(pagosDelCorteSeleccionado)) {
+              <div class="alert alert-warning mt-3 mb-0">
+                <strong>¡Atención!</strong> Se registraron pagos con $0.00 o 100% de descuento en este corte.
+              </div>
+            }
+
+            <div class="table-responsive mt-3">
+              <table class="table table-sm table-striped table-hover align-middle border">
+                <thead class="table-dark">
+                  <tr>
+                    <th scope="col" class="text-center">ID Pago</th>
+                    <th scope="col">Cliente</th>
+                    <th scope="col">Mes Pagado</th>
+                    <th scope="col" class="text-end">Monto Abonado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (d of desglosePagos(); track $index) {
+                    <tr [class.table-warning]="d.MontoMes == 0 || d.MontoMes === '0.00'">
+                      <td class="text-center text-secondary fw-bold">#{{ d.PagoId }}</td>
+                      <td>
+                        {{ d.Cliente }}
+                        @if(d.MontoMes == 0 || d.MontoMes === '0.00') {
+                          <span class="badge bg-danger ms-2">100% Descuento</span>
+                        }
+                      </td>
+                      <td>
+                        <span class="badge bg-secondary">
+                          {{ obtenerNombreMes(d.Mes) }} {{ d.Anio }}
+                        </span>
+                      </td>
+                      <td class="text-end fw-bold" [class.text-success]="d.MontoMes > 0" [class.text-danger]="d.MontoMes == 0 || d.MontoMes === '0.00'">
+                        ${{ d.MontoMes | number:'1.2-2' }}
+                      </td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="4" class="text-center py-4 text-muted">
+                        No se encontró información detallada de los meses para este corte.
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
           
         </div>
         
