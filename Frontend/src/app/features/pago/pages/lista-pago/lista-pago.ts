@@ -6,6 +6,7 @@ import { PagoService } from '../../services/pago';
 import { PagoDetallado, PagoForm } from '../../models/pago.model';
 import { ListaMensualidad } from '../../../mensualidad/pages/lista-mensualidad/lista-mensualidad';
 import { UsuarioService } from '../../../usuario/services/usuario';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-lista-pago',
@@ -88,6 +89,7 @@ export class ListaPago implements OnInit {
   };
 
   esAdmin: boolean =false;
+  exportando = signal(false);
 
   ngOnInit(): void {
     this.verificarPermisos();
@@ -671,5 +673,64 @@ export class ListaPago implements OnInit {
       this.esAdmin = false;
 
     }
+  }
+
+  exportarExcel() {
+    this.exportando.set(true);
+    this.pagoService.getExportarPagos().subscribe({
+      next: (data) => {
+        // 1. Agrupar datos por cliente/instalacion
+        const clientesMap = new Map<number, any>();
+        const mesesNombres = ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
+        
+        data.forEach(row => {
+          if (!clientesMap.has(row.InstalacionId)) {
+            let fechaInst = '';
+            if (row.Fecha_Instalacion) {
+              const d = new Date(row.Fecha_Instalacion);
+              fechaInst = `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()}`;
+            }
+
+            clientesMap.set(row.InstalacionId, {
+              'TELEFONO': row.Telefono || '',
+              'CLIENTE': row.Cliente || '',
+              'UBICACIÓN': row.Ubicacion || '',
+              'FECHA DE INST.': fechaInst,
+              'ANTENA AP': row.Antena_AP || '',
+              'PLAN': row.Plan || ''
+            });
+          }
+
+          if (row.Anio && row.Mes) {
+            const colName = `${mesesNombres[row.Mes - 1]} ${row.Anio}`;
+            const clienteObj = clientesMap.get(row.InstalacionId);
+            clienteObj[colName] = `_$* ${Number(row.Monto).toFixed(2)}_-`;
+          }
+        });
+
+        const datosFinales = Array.from(clientesMap.values());
+
+        // 2. Crear el Excel
+        const ws = XLSX.utils.json_to_sheet(datosFinales);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Clientes y Pagos');
+
+        // Ajustar ancho de columnas
+        if (datosFinales.length > 0) {
+          ws['!cols'] = Object.keys(datosFinales[0]).map(key => ({
+            wch: Math.max(key.length, ...datosFinales.map(d => String((d as any)[key] || '').length))
+          }));
+        }
+
+        const fechaStr = new Date().toISOString().slice(0, 10);
+        XLSX.writeFile(wb, `Clientes_TravelNet_${fechaStr}.xlsx`);
+        this.exportando.set(false);
+      },
+      error: (err) => {
+        this.exportando.set(false);
+        console.error('Error al exportar:', err);
+        alert('Error al exportar los pagos. Intenta de nuevo.');
+      }
+    });
   }
 }

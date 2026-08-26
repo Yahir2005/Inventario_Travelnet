@@ -25,6 +25,12 @@
   <button class="btn btn-primary text-nowrap" (click)="prepararCorteCaja()">
        Corte de Caja
     </button>
+
+  @if (esAdmin) {
+    <button class="btn btn-success text-nowrap ms-2" (click)="exportarExcel()" [disabled]="exportando()">
+      {{ exportando() ? '⏳ Exportando...' : '📊 Exportar a Excel' }}
+    </button>
+  }
   <div class="table-responsive">
   <table class="table table-striped table-hover align-middle">
     <thead class="table-dark">
