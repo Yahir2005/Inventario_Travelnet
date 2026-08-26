@@ -55,6 +55,31 @@ const Pago = {
         return rows;
     },
 
+    findAllParaExportar: async (db) => {
+        const rows = await db.query(`
+            SELECT
+                i.InstalacionId,
+                c.Nombre_Cliente AS Cliente,
+                c.Telefono,
+                lo.NombreLocalidad AS Ubicacion,
+                i.Fecha_Instalacion,
+                i.Tipo AS Antena_AP,
+                i.Plan,
+                m.Mes,
+                m.Anio,
+                m.Monto
+            FROM Instalacion i
+            INNER JOIN Cliente c ON i.ClienteId = c.ClienteId
+            LEFT JOIN Localidad lo ON i.LocalidadId = lo.LocalidadId
+            LEFT JOIN Mensualidad m ON m.InstalacionId = i.InstalacionId 
+                AND m.Active = TRUE 
+                AND (m.Estado = 'Pagado' OR m.Estado = 'Incompleto')
+            WHERE i.Active = TRUE
+            ORDER BY c.Nombre_Cliente ASC, m.Anio ASC, m.Mes ASC
+        `);
+        return rows;
+    },
+
     findAllDetallado: async (db) => {
         const rows = await db.query(`
             SELECT

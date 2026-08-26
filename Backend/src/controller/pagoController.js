@@ -71,4 +71,13 @@ const getDesglose = async (req, res) => {
     }
 };
 
-module.exports = { getAll, getById, create, update, getDesglose }
+const getExportar = async (req, res) => {
+    try {
+        const pagos = await Pago.findAllParaExportar(req.db);
+        res.json(pagos);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+module.exports = { getAll, getById, create, update, getDesglose, getExportar }
