@@ -16,6 +16,10 @@ export class PagoService {
     return this.http.get<PagoDetallado[]>(this.apiUrl);
   }
 
+  getExportarPagos(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/exportar`);
+  }
+
   getPago(id: number): Observable<Pago> {
     return this.http.get<Pago>(`${this.apiUrl}/${id}`);
   }
