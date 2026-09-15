@@ -91,7 +91,7 @@
                         <td>{{ cliente.Modalidad_Servicio || 'N/A' }}</td>
                         <td>{{ cliente.Tipo || 'Pendiente' }}</td>
                         <td class="text-center">
-                            <button class="btn btn-primary btn-sm" (click)="verDetalles(cliente)">
+                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalDetallesCliente" (click)="verDetalles(cliente)">
                                 Detalles
                             </button>
                             <button class="btn btn-warning btn-sm" (click)="editarCliente(cliente)" *ngIf="esAdmin">
@@ -119,4 +119,85 @@
     </div>
     <p class="text-muted small" *ngIf="!loading() && esAdmin" >Mostrando {{ clientesVista().length }} de {{ clientes().length }} clientes</p>
     </div>
+</div>
+
+<!-- Modal Detalles de Cliente e Instalaciones -->
+<div class="modal fade" id="modalDetallesCliente" tabindex="-1" aria-labelledby="modalDetallesClienteLabel" aria-hidden="true" data-bs-theme="dark">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalDetallesClienteLabel">
+          Detalles e Instalaciones de {{ clienteSeleccionado?.Nombre_Cliente }}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        
+        <div *ngIf="instalacionesCliente.length === 0" class="alert alert-warning text-center">
+          Este cliente no tiene instalaciones registradas.
+        </div>
+
+        <div *ngIf="instalacionesCliente.length > 0" class="table-responsive">
+          <table class="table table-striped table-hover align-middle">
+            <thead class="table-dark">
+              <tr>
+                <th>Folio (ID)</th>
+                <th>Tipo</th>
+                <th>Plan</th>
+                <th>Estado</th>
+                <th>Ubicación</th>
+                <th>Credenciales Wi-Fi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let inst of instalacionesCliente">
+                <td>#{{ inst.InstalacionId }}</td>
+                <td>{{ inst.Tipo || 'Pendiente' }}</td>
+                <td>{{ inst.Plan || 'N/A' }}</td>
+                <td>
+                  <span class="badge" [ngClass]="inst.Instalacion_Activa ? 'text-bg-success' : 'text-bg-danger'">
+                    {{ inst.Instalacion_Activa ? 'Activa' : 'Baja' }}
+                  </span>
+                </td>
+                <td>
+                  <a *ngIf="inst.Ubicacion_Maps" [href]="inst.Ubicacion_Maps" target="_blank" class="btn btn-sm btn-outline-info">Ver Mapa</a>
+                  <span *ngIf="!inst.Ubicacion_Maps" class="text-muted small">Sin enlace</span>
+                </td>
+                <td>
+                  <!-- Vista oculta (botón) -->
+                  <button *ngIf="!inst.mostrarWifi && (inst.Nombre_Wifi || inst.Password_Wifi)" 
+                          class="btn btn-sm btn-outline-primary" 
+                          (click)="toggleWifi(inst)">
+                    👁️ Ver Wi-Fi
+                  </button>
+                  
+                  <!-- Mensaje si no tiene -->
+                  <span *ngIf="!inst.Nombre_Wifi && !inst.Password_Wifi" class="text-muted small">
+                    Sin red registrada
+                  </span>
+
+                  <!-- Vista revelada -->
+                  <div *ngIf="inst.mostrarWifi" class="border p-2 rounded bg-dark d-flex justify-content-between align-items-center">
+                    <div>
+                      <small class="d-block text-secondary">Red:</small>
+                      <strong class="text-light">{{ inst.Nombre_Wifi || 'N/A' }}</strong><br>
+                      <small class="d-block text-secondary mt-1">Clave:</small>
+                      <strong class="text-light">{{ inst.Password_Wifi || 'N/A' }}</strong>
+                    </div>
+                    <button class="btn btn-sm btn-secondary ms-3" (click)="toggleWifi(inst)" title="Ocultar">
+                      ❌
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
 </div>

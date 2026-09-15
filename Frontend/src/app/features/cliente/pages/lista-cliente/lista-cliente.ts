@@ -35,6 +35,9 @@ export class ListaClienteComponent implements OnInit {
   clientes = signal<ClienteDetallado[]>([]);
   loading = signal<boolean>(true);
 
+  clienteSeleccionado: ClienteDetallado | null = null;
+  instalacionesCliente: any[] = [];
+
   modalidades = MODALIDADES;
 
   ordenCampo: '' | 'nombre' | 'id' | 'adeudo' | 'pago' = '';
@@ -141,8 +144,20 @@ export class ListaClienteComponent implements OnInit {
     });
   }
 
-  verDetalles(cliente:ClienteDetallado){
-    console.log('Motrando detalles del cliente: ',cliente.Nombre_Cliente);
+  verDetalles(cliente: ClienteDetallado) {
+    this.clienteSeleccionado = cliente;
+    
+    // Filtrar las instalaciones de este cliente
+    this.instalacionesCliente = this.clientes()
+      .filter(c => c.ClienteId === cliente.ClienteId && c.InstalacionId)
+      .map(inst => ({
+        ...inst,
+        mostrarWifi: false // propiedad para alternar la visibilidad de la contraseña
+      }));
+  }
+
+  toggleWifi(inst: any) {
+    inst.mostrarWifi = !inst.mostrarWifi;
   }
 
   editarCliente(cliente:ClienteDetallado){
