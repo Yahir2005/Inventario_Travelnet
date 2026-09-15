@@ -14,6 +14,7 @@
           <th>Fecha de Pago</th>
           <th>Tipo Pago</th>
           <th>Estado</th>
+          <th>Imprimir</th>
           <th >Cancelar</th>
           <th class="text-end">Editar</th>
         </tr>
@@ -42,6 +43,15 @@
               @if (m.MotivoCancelacion) {
                 <div class="small text-danger mt-1">Motivo: {{ m.MotivoCancelacion }}</div>
               }
+            }
+          </td>
+          <td class="text-center">
+            @if (m.Active) {
+              <button class="btn btn-outline-info btn-sm text-nowrap" (click)="imprimir(m)" title="Imprimir Ticket">
+                🖨️ Imprimir
+              </button>
+            } @else {
+              <span class="text-muted small">—</span>
             }
           </td>
           <td class="text-end">

@@ -18,10 +18,15 @@ export class ListaMensualidad implements OnInit, OnChanges {
 
   @Input() instalacionId?: number;
   @Output() mensualidadActualizada = new EventEmitter<void>();
+  @Output() imprimirTicket = new EventEmitter<Mensualidad>();
 
   mensualidades = signal<Mensualidad[]>([]);
   loading = signal(false);
   guardando = signal(false);
+
+  imprimir(m: Mensualidad) {
+    this.imprimirTicket.emit(m);
+  }
 
   mostrarModalCancelar = false;
   mensualidadACancelar: Mensualidad | null = null;
