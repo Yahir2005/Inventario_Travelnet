@@ -1,28 +1,41 @@
-import { Injectable,inject } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, from } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
 import { Instalacion } from '../models/instalacion.model';
 import { InstalacionDetallada } from '../models/instalacion-list-view.model';
 import { Olt } from '../models/olt.model';
 import { Torre } from '../models/torre.model';
 import { Cliente } from '../models/cliente.model';
+import { AppDB } from '../../../db/app.db';
 
 @Injectable({
   providedIn: 'root',
 })
 export class InstalacionService {
   private http = inject(HttpClient);
+  private db = inject(AppDB);
   private apiUrl = 'http://localhost:3000/api/instalacion';
   private apiTorre = 'http://localhost:3000/api/torre';
   private apiOlt = 'http://localhost:3000/api/olt';
   private apiCliente = 'http://localhost:3000/api/cliente';
   private apiLocalidad = 'http://localhost:3000/api/localidad';
 
-  getInstalaciones(): Observable <Instalacion[]>{
+  getInstalaciones(): Observable<Instalacion[]> {
     return this.http.get<Instalacion[]>(this.apiUrl);
   }
-  getInstalacionesDetalladas(): Observable <InstalacionDetallada[]>{
-    return this.http.get<InstalacionDetallada[]>(`${this.apiUrl}/lista-detallada`);
+
+  getInstalacionesDetalladas(): Observable<InstalacionDetallada[]> {
+    return this.http.get<InstalacionDetallada[]>(`${this.apiUrl}/lista-detallada`).pipe(
+      tap(async (instalaciones) => {
+        await this.db.cacheInstalaciones.clear();
+        await this.db.cacheInstalaciones.bulkAdd(instalaciones);
+      }),
+      catchError(() => {
+        console.warn('Sin red. Recuperando instalaciones desde IndexedDB.');
+        return from(this.db.cacheInstalaciones.toArray() as Promise<InstalacionDetallada[]>);
+      })
+    );
   }
 
   getInstalacionPorId(id: number): Observable<Instalacion>{
