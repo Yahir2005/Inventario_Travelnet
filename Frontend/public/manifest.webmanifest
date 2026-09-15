@@ -1,6 +1,6 @@
 {
-  "name": "Frontend",
-  "short_name": "Frontend",
+  "name": "Servicios TravelNET",
+  "short_name": "TravelNET",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",
