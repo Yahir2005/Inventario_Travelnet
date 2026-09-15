@@ -72,10 +72,19 @@ INSERT INTO Localidad (NombreLocalidad) VALUES
 ('Tecamachalco'),
 ('Quecholac');
 
+CREATE TABLE Plan(
+    PlanId INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre VARCHAR(30) NOT NULL UNIQUE,
+    Pago DECIMAL(10,2)
+);
+
+INSERT INTO Plan(Nombre,Pago) VALUES ('20 MEGAS',300),('40 MEGAS',500),('60 MEGAS',700),('80 MEGAS',900);
+
 CREATE TABLE Instalacion(
     InstalacionId INT AUTO_INCREMENT PRIMARY KEY,
     UsuarioId INT,
     ClienteId INT,
+    PlanId INT,
     OLTId INT DEFAULT NULL,
     TorreId INT DEFAULT NULL,
     LocalidadId INT,
@@ -84,11 +93,11 @@ CREATE TABLE Instalacion(
     Password_Wifi VARCHAR(100),
     Active BOOLEAN DEFAULT TRUE,
     Tipo ENUM('Fibra','Antena'),
-    Plan ENUM("20 MEGAS","40 MEGAS","60 MEGAS", "80 MEGAS","100 MEGAS"),
     Modalidad_Servicio ENUM('Mensual','Bimestral','Trimestral','Cuatrimestral','Quinquemestral','Semestral','Heptamestral','Octomestral','Nonamestral','Decamestral','Oncemestral','Anual') DEFAULT 'Mensual',
     Uuid_local VARCHAR(36) DEFAULT NULL UNIQUE,
     Sincronizado TINYINT(1) DEFAULT 1,
     Fecha_Instalacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (PlanId) REFERENCES Plan(PlanId),
     FOREIGN KEY (LocalidadId) REFERENCES Localidad(LocalidadId),
     FOREIGN KEY (ClienteId) REFERENCES Cliente(ClienteId),
     FOREIGN KEY (UsuarioId) REFERENCES Usuario(UsuarioId),
@@ -97,7 +106,7 @@ CREATE TABLE Instalacion(
     CHECK (
         (Tipo = 'Fibra' AND OLTId IS NOT NULL AND TorreId IS NULL) OR
         (Tipo = 'Antena' AND TorreId IS NOT NULL AND OLTId IS NULL)
-    )  
+    )
 );
 
 CREATE TABLE Imagen_Instalacion(
@@ -137,14 +146,12 @@ CREATE TABLE Servicios(
 
 CREATE TABLE Mensualidad (
     MensualidadId INT AUTO_INCREMENT PRIMARY KEY,
-    InstalacionId INT,
     Mes INT,
     Anio INT,
     Concepto VARCHAR (100),
     Monto DECIMAL(10,2),
     Active BOOLEAN DEFAULT TRUE,
-    Estado  ENUM('Pendiente','Pagado','Vencido'),
-    FOREIGN KEY (InstalacionId) REFERENCES Instalacion(InstalacionId)
+    Estado  ENUM('Pendiente','Pagado','Vencido','Incompleto')
 );
 
 CREATE TABLE Pago(
@@ -237,4 +244,4 @@ CREATE TABLE CorteCaja(
     FechaCorte DATETIME DEFAULT CURRENT_TIMESTAMP,
     Pagos_Incluidos JSON,
     FOREIGN KEY (UsuarioId) REFERENCES Usuario(UsuarioId)
-)
+);
