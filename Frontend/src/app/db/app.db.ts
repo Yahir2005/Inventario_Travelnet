@@ -11,14 +11,23 @@ export class AppDB extends Dexie {
   
   imagenesPendientes!: Table<{ id?: number, instalacionId: number, archivo: Blob }, number>;
 
+  cacheClientes!: Table<any, number>;
+  cachePagos!: Table<any, number>;
+  cacheInstalaciones!: Table<any, number>;
+  cacheMensualidades!: Table<any, number>;
+
   constructor() {
     super('TravelNetOfflineDB');
     
-    this.version(2).stores({
+    this.version(3).stores({
       pagosPendientes: '++id',
       clientesPendientes: '++id',
       instalacionesPendientes: '++id',
-      imagenesPendientes: '++id, instalacionId' 
+      imagenesPendientes: '++id, instalacionId',
+      cacheClientes: '++id',
+      cachePagos: '++id',
+      cacheInstalaciones: '++id',
+      cacheMensualidades: '++id, instalacionId'
     });
   }
 }
