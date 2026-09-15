@@ -11,26 +11,62 @@
     </div>
   }
 
-  <div class="col-md-4 mb-3">
-    <form class="d-flex" role="search" (ngSubmit)="buscarPagos()">
-          <input class="form-control me-2" type="search" name="buscar" [(ngModel)]="terminoBusqueda" 
-          (ngModelChange)="aplicarFiltro()"
-          placeholder="Search" aria-label="Search"/>
-          @if(terminoBusqueda) {
-            <button type="button" class="btn btn-outline-secondary me-1" (click)="limpiarBusqueda()">Limpiar</button>
-          }
-         <button class="btn btn-outline-success text-nowrap" type="submit">Buscar Pago</button>
-    </form>
-  </div>
-  <button class="btn btn-primary text-nowrap" (click)="prepararCorteCaja()">
-       Corte de Caja
-    </button>
+  <div class="row mb-3 align-items-end g-2">
+    <!-- Búsqueda General -->
+    <div class="col-md-3">
+      <label class="form-label mb-0 small">Búsqueda</label>
+      <input class="form-control" type="search" placeholder="Cliente, Teléfono, etc." 
+             [(ngModel)]="terminoBusqueda" (ngModelChange)="aplicarFiltro()"/>
+    </div>
+    
+    <!-- Filtros Desplegables -->
+    <div class="col-md-2">
+      <label class="form-label mb-0 small">Localidad</label>
+      <select class="form-select" [(ngModel)]="filtroLocalidad" (ngModelChange)="aplicarFiltro()">
+        <option value="">Todas</option>
+        @for (loc of localidadesDisponibles; track loc) {
+          <option [value]="loc">{{ loc }}</option>
+        }
+      </select>
+    </div>
+    
+    <div class="col-md-2">
+      <label class="form-label mb-0 small">Plan</label>
+      <select class="form-select" [(ngModel)]="filtroPlan" (ngModelChange)="aplicarFiltro()">
+        <option value="">Todos</option>
+        @for (plan of planesDisponibles; track plan) {
+          <option [value]="plan">{{ plan }}</option>
+        }
+      </select>
+    </div>
 
-  @if (esAdmin) {
-    <button class="btn btn-success text-nowrap ms-2" (click)="exportarExcel()" [disabled]="exportando()">
-      {{ exportando() ? '⏳ Exportando...' : '📊 Exportar a Excel' }}
-    </button>
-  }
+    <div class="col-md-2">
+      <label class="form-label mb-0 small">Modalidad</label>
+      <select class="form-select" [(ngModel)]="filtroModalidad" (ngModelChange)="aplicarFiltro()">
+        <option value="">Todas</option>
+        @for (mod of modalidadesDisponibles; track mod) {
+          <option [value]="mod">{{ mod }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Botones de Acción -->
+    <div class="col-md-3 d-flex gap-2">
+      @if(terminoBusqueda || filtroLocalidad || filtroPlan || filtroModalidad) {
+        <button type="button" class="btn btn-outline-secondary" (click)="limpiarBusqueda()" title="Limpiar Filtros">
+          <i class="bi bi-eraser"></i> Limpiar
+        </button>
+      }
+      <button class="btn btn-primary text-nowrap" (click)="prepararCorteCaja()">
+         Corte de Caja
+      </button>
+      @if (esAdmin) {
+        <button class="btn btn-success text-nowrap" (click)="exportarExcel()" [disabled]="exportando()">
+          {{ exportando() ? '⏳' : '📊 Excel' }}
+        </button>
+      }
+    </div>
+  </div>
   <div class="table-responsive">
   <table class="table table-striped table-hover align-middle">
     <thead class="table-dark">
@@ -149,6 +185,7 @@
             <app-lista-mensualidad
               [instalacionId]="pagoMensualidadesSeleccionado.InstalacionId"
               (mensualidadActualizada)="onMensualidadActualizada()"
+              (imprimirTicket)="imprimirMensualidadIndividual($event)"
             ></app-lista-mensualidad>
           }
         </div>

@@ -26,6 +26,21 @@ export class ListaPago implements OnInit {
   error = signal<string | null>(null);
   pagosFiltrados: PagoDetallado[] = [];
   terminoBusqueda = '';
+  filtroLocalidad = '';
+  filtroPlan = '';
+  filtroModalidad = '';
+
+  get localidadesDisponibles(): string[] {
+    return [...new Set(this.pagos().map(p => p.Localidad).filter(l => Boolean(l)))].sort() as string[];
+  }
+
+  get planesDisponibles(): string[] {
+    return [...new Set(this.pagos().map(p => p.Plan).filter(p => Boolean(p)))].sort() as string[];
+  }
+
+  get modalidadesDisponibles(): string[] {
+    return [...new Set(this.pagos().map(p => p.Modalidad_Servicio).filter(m => Boolean(m)))].sort() as string[];
+  }
   
   mostrarModal = false;
   pagoSeleccionado: PagoDetallado | null = null;
@@ -251,15 +266,18 @@ export class ListaPago implements OnInit {
 
   aplicarFiltro(){
     const termino = this.terminoBusqueda.toLocaleLowerCase().trim();
-    if(!termino) {
-      this.pagosFiltrados = this.pagos();
-      return;
-    }
-    this.pagosFiltrados = this.pagos().filter( inst =>
-      (inst.Nombre_Cliente || '').toLocaleLowerCase().includes(termino) ||
-      (inst.Localidad || '').toLocaleLowerCase().includes(termino) ||
-      (inst.Telefono || '').toLocaleLowerCase().includes(termino)
-    );
+    this.pagosFiltrados = this.pagos().filter( inst => {
+      const coincideTexto = !termino || 
+        (inst.Nombre_Cliente || '').toLocaleLowerCase().includes(termino) ||
+        (inst.Localidad || '').toLocaleLowerCase().includes(termino) ||
+        (inst.Telefono || '').toLocaleLowerCase().includes(termino);
+        
+      const coincideLocalidad = !this.filtroLocalidad || inst.Localidad === this.filtroLocalidad;
+      const coincidePlan = !this.filtroPlan || inst.Plan === this.filtroPlan;
+      const coincideModalidad = !this.filtroModalidad || inst.Modalidad_Servicio === this.filtroModalidad;
+
+      return coincideTexto && coincideLocalidad && coincidePlan && coincideModalidad;
+    });
   }
 
   buscarPagos(){
@@ -268,6 +286,9 @@ export class ListaPago implements OnInit {
 
   limpiarBusqueda(){
     this.terminoBusqueda = '';
+    this.filtroLocalidad = '';
+    this.filtroPlan = '';
+    this.filtroModalidad = '';
     this.aplicarFiltro();
   }
 
@@ -289,6 +310,91 @@ export class ListaPago implements OnInit {
 
   onMensualidadActualizada() {
     this.ngOnInit();
+  }
+
+  imprimirMensualidadIndividual(mensualidad: any) {
+    if (!this.pagoMensualidadesSeleccionado) return;
+    
+    const cliente = this.pagoMensualidadesSeleccionado;
+    const mesStr = this.mesesLista.find(m => m.id === mensualidad.Mes)?.nombre || '';
+    const logoUrl = window.location.origin + '/assets/images/TravelNet.png';
+    const fechaActual = new Date().toLocaleString();
+
+    let desgloseHTML = `<div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                          <span>${mesStr} ${mensualidad.Anio}</span>
+                          <span>$${parseFloat(mensualidad.Monto).toFixed(2)}</span>
+                        </div>`;
+
+    const ticketHTML = `
+      <html>
+        <head>
+          <title>Imprimir Ticket - ${mesStr} ${mensualidad.Anio}</title>
+          <style>
+            body { font-family: 'Courier New', Courier, monospace; font-size: 14px; padding: 10px; max-width: 300px; margin: 0 auto; color: #000; }
+            .text-center { text-align: center; }
+            .text-left { text-align: left; }
+            .bold { font-weight: bold; }
+            .divider { border-top: 1px dashed #000; margin: 10px 0; }
+            .flex { display: flex; justify-content: space-between; }
+          </style>
+        </head>
+        <body>
+          <div style="text-align: center; margin-bottom: 5px;">
+            <img src="${logoUrl}" alt="TravelNET" style="max-width: 180px; max-height: 80px;">
+          </div>
+          <p class="text-center bold">Comprobante de Pago</p>
+          <p style="font-size: 12px; text-align: center;">${fechaActual}</p>
+          
+          <div class="divider"></div>
+          
+          <div class="text-left">
+            <p><strong>Cliente:</strong> ${cliente.Nombre_Cliente}</p>
+            <p><strong>Instalación:</strong> #${cliente.InstalacionId}</p>
+            <p><strong>Plan:</strong> ${cliente.Plan || 'N/A'}</p>
+            <p><strong>Localidad:</strong> ${cliente.Localidad || 'N/A'}</p>
+            <p><strong>Método:</strong> ${mensualidad.Tipo_Pago || 'Efectivo'}</p>
+          </div>
+          
+          <div class="divider"></div>
+          
+          <div class="text-left">
+            <p class="bold">Concepto:</p>
+            <p>${mensualidad.Concepto || 'Pago de Mensualidad'}</p>
+          </div>
+          
+          <div class="divider"></div>
+          
+          <div class="text-left">
+            <p class="bold" style="margin-bottom: 5px;">Mes Pagado:</p>
+            ${desgloseHTML}
+          </div>
+          
+          <div class="divider"></div>
+          
+          <div class="flex bold" style="font-size: 16px;">
+            <span>TOTAL:</span>
+            <span>$${parseFloat(mensualidad.Monto).toFixed(2)}</span>
+          </div>
+          
+          <div class="divider"></div>
+          <p style="font-size: 12px; text-align: center;">¡Gracias por tu pago!</p>
+          <p style="font-size: 12px; text-align: center;">Conserva este ticket para cualquier aclaración.</p>
+          
+          <script>
+            window.onload = function() {
+              window.print();
+              setTimeout(function() { window.close(); }, 500);
+            }
+          </script>
+        </body>
+      </html>
+    `;
+
+    const printWindow = window.open('', '_blank', 'width=400,height=600');
+    if (printWindow) {
+      printWindow.document.write(ticketHTML);
+      printWindow.document.close();
+    }
   }
 
   imprimirTicket(pago: PagoDetallado){
