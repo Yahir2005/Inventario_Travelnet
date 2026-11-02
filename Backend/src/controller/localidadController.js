@@ -1,5 +1,14 @@
 const Localidad = require('../model/localidad');
 
+/**
+ * ============================================================================
+ * CONTROLADOR DE LOCALIDADES (localidadController.js)
+ * ============================================================================
+ * Gestiona el catálogo de localidades, municipios y códigos postales donde
+ * se instalan los servicios de TravelNet.
+ */
+
+/** Obtiene todas las localidades registradas */
 const getAll = async (req, res) => {
     try {
         const localidades = await Localidad.findAll(req.db);
@@ -9,6 +18,7 @@ const getAll = async (req, res) => {
     }
 };
 
+/** Obtiene una localidad específica por su ID */
 const getById = async (req, res) => {
     try {
         const localidad = await Localidad.findByPk(req.db, req.params.id);
@@ -19,6 +29,7 @@ const getById = async (req, res) => {
     }
 };
 
+/** Crea una nueva localidad en la base de datos */
 const create = async (req, res) => {
     try {
         const localidad = await Localidad.create(req.db, req.body);
@@ -28,6 +39,7 @@ const create = async (req, res) => {
     }
 };
 
+/** Actualiza los datos de una localidad existente */
 const update = async (req, res) => {
     try {
         const exist = await Localidad.findByPk(req.db, req.params.id);

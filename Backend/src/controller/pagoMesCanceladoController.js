@@ -1,5 +1,14 @@
 const PagoMesCancelado = require('../model/PagoMesCancelado');
 
+/**
+ * ============================================================================
+ * CONTROLADOR DE MENSUALIDADES CANCELADAS (pagoMesCanceladoController.js)
+ * ============================================================================
+ * Permite consultar y administrar la bitácora de auditoría de mensualidades
+ * que han sido canceladas o dadas de baja, incluyendo el motivo y el usuario.
+ */
+
+/** Obtiene todos los registros de mensualidades canceladas */
 const getAll = async (req,res) => {
     try {
         const pagoMesCancelado = await PagoMesCancelado.findAll(req.db);
@@ -9,6 +18,7 @@ const getAll = async (req,res) => {
     }
 };
 
+/** Obtiene un registro de cancelación específico por su ID */
 const getById = async (req,res) => {
     try {
         const pagoMesCancelado = await PagoMesCancelado.findByPk(req.db,req.params.id);
@@ -19,6 +29,7 @@ const getById = async (req,res) => {
     }
 };
 
+/** Crea un nuevo registro en la bitácora de cancelaciones */
 const create = async (req,res) => {
     try {
         const pagoMesCancelado = await PagoMesCancelado.create(req.db,req.body);
@@ -28,6 +39,7 @@ const create = async (req,res) => {
     }
 }
 
+/** Actualiza el motivo u observaciones de un registro de cancelación */
 const update = async (req,res) => {
     try {
         const exist = await PagoMesCancelado.findByPk(req.db,req.params.id);

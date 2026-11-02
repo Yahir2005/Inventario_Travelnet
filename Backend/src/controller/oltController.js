@@ -1,5 +1,14 @@
 const OLT = require('../model/OLT');
 
+/**
+ * ============================================================================
+ * CONTROLADOR DE EQUIPOS OLT (oltController.js)
+ * ============================================================================
+ * Procesa las peticiones HTTP para listar, consultar por ID, crear y actualizar
+ * las terminales de fibra óptica (OLT).
+ */
+
+/** Obtiene todas las OLTs registradas */
 const getAll = async (req,res) => {
     try {
         const olt = await OLT.findAll(req.db);
@@ -9,6 +18,7 @@ const getAll = async (req,res) => {
     }
 };
 
+/** Obtiene una OLT específica por su ID */
 const getById = async (req,res) => {
     try {
         const olt = await OLT.findByPk(req.db,req.params.id);
@@ -19,6 +29,7 @@ const getById = async (req,res) => {
     }
 };
 
+/** Crea una nueva OLT */
 const create = async (req,res) => {
     try {
         const olt = await OLT.create(req.db,req.body);
@@ -28,6 +39,7 @@ const create = async (req,res) => {
     }
 };
 
+/** Actualiza el nombre o ubicación de una OLT existente */
 const update = async (req,res) => {
     try {
         const exist = await OLT.findByPk(req.db,req.params.id);

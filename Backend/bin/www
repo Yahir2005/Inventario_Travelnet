@@ -1,6 +1,13 @@
 #!/usr/bin/env node
 
 /**
+ * ============================================================================
+ * PUNTO DE ARRANQUE DEL SERVIDOR HTTP (bin/www)
+ * ============================================================================
+ * Este script se ejecuta al correr `npm start` en el Backend.
+ * Importa la aplicación configurada en `app.js`, levanta el servidor HTTP
+ * en el puerto indicado (por defecto el 3000) y escucha errores de red.
+ *
  * Module dependencies.
  */
 

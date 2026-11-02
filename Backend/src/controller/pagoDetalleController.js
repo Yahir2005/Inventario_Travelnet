@@ -1,5 +1,14 @@
 const PagoDetalle = require('../model/pagoDetalle');
 
+/**
+ * ============================================================================
+ * CONTROLADOR DE DETALLE DE PAGOS (pagoDetalleController.js)
+ * ============================================================================
+ * Administra los registros de la tabla `Pago_Detalle`, que vinculan un cobro
+ * (`PagoId`) con cada mes cubierto (`MensualidadId`) y su `MontoAplicado`.
+ */
+
+/** Obtiene todos los detalles de pago */
 const getAll = async (req, res) => {
     try {
         const detalles = await PagoDetalle.findAll(req.db);
@@ -9,6 +18,7 @@ const getAll = async (req, res) => {
     }
 };
 
+/** Obtiene un detalle de pago por su ID */
 const getById = async (req, res) => {
     try {
         const detalle = await PagoDetalle.findByPk(req.db, req.params.id);
@@ -19,6 +29,7 @@ const getById = async (req, res) => {
     }
 };
 
+/** Crea un nuevo registro en `Pago_Detalle` */
 const create = async (req, res) => {
     try {
         const detalle = await PagoDetalle.create(req.db, req.body);
@@ -28,6 +39,7 @@ const create = async (req, res) => {
     }
 };
 
+/** Actualiza un registro existente de `Pago_Detalle` */
 const update = async (req, res) => {
     try {
         const exist = await PagoDetalle.findByPk(req.db, req.params.id);
@@ -40,6 +52,7 @@ const update = async (req, res) => {
     }
 };
 
+/** Elimina un registro de `Pago_Detalle` por su ID */
 const remove = async (req, res) => {
     try {
         const removed = await PagoDetalle.remove(req.db, req.params.id);
