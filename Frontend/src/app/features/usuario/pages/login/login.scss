@@ -1,3 +1,31 @@
+.theme-toggle-bar {
+  display: flex !important;
+  flex-direction: row !important;
+  justify-content: flex-end;
+  margin-bottom: 10px !important;
+}
+
+.btn-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: auto !important;
+  padding: 6px 12px !important;
+  margin: 0 !important;
+  border-radius: 20px !important;
+  font-size: 0.85rem;
+  font-weight: 500 !important;
+  background-color: var(--bs-secondary-bg, #e9ecef) !important;
+  color: var(--bs-body-color, #212529) !important;
+  border: 1px solid var(--bs-border-color, #dee2e6) !important;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    background-color: var(--bs-tertiary-bg, #dee2e6) !important;
+  }
+}
+
 .logo-wrapper {
   display: flex;
   justify-content: center;
@@ -6,6 +34,7 @@
 
 .logo-img {
   max-width: 350px;
+  width: 100%;
   height: auto;
   object-fit: contain;
 }
@@ -14,44 +43,64 @@
   max-width: 400px;
   margin: 60px auto; 
   padding: 30px;
-  background-color: #f8f9fa; 
-  border-radius: 10px; 
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); 
+  background-color: var(--bs-tertiary-bg, #f8f9fa);
+  color: var(--bs-body-color, #212529);
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: 14px; 
+  box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.15); 
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
   
   h2 {
     text-align: center;
     margin-bottom: 25px;
+    color: var(--bs-body-color, #212529);
+  }
+
+  label {
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: var(--bs-body-color, #212529);
   }
 }
 
-.login-container div {
+.login-container .field-group {
   margin-bottom: 15px;
   display: flex;
   flex-direction: column;
 }
 
 .login-container input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  padding: 10px 12px;
+  background-color: var(--bs-body-bg, #ffffff);
+  color: var(--bs-body-color, #212529);
+  border: 1px solid var(--bs-border-color, #ced4da);
+  border-radius: 8px;
   width: 100%; 
   box-sizing: border-box;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+
+  &:focus {
+    outline: none;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+  }
 }
 
-.login-container button {
+.btn-submit-login {
   width: 100%;
   padding: 10px;
   background-color: #0d6efd; 
-  color: white;
+  color: #ffffff;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
   margin-top: 10px;
-}
+  transition: background-color 0.2s ease;
 
-.login-container button:hover {
-  background-color: #0b5ed7; 
+  &:hover {
+    background-color: #0b5ed7; 
+  }
 }
 
 .password-wrapper {
@@ -62,27 +111,60 @@
 }
 
 .password-wrapper input {
-  padding-right: 70px; 
+  padding-right: 75px; 
 }
 
 .btn-toggle-password {
   position: absolute;
-  right: 5px;
+  right: 6px;
   top: 50%;
   transform: translateY(-50%);
   
   background: none !important;
-  color: #6c757d !important; 
+  color: var(--bs-secondary-color, #6c757d) !important; 
   border: none !important;
   width: auto !important;
-  padding: 5px !important;
+  padding: 5px 8px !important;
   margin: 0 !important;
   font-size: 0.85rem;
   font-weight: normal !important;
+  cursor: pointer;
 }
 
 .btn-toggle-password:hover {
   background: none !important;
   color: #0d6efd !important; 
   text-decoration: underline;
+}
+
+.login-error {
+  color: var(--bs-danger-text-emphasis, #dc3545);
+  text-align: center;
+  margin-top: 14px;
+  margin-bottom: 0;
+  font-weight: 500;
+}
+
+:host-context([data-bs-theme="dark"]) {
+  .login-container {
+    background-color: #1e1b24;
+    border-color: #363140;
+    box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.45);
+  }
+
+  .login-container input {
+    background-color: #141218;
+    color: #e6e1e5;
+    border-color: #49454f;
+  }
+
+  .btn-theme-toggle {
+    background-color: #2b2733 !important;
+    color: #e6e1e5 !important;
+    border-color: #49454f !important;
+
+    &:hover {
+      background-color: #383342 !important;
+    }
+  }
 }
