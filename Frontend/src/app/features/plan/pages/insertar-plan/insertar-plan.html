@@ -1,0 +1,52 @@
+<div class="container mt-4" style="max-width: 720px;">
+  <h2>Registrar Nuevo Plan</h2>
+
+  <form (ngSubmit)="guardarPlan()">
+    <div class="row mb-3">
+      <div class="col-md-7">
+        <label class="form-label fw-bold">Nombre del Plan</label>
+        <input type="text" class="form-control" name="Nombre" [(ngModel)]="plan.Nombre" placeholder="Ej. 40 MEGAS" required>
+      </div>
+      <div class="col-md-5">
+        <label class="form-label fw-bold">Velocidad (Mbps)</label>
+        <input type="number" class="form-control" name="Velocidad_Mbps" [(ngModel)]="plan.Velocidad_Mbps" min="1" required>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span class="fw-bold">Tarifas por Modalidad</span>
+        <button type="button" class="btn btn-sm btn-outline-primary" (click)="agregarTarifa()">+ Agregar Tarifa</button>
+      </div>
+      <div class="card-body">
+        @for (tarifa of plan.Tarifas; track $index) {
+          <div class="row g-2 align-items-center mb-2">
+            <div class="col-md-6">
+              <select class="form-select" [name]="'modalidad_' + $index" [(ngModel)]="tarifa.Modalidad">
+                @for (m of modalidades; track m) {
+                  <option [value]="m">{{ m }}</option>
+                }
+              </select>
+            </div>
+            <div class="col-md-4">
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input type="number" class="form-control" [name]="'precio_' + $index" [(ngModel)]="tarifa.Precio" min="0" step="0.01">
+              </div>
+            </div>
+            <div class="col-md-2 text-end">
+              <button type="button" class="btn btn-outline-danger btn-sm" (click)="quitarTarifa($index)">Quitar</button>
+            </div>
+          </div>
+        } @empty {
+          <p class="text-muted small mb-0">Sin tarifas iniciales.</p>
+        }
+      </div>
+    </div>
+
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-primary" [disabled]="guardando()">Guardar Plan</button>
+      <a class="btn btn-secondary" routerLink="/plan">Cancelar</a>
+    </div>
+  </form>
+</div>

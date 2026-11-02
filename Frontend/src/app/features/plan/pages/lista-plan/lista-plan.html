@@ -1,0 +1,77 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Catálogo de Planes y Tarifas</h2>
+    @if (esAdmin) {
+      <a class="btn btn-primary" routerLink="/plan/insertar-plan">+ Nuevo Plan</a>
+    }
+  </div>
+
+  @if (loading()) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="mt-2 text-muted">Cargando planes...</p>
+    </div>
+  } @else if (error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
+  } @else {
+    <div class="table-responsive">
+      <table class="table table-striped table-hover align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>Nombre del Plan</th>
+            <th>Velocidad (Mbps)</th>
+            <th>Tarifas Configuradas</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (plan of planes(); track plan.PlanId) {
+            <tr>
+              <td>#{{ plan.PlanId }}</td>
+              <td class="fw-bold">{{ plan.Nombre }}</td>
+              <td>{{ plan.Velocidad_Mbps }} Mbps</td>
+              <td>
+                @if (plan.Tarifas && plan.Tarifas.length > 0) {
+                  <div class="d-flex flex-wrap gap-1">
+                    @for (t of plan.Tarifas; track t.TarifaId) {
+                      <span class="badge text-bg-secondary">
+                        {{ t.Modalidad }}: ${{ t.Precio }}
+                      </span>
+                    }
+                  </div>
+                } @else {
+                  <span class="text-muted small">Sin tarifas registradas</span>
+                }
+              </td>
+              <td>
+                <span class="badge" [ngClass]="plan.Active ? 'bg-success' : 'bg-danger'">
+                  {{ plan.Active ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td>
+                @if (esAdmin) {
+                  <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-warning btn-sm" (click)="editarPlan(plan.PlanId)">
+                      Editar
+                    </button>
+                    <button type="button" class="btn btn-sm"
+                            [ngClass]="plan.Active ? 'btn-outline-danger' : 'btn-outline-success'"
+                            (click)="cambiarEstado(plan)">
+                      {{ plan.Active ? 'Inhabilitar' : 'Habilitar' }}
+                    </button>
+                  </div>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="text-center py-4">No hay planes registrados.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
