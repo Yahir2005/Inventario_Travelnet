@@ -8,12 +8,20 @@
 .angular/
 
 # Node modules and dependency files
-/node_modules/
+node_modules/
+**/node_modules/
 /package-lock.json
 /yarn.lock
 
-# Environment files
+# Environment and credentials files
 /.env
+.env
+.env.*
+**/.env
+credenciales.txt
+contraseñas.txt
+PLAN_REMEDIACION.txt
+PLAN_INSERTS_HASH.txt
 
 # Angular CLI and build artefacts
 /.angular-cli.json
@@ -26,5 +34,3 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-credenciales.txt
-PLAN_REMEDIACION.txt
