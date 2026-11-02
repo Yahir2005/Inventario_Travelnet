@@ -1,9 +1,14 @@
-export interface Cliente{
+export interface Cliente {
   ClienteId: number;
   Nombre_Cliente: string;
   Telefono: string;
-  Direccion: string;
+  Calle?: string | null;
+  Numero?: string | null;
+  Colonia?: string | null;
+  Codigo_Postal?: string | null;
+  Direccion?: string;
+  Saldo_Actual?: number;
   Active: boolean;
-  TipoCliente: 'Fisica' | 'Moral'
+  TipoCliente: 'Fisica' | 'Moral';
 }
 

@@ -4,6 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TorreService } from '../../service/torre';
 
+/**
+ * ============================================================================
+ * COMPONENTE: ACTUALIZAR TORRE (actualizar-torre.ts)
+ * ============================================================================
+ * Permite a un Administrador editar el nombre o la ubicación de una torre
+ * existente a partir del parámetro `:id` de la URL.
+ */
 @Component({
   selector: 'app-actualizar-torre',
   standalone: true,
@@ -28,6 +35,7 @@ export class ActualizarTorre implements OnInit {
     Ubicacion: ''
   };
 
+  /** Verifica permisos de Administrador y carga los datos actuales de la torre */
   ngOnInit(): void {
     const usuarioString = localStorage.getItem('usuario');
     if (usuarioString) {
@@ -62,6 +70,7 @@ export class ActualizarTorre implements OnInit {
     });
   }
 
+  /** Valida el formulario y envía la actualización al backend */
   guardar(){
     if (!this.form.Nombre.trim()) {
       alert('El nombre de la torre es obligatorio.');

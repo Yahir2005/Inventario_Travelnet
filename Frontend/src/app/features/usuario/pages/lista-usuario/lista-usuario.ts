@@ -4,6 +4,13 @@ import { Router } from '@angular/router';
 import { UsuarioService } from '../../services/usuario';
 import { Usuario } from '../../models/usuario.model';
 
+/**
+ * ============================================================================
+ * COMPONENTE: LISTA DE USUARIOS (lista-usuario.ts)
+ * ============================================================================
+ * Muestra la tabla con todo el personal registrado en el sistema (Administradores,
+ * Técnicos, Cobradores, etc.) y permite editar sus perfiles o habilitar/inhabilitar su acceso.
+ */
 @Component({
   selector: 'app-lista-usuario',
   standalone: true,
@@ -20,6 +27,7 @@ export class ListaUsuario implements OnInit {
   error = signal<string | null>(null);
   esAdmin = false;
 
+  /** Al iniciar, comprueba si el usuario actual es Administrador y descarga la lista de usuarios */
   ngOnInit(): void {
     const usuarioString = localStorage.getItem('usuario');
     if (usuarioString) {
@@ -39,10 +47,12 @@ export class ListaUsuario implements OnInit {
     });
   }
 
+  /** Redirige al formulario de edición del usuario seleccionado */
   editarUsuario(id: number){
     this.router.navigate(['/usuario/actualizar-usuario', id]);
   }
 
+  /** Habilita o inhabilita el acceso de un usuario al sistema previa confirmación */
   cambiarEstado(usuarioTarget: Usuario){
     const accion = usuarioTarget.Active ? 'inhabilitar' : 'habilitar';
     const confirmacion = confirm(`¿Estás seguro de que deseas ${accion} al usuario ${usuarioTarget.Nombre}?`);

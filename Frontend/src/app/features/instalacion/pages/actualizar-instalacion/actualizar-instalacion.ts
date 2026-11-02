@@ -5,6 +5,14 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { InstalacionService } from '../../services/instalacion';
 import { forkJoin } from 'rxjs'; // <-- IMPORTAMOS FORKJOIN
 
+/**
+ * COMPONENTE: ACTUALIZAR INSTALACIÓN (ActualizarInstalacion)
+ * ----------------------------------------------------------
+ * Permite modificar los datos de una instalación existente (tipo de conexión, OLT/Torre,
+ * nombre/clave Wi-Fi, localidad, plan, modalidad y coordenadas de Google Maps).
+ * Utiliza `forkJoin` para cargar en paralelo los datos actuales de la instalación
+ * junto con todos los catálogos necesarios para los selectores del formulario.
+ */
 @Component({
   selector: 'app-actualizar-instalacion',
   standalone: true,
@@ -29,6 +37,8 @@ export class ActualizarInstalacion implements OnInit {
   instalacion = {
     UsuarioId: null as number | null,
     ClienteId: null as number | null,
+    TarifaId: null as number | null,
+    InfraestructuraId: null as number | null,
     OLTId: null as number | null,
     TorreId: null as number | null,
     Ubicacion_Maps: '',
@@ -39,6 +49,9 @@ export class ActualizarInstalacion implements OnInit {
     Plan: '20 MEGAS',
     Modalidad_Servicio: 'Mensual'
   };
+
+  private planOriginal = '';
+  private modalidadOriginal = '';
 
   ngOnInit(): void {
     // Al usar forkJoin ya no llamamos a los métodos individuales aquí
@@ -73,9 +86,13 @@ export class ActualizarInstalacion implements OnInit {
 
         // 2. Asignamos los datos del formulario
         const data = resultados.instalacionObj;
+        this.planOriginal = data.Plan || '20 MEGAS';
+        this.modalidadOriginal = data.Modalidad_Servicio || 'Mensual';
         this.instalacion = {
           UsuarioId: data.UsuarioId ?? null,
           ClienteId: data.ClienteId ?? null,
+          TarifaId: data.TarifaId ?? null,
+          InfraestructuraId: data.InfraestructuraId ?? null,
           OLTId: data.OLTId ?? null,
           TorreId: data.TorreId ?? null,
           Ubicacion_Maps: data.Ubicacion_Maps || '',
@@ -83,8 +100,8 @@ export class ActualizarInstalacion implements OnInit {
           Password_Wifi: data.Password_Wifi || '',
           Tipo: data.Tipo || '',
           LocalidadId: data.LocalidadId ?? null,
-          Plan: data.Plan || '20 MEGAS',
-          Modalidad_Servicio: data.Modalidad_Servicio || 'Mensual'
+          Plan: this.planOriginal,
+          Modalidad_Servicio: this.modalidadOriginal
         };
 
         // 3. Apagamos el spinner UNA SOLA VEZ al final
@@ -134,8 +151,17 @@ export class ActualizarInstalacion implements OnInit {
 
     if (this.instalacion.Tipo === 'Fibra') {
       this.instalacion.TorreId = null;
+      this.instalacion.InfraestructuraId = this.instalacion.OLTId ? Number(this.instalacion.OLTId) : null;
     } else if (this.instalacion.Tipo === 'Antena') {
       this.instalacion.OLTId = null;
+      this.instalacion.InfraestructuraId = this.instalacion.TorreId ? Number(this.instalacion.TorreId) : null;
+    }
+
+    if (
+      this.instalacion.Plan !== this.planOriginal ||
+      this.instalacion.Modalidad_Servicio !== this.modalidadOriginal
+    ) {
+      this.instalacion.TarifaId = null;
     }
 
     if (!this.instalacion.Ubicacion_Maps) {

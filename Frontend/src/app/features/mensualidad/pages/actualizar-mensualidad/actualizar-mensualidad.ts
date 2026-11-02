@@ -4,6 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MensualidadService } from '../../services/mensualidad';
 
+/**
+ * ============================================================================
+ * COMPONENTE: ACTUALIZAR MENSUALIDAD (actualizar-mensualidad.ts)
+ * ============================================================================
+ * Permite a un administrador corregir el mes, año, concepto, monto o estado
+ * de una mensualidad específica.
+ */
 @Component({
   selector: 'app-actualizar-mensualidad',
   standalone: true,
@@ -48,6 +55,7 @@ export class ActualizarMensualidad implements OnInit {
     Active: true
   };
 
+  /** Lee el ID de la mensualidad desde la URL al cargar la pantalla */
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
@@ -60,6 +68,7 @@ export class ActualizarMensualidad implements OnInit {
     });
   }
 
+  /** Consulta los datos actuales de la mensualidad en el backend */
   cargarMensualidad(id: number) {
     this.mensualidadService.getMensualidadPorId(id).subscribe({
       next: (data) => {
@@ -83,6 +92,7 @@ export class ActualizarMensualidad implements OnInit {
     });
   }
 
+  /** Valida el formulario y envía los cambios al backend mediante `PUT /api/mensualidad/:id` */
   guardarCambios() {
     if (!this.mensualidadId) return;
 

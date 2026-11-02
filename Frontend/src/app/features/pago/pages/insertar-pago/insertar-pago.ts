@@ -7,6 +7,14 @@ import { AppDB } from '../../../../db/app.db';
 import { SyncService } from '../../services/sync.service';
 import { PagoDetallado, PagoForm } from '../../models/pago.model';
 
+/**
+ * ============================================================================
+ * COMPONENTE: INSERTAR PAGO (insertar-pago.ts)
+ * ============================================================================
+ * Formulario completo para registrar un pago seleccionando la instalación del
+ * cliente. Calcula automáticamente el mes siguiente a cobrar, arma el concepto,
+ * soporta guardado en Modo Offline y ofrece imprimir el ticket térmico al terminar.
+ */
 @Component({
   selector: 'app-insertar-pago',
   standalone: true,
@@ -68,6 +76,7 @@ export class InsertarPago implements OnInit {
     this.cargarInstalaciones();
   }
 
+  /** Obtiene las instalaciones disponibles desde el backend o desde IndexedDB si estamos sin red */
   cargarInstalaciones() {
     this.loading.set(true); 
     this.pagoService.getPagos().subscribe({
@@ -82,6 +91,7 @@ export class InsertarPago implements OnInit {
     });
   }
 
+  /** Cuando el cajero elige una instalación, sugiere el mes siguiente a su último pago registrado */
   onInstalacionChange() {
     const inst = this.instalaciones.find(i => i.InstalacionId === Number(this.pago.InstalacionId));
     if (inst) {
@@ -104,6 +114,7 @@ export class InsertarPago implements OnInit {
     }
   }
 
+  /** Actualiza automáticamente el texto del concepto según el mes de inicio y la cantidad de meses */
   actualizarConcepto() {
     const startMes = Number(this.pago.Mes) || 1;
     const startAnio = Number(this.pago.Anio) || new Date().getFullYear();
@@ -124,7 +135,8 @@ export class InsertarPago implements OnInit {
 
   mostrarModalImprimir = signal(false);
 
-async guardarPago() {
+  /** Valida el formulario y envía el pago al servidor, o lo encola en IndexedDB si no hay conexión */
+  async guardarPago() {
     // 1. VALIDACIONES ORIGINALES
     if (!this.pago.InstalacionId) {
       alert('Selecciona una instalación.');
@@ -140,6 +152,10 @@ async guardarPago() {
     }
 
     this.guardando.set(true);
+
+    if (!this.pago.Uuid_local && typeof crypto !== 'undefined' && crypto.randomUUID) {
+      this.pago.Uuid_local = crypto.randomUUID();
+    }
 
     if (this.syncService.estaEnLinea()) {
       this.pagoService.crearPago(this.pago).subscribe({
@@ -164,11 +180,10 @@ async guardarPago() {
     }
   }
 
+  /** Encola el pago localmente mediante `SyncService` para sincronizarlo en cuanto vuelva la red */
   private async guardarLocalmente() {
     try {
-      const pagoLocal = JSON.parse(JSON.stringify(this.pago)); 
-      
-      await this.db.pagosPendientes.add(pagoLocal);
+      await this.syncService.encolarPagoOffline(this.pago);
       this.guardando.set(false);
       this.mostrarModalImprimir.set(true);
     } catch (error) {
@@ -192,16 +207,28 @@ async guardarPago() {
     this.router.navigate(['/pago']);
   }
 
+  /** Escapa caracteres especiales HTML para evitar inyección de código en la ventana de impresión */
+  private escapeHtml(valor: unknown): string {
+    return String(valor ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  /** Abre una ventana emergente con formato de impresora térmica (58mm/80mm) e imprime el recibo */
   imprimirTicketGuardado(inst: PagoDetallado, pago: PagoForm) {
-    const fechaActual = new Date().toLocaleDateString('es-MX', { 
+    const fechaActual = this.escapeHtml(new Date().toLocaleDateString('es-MX', { 
       year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' 
-    });
+    }));
 
-    const nombreCliente = inst ? inst.Nombre_Cliente : 'Cliente Desconocido';
-    const plan = inst ? inst.Plan : 'N/A';
-    const localidad = inst ? inst.Localidad : 'N/A';
-
-    const conceptoTicket = pago.Concepto || 'Mensualidad';
+    const nombreCliente = this.escapeHtml(inst ? inst.Nombre_Cliente : 'Cliente Desconocido');
+    const plan = this.escapeHtml(inst ? inst.Plan : 'N/A');
+    const localidad = this.escapeHtml(inst ? inst.Localidad : 'N/A');
+    const instalacionIdSafe = this.escapeHtml(pago.InstalacionId);
+    const tipoPagoSafe = this.escapeHtml(pago.Tipo_Pago);
+    const conceptoTicket = this.escapeHtml(pago.Concepto || 'Mensualidad');
     const montoTicket = pago.Monto !== null ? parseFloat(pago.Monto.toString()).toFixed(2) : '0.00';
 
     const cant = Number(pago.Cantidad_Meses) || 1;
@@ -215,7 +242,7 @@ async guardarPago() {
     for (let i = 0; i < cant; i++) {
       const mesIndex = (startMes - 1 + i) % 12;
       const anio = startAnio + Math.floor((startMes - 1 + i) / 12);
-      const nombreMes = this.mesesLista[mesIndex].nombre;
+      const nombreMes = this.escapeHtml(this.mesesLista[mesIndex].nombre);
       
       desgloseHTML += `
         <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 2px;">
@@ -225,7 +252,7 @@ async guardarPago() {
       `;
     }
 
-    const logoUrl = `${window.location.origin}/assets/images/TravelNet.png`;
+    const logoUrl = this.escapeHtml(`${window.location.origin}/assets/images/TravelNet.png`);
 
     const ticketHTML = `
       <!DOCTYPE html>
@@ -259,10 +286,10 @@ async guardarPago() {
           
           <div class="text-left">
             <p><strong>Cliente:</strong> ${nombreCliente}</p>
-            <p><strong>Instalación:</strong> #${pago.InstalacionId}</p>
+            <p><strong>Instalación:</strong> #${instalacionIdSafe}</p>
             <p><strong>Plan:</strong> ${plan}</p>
             <p><strong>Localidad:</strong> ${localidad}</p>
-            <p><strong>Método:</strong> ${pago.Tipo_Pago}</p>
+            <p><strong>Método:</strong> ${tipoPagoSafe}</p>
           </div>
           
           <div class="divider"></div>

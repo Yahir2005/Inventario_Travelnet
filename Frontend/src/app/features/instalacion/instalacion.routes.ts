@@ -1,5 +1,13 @@
 import { Routes } from '@angular/router';
 
+/**
+ * RUTAS DEL MÓDULO DE INSTALACIONES (instalacion.routes.ts)
+ * ---------------------------------------------------------
+ * Define las direcciones dentro de `/instalacion`:
+ *  - `/instalacion`: Lista general de instalaciones activas.
+ *  - `/instalacion/insertar-instalacion`: Formulario para dar de alta una instalación nueva.
+ *  - `/instalacion/actualizar-instalacion/:id`: Formulario para editar una instalación existente.
+ */
 export const INSTALACION_ROUTES: Routes = [
     {
         path: '',

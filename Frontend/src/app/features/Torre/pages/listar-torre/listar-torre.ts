@@ -4,6 +4,13 @@ import { Router } from '@angular/router';
 import { TorreService } from '../../service/torre';
 import { Torre } from '../../model/torre.model';
 
+/**
+ * ============================================================================
+ * COMPONENTE: LISTAR TORRES (listar-torre.ts)
+ * ============================================================================
+ * Muestra el catálogo de torres de telecomunicaciones para enlaces por antena
+ * y permite a los Administradores agregar o editar registros.
+ */
 @Component({
   selector: 'app-listar-torre',
   standalone: true,
@@ -30,6 +37,7 @@ export class ListarTorre implements OnInit {
     this.cargarTorres();
   }
 
+  /** Consulta las torres al backend y actualiza el signal `torres` */
   cargarTorres(){
     this.loading.set(true);
     this.torreService.getTorres().subscribe({
@@ -45,11 +53,13 @@ export class ListarTorre implements OnInit {
     });
   }
 
+  /** Redirige al formulario de creación de torre (solo Administradores) */
   agregarTorre(){
     if (!this.esAdmin) return;
     this.router.navigate(['/Torre/insertar-torre']);
   }
 
+  /** Redirige al formulario de edición de la torre seleccionada */
   editarTorre(torre: Torre){
     if (!this.esAdmin) return;
     this.router.navigate(['/Torre/actualizar-torre', torre.TorreId]);

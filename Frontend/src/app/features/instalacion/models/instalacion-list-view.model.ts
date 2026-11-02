@@ -2,6 +2,9 @@ export interface InstalacionDetallada {
     InstalacionId: number;
     UsuarioId: number;
     ClienteId: number | null;
+    TarifaId?: number | null;
+    PlanId?: number | null;
+    InfraestructuraId?: number | null;
     OLTId: number | null;
     TorreId: number | null;
     LocalidadId: number | null;
@@ -9,9 +12,15 @@ export interface InstalacionDetallada {
     Nombre_Wifi: string;
     Password_Wifi: string;
     Instalacion_Activa: boolean;
+    Uuid_local?: string | null;
+    Sincronizado?: number | boolean;
     Tipo: 'Fibra' | 'Antena' | null;
-    Plan?: '20 MEGAS' | '40 MEGAS' | '60 MEGAS' | '80 MEGAS' | '100 MEGAS' | null;
+    Tipo_Infraestructura?: 'OLT' | 'Torre' | null;
+    Nombre_Infraestructura?: string | null;
+    Plan?: string | null;
+    Velocidad_Mbps?: number | null;
     Modalidad_Servicio?: 'Mensual' | 'Bimestral' | 'Trimestral' | 'Cuatrimestral' | 'Quinquemestral' | 'Semestral' | 'Heptamestral' | 'Octomestral' | 'Nonamestral' | 'Decamestral' | 'Oncemestral' | 'Anual' | null;
+    Precio_Tarifa?: number | null;
     Fecha_Instalacion: string;
     Nombre_Cliente?: string | null;
     Telefono?: string | null;

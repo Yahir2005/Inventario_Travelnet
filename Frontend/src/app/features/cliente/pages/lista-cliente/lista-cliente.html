@@ -1,6 +1,16 @@
+<!--
+  VISTA: LISTA DE CLIENTES (lista-cliente.html)
+  =============================================
+  Contiene:
+   1. Barra superior de ordenamiento, filtros (Antena/Fibra, Modalidad, Adeudo) y buscador.
+   2. Tabla principal de clientes (`@for (cliente of clientesVista(); ...)`).
+   3. Ventana emergente (Modal) para ver todas las instalaciones y claves Wi-Fi de un cliente.
+-->
 <div class="container-fluid mt-3">
+    <!-- 1. BARRA DE FILTROS Y BÚSQUEDA -->
     <div class="row mb-4 align-items-end gap-3">
 
+        <!-- Selector de columna para ordenar la tabla -->
         <div class="col-auto">
             <select class="form-select" [(ngModel)]="ordenCampo" aria-label="Ordenar por">
                 <option value="">Ordenar Por</option>
@@ -10,6 +20,7 @@
                 <option value="pago">Pago</option>
             </select>
         </div>
+        <!-- Botón para invertir el orden (Ascendente ↑ / Descendente ↓) -->
         <div class="col-auto">
             <button type="button" class="btn btn-dark" (click)="alternarOrden()"
                     [disabled]="!ordenCampo"
@@ -18,6 +29,7 @@
             </button>
         </div>
 
+        <!-- Filtro por Tipo de Conexión (Antena o Fibra) -->
         <div class="col-auto">
             <select class="form-select" [(ngModel)]="filtroTipo" aria-label="Filtrar por tipo">
                 <option value="">Tipo: Todos</option>
@@ -25,6 +37,7 @@
                 <option value="Fibra">Fibra</option>
             </select>
         </div>
+        <!-- Filtro por Modalidad de Servicio -->
         <div class="col-auto">
             <select class="form-select" [(ngModel)]="filtroModalidad" aria-label="Filtrar por modalidad">
                 <option value="">Modalidad: Todas</option>
@@ -33,11 +46,13 @@
                 }
             </select>
         </div>
+        <!-- Interruptor (Switch) para mostrar únicamente clientes atrasados en su pago -->
         <div class="col-auto form-check form-switch mb-1">
             <input class="form-check-input" type="checkbox" role="switch" id="filtroAdeudo" [(ngModel)]="soloConAdeudo">
             <label class="form-check-label" for="filtroAdeudo">Solo con adeudo</label>
         </div>
 
+        <!-- Cuadro de búsqueda en tiempo real por nombre o teléfono -->
         <div class="col-md-3">
             <form class="d-flex" role="search" (submit)="$event.preventDefault()">
                 <input class="form-control me-2" type="search" placeholder="Buscar por nombre o teléfono"
@@ -46,10 +61,12 @@
             </form>
         </div>
 
+        <!-- Botón para limpiar todos los filtros activos -->
         <div class="col-auto">
             <button type="button" class="btn btn-outline-secondary text-nowrap" (click)="limpiarFiltros()">Limpiar</button>
         </div>
 
+    <!-- 2. TABLA PRINCIPAL DE CLIENTES -->
     <div class="table-responsive mt-3">
         <table class="table table-striped table-hover">
             <thead class="table-dark">
@@ -64,6 +81,7 @@
                 </tr>
             </thead>
                 <tbody>
+                   <!-- Recorre cada cliente filtrado y ordenado devuelto por clientesVista() -->
                    @for (cliente of clientesVista(); track cliente.ClienteId) {
                     <tr>
                         <td>{{ cliente.ClienteId }}</td>
@@ -91,15 +109,18 @@
                         <td>{{ cliente.Modalidad_Servicio || 'N/A' }}</td>
                         <td>{{ cliente.Tipo || 'Pendiente' }}</td>
                         <td class="text-center">
+                            <!-- Abre el modal con el historial de instalaciones de este cliente -->
                             <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalDetallesCliente" (click)="verDetalles(cliente)">
                                 Detalles
                             </button>
+                            <!-- Solo el Administrador puede ir a la pantalla de edición de datos del cliente -->
                             <button class="btn btn-warning btn-sm" (click)="editarCliente(cliente)" *ngIf="esAdmin">
                                 Editar Cliente
                             </button>
                         </td>
                     </tr>
                    } @empty {
+                    <!-- Si la lista está vacía, muestra el spinner de carga o un aviso informativo -->
                     <tr>
                         <td colspan="7" class="text-center py-4">
                             @if (loading()) {
@@ -121,6 +142,7 @@
     </div>
 </div>
 
+<!-- 3. MODAL DE DETALLES DE CLIENTE E INSTALACIONES -->
 <!-- Modal Detalles de Cliente e Instalaciones -->
 <div class="modal fade" id="modalDetallesCliente" tabindex="-1" aria-labelledby="modalDetallesClienteLabel" aria-hidden="true" data-bs-theme="dark">
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">

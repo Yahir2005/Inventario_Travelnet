@@ -4,6 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CorteCajaService } from '../../service/corte-caja';
 
+/**
+ * ============================================================================
+ * COMPONENTE: LISTA DE CORTES DE CAJA (lista-corte-caja.ts)
+ * ============================================================================
+ * Muestra el historial de cierres de caja realizados por el personal.
+ * Permite agrupar los cortes por día, semana, mes o año, y abrir un modal
+ * para inspeccionar el desglose exacto de los pagos incluidos en cada corte.
+ */
 @Component({
   selector: 'app-lista-corte-caja',
   standalone: true,
@@ -20,6 +28,7 @@ export class ListaCorteCajaComponent {
 
   esAdmin = false;
 
+  // Selector de agrupación: '0' = Sin agrupar, '1' = Día, '2' = Semana, '3' = Mes, '4' = Año
   filtrosSelecionado: string = '0';
   cortesAgrupados: any[] = [];
 
@@ -30,6 +39,7 @@ export class ListaCorteCajaComponent {
   cargandoDesglose = signal(false);
   desglosePagos = signal<any[]>([]);
 
+  /** Verifica si el usuario es Administrador y carga la lista de cortes desde el backend */
   ngOnInit(): void {
     const usuarioString = localStorage.getItem('usuario');
     if (usuarioString) {
@@ -51,11 +61,13 @@ export class ListaCorteCajaComponent {
     });
   }
 
+  /** Navega a la pantalla de edición del corte (exclusivo para Administradores) */
   editarCorte(corte: any){
     if (!this.esAdmin) return;
     this.router.navigate(['/Corte-Caja/actualizar-corte-caja', corte.CorteId]);
   }
 
+  /** Convierte de forma segura la cadena JSON `Pagos_Incluidos` en un arreglo de objetos */
   parsearPagos(valor: any): any[] {
     if (!valor) return [];
     if (Array.isArray(valor)) return valor;
@@ -67,6 +79,7 @@ export class ListaCorteCajaComponent {
     }
   }
 
+  /** Abre el modal de detalles y consulta al servidor la información completa de cada pago incluido */
   abrirModalDetalles(corte: any){
     this.corteSeleccionado = corte;
     this.pagosDelCorteSeleccionado = this.parsearPagos(corte.Pagos_Incluidos);
@@ -98,6 +111,7 @@ export class ListaCorteCajaComponent {
     this.desglosePagos.set([]);
   }
 
+  /** Permite cerrar el modal de detalles presionando la tecla Escape */
   @HostListener('document:keydown.escape')
   onEscape(){
     if (this.mostrarModalDetalles) {
@@ -109,6 +123,7 @@ export class ListaCorteCajaComponent {
     return this.parsearPagos(jsonString).length;
   }
 
+  /** Agrupa los cortes de caja por Día, Semana, Mes o Año y suma los montos totales de cada grupo */
   agruparCortes(){
     if(this.filtrosSelecionado === '0'){
       this.cortesAgrupados = [];

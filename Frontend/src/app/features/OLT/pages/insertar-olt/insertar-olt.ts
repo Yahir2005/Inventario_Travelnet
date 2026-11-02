@@ -4,6 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { OltService } from '../../service/olt';
 
+/**
+ * ============================================================================
+ * COMPONENTE: INSERTAR OLT (insertar-olt.ts)
+ * ============================================================================
+ * Formulario exclusivo para Administradores que permite registrar una nueva
+ * terminal de fibra óptica (OLT) indicando su nombre y ubicación.
+ */
 @Component({
   selector: 'app-insertar-olt',
   standalone: true,
@@ -31,6 +38,7 @@ export class InsertarOLT {
     }
   }
 
+  /** Valida el nombre de la OLT y envía el registro al servidor */
   guardar(){
     if (!this.form.Nombre.trim()) {
       alert('El nombre de la OLT es obligatorio.');

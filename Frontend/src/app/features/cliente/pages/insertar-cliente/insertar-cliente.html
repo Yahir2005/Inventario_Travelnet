@@ -1,34 +1,58 @@
+<!--
+  VISTA: AGREGAR NUEVO CLIENTE (insertar-cliente.html)
+  ====================================================
+  Formulario vinculado mediante `[(ngModel)]` al objeto `cliente` en `insertar-cliente.ts`.
+  Al enviar el formulario (`(ngSubmit)="guardarCliente()"`), se valida y guarda el registro.
+-->
 <div class="container-fluid mt-3">
   <h2>Agregar Nuevo Cliente</h2>
 
   <form (ngSubmit)="guardarCliente()">
 
+    <!-- Campo: Nombre completo del cliente -->
     <div class="mb-4">
       <label for="nombre_cliente" class="form-label">Nombre Cliente</label>
 
       <input type="text" class="form-control" id="nombre_cliente" name="Nombre" [(ngModel)]="cliente.Nombre_Cliente" placeholder="Ejemplo: Juarez Perez Antonio" required>
     </div>
 
+    <!-- Campo: Teléfono de contacto -->
     <div class="mb-4">
       <label for="Telefono" class="form-label">Teléfono</label>
 
       <input type="tel" class="form-control" id="Telefono" name="Telefono" [(ngModel)]="cliente.Telefono" placeholder="Ejemplo: 2341049080" required>
     </div>
 
-    <div class="mb-4">
-      <label for="Direccion" class="form-label">Dirección</label>
-
-      <textarea class="form-control" id="Direccion" name="Direccion" rows="3" [(ngModel)]="cliente.Direccion"  required></textarea>
+    <!-- Campos de Domicilio: Calle, Número y Colonia -->
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <label for="Calle" class="form-label">Calle</label>
+        <input type="text" class="form-control" id="Calle" name="Calle" [(ngModel)]="cliente.Calle" placeholder="Ej. Av. Reforma" required>
+      </div>
+      <div class="col-md-2">
+        <label for="Numero" class="form-label">Número</label>
+        <input type="text" class="form-control" id="Numero" name="Numero" [(ngModel)]="cliente.Numero" placeholder="Ej. 45">
+      </div>
+      <div class="col-md-4">
+        <label for="Colonia" class="form-label">Colonia / Barrio</label>
+        <input type="text" class="form-control" id="Colonia" name="Colonia" [(ngModel)]="cliente.Colonia" placeholder="Ej. Centro">
+      </div>
     </div>
 
-    <div class="mb-4">
-      <label for="TipoCliente" class="form-label">Tipo cliente</label>
-
-      <select class="form-select" id="TipoCliente" name="Tipo" [(ngModel)]="cliente.TipoCliente" required>
-        <option value="" disabled selected>Selecciona un tipo...</option>
-        <option value="Fisica">Física</option>
-        <option value="Moral">Moral</option>
-      </select>
+    <!-- Campos: Código Postal y Tipo de Persona (Física o Moral) -->
+    <div class="row mb-4">
+      <div class="col-md-4">
+        <label for="Codigo_Postal" class="form-label">Código Postal</label>
+        <input type="text" class="form-control" id="Codigo_Postal" name="Codigo_Postal" [(ngModel)]="cliente.Codigo_Postal" placeholder="Ej. 75680">
+      </div>
+      <div class="col-md-8">
+        <label for="TipoCliente" class="form-label">Tipo cliente</label>
+        <select class="form-select" id="TipoCliente" name="Tipo" [(ngModel)]="cliente.TipoCliente" required>
+          <option value="" disabled>Selecciona un tipo...</option>
+          <option value="Fisica">Física</option>
+          <option value="Moral">Moral</option>
+        </select>
+      </div>
     </div>
 
     <!-- Botones de acción -->

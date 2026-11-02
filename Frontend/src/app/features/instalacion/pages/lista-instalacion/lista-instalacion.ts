@@ -4,7 +4,15 @@ import { InstalacionService } from '../../services/instalacion';
 import { InstalacionDetallada } from '../../models/instalacion-list-view.model';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
+import { environment } from '../../../../../environments/environment';
 
+/**
+ * COMPONENTE: LISTA DE INSTALACIONES (ListaInstalacion)
+ * -----------------------------------------------------
+ * Muestra todas las instalaciones activas con su cliente, localidad, tipo (Fibra/Antena),
+ * plan contratado, enlace a Google Maps y vista previa de la última foto de evidencia.
+ * Además permite capturar/actualizar las coordenadas GPS desde la misma tabla.
+ */
 @Component({
   selector: 'app-lista-instalacion',
   standalone: true,
@@ -16,6 +24,7 @@ export class ListaInstalacion implements OnInit {
   private instalacionService = inject(InstalacionService);
   private router = inject(Router);
 
+  // Señales reactivas para la lista de instalaciones y el estado de carga
   instalaciones = signal<InstalacionDetallada[]>([]);
   instalacionesFiltradas: InstalacionDetallada[] = [];
   loading = signal(true);
@@ -25,15 +34,21 @@ export class ListaInstalacion implements OnInit {
   ubicacionObtenida: boolean = false;
   esAdmin = false;
 
+  /**
+   * Al abrir la pantalla verifica si el usuario es Administrador y descarga la lista de instalaciones.
+   */
   ngOnInit(): void {
     const usuarioString = localStorage.getItem('usuario');
     if (usuarioString) {
       const usuario = JSON.parse(usuarioString);
-      this.esAdmin = usuario.Ocupacion === 'Administrador';
+      this.esAdmin = (usuario.Rol || usuario.Ocupacion) === 'Administrador';
     }
     this.cargarInstalaciones();
   }
 
+  /**
+   * Consulta las instalaciones detalladas desde el servicio (o desde IndexedDB si no hay red).
+   */
   cargarInstalaciones() {
     this.loading.set(true);
     this.instalacionService.getInstalacionesDetalladas().subscribe({
@@ -137,7 +152,7 @@ export class ListaInstalacion implements OnInit {
   obtenerUrlImagen(ruta?: string | null): string | null {
     if (!ruta) return null;
     if (ruta.startsWith('http')) return ruta;
-    return `http://localhost:3000${ruta}`;
+    return `${environment.serverUrl}${ruta}`;
   }
 
   registrarPago(instalacion: InstalacionDetallada) {

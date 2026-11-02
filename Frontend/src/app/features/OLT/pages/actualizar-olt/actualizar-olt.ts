@@ -4,6 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OltService } from '../../service/olt';
 
+/**
+ * ============================================================================
+ * COMPONENTE: ACTUALIZAR OLT (actualizar-olt.ts)
+ * ============================================================================
+ * Permite a un Administrador modificar el nombre o la ubicación de una OLT
+ * existente a partir del ID recibido en la ruta.
+ */
 @Component({
   selector: 'app-actualizar-olt',
   standalone: true,
@@ -28,6 +35,7 @@ export class ActualizarOLT implements OnInit {
     Ubicacion: ''
   };
 
+  /** Verifica permisos de Administrador y carga los datos actuales de la OLT */
   ngOnInit(): void {
     const usuarioString = localStorage.getItem('usuario');
     if (usuarioString) {
@@ -62,6 +70,7 @@ export class ActualizarOLT implements OnInit {
     });
   }
 
+  /** Valida el formulario y envía la actualización al servidor */
   guardar(){
     if (!this.form.Nombre.trim()) {
       alert('El nombre de la OLT es obligatorio.');

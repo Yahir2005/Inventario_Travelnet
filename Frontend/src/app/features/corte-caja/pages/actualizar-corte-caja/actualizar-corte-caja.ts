@@ -14,6 +14,14 @@ interface PagoCorte {
   Monto: number;
 }
 
+/**
+ * ============================================================================
+ * COMPONENTE: ACTUALIZAR CORTE DE CAJA (actualizar-corte-caja.ts)
+ * ============================================================================
+ * Permite a un Administrador modificar un corte de caja existente:
+ * cambiar el empleado responsable, el autorizador, la fecha, o agregar/quitar
+ * pagos del corte recalculando automáticamente el monto total.
+ */
 @Component({
   selector: 'app-actualizar-corte-caja',
   standalone: true,
@@ -44,6 +52,7 @@ export class ActualizarCorteCaja implements OnInit {
   pagosEnCorte: PagoCorte[] = [];
   pagosDisponibles: PagoCorte[] = [];
 
+  /** Verifica permisos de Administrador, obtiene el ID del corte de la URL y carga los datos */
   ngOnInit(): void {
     const usuarioString = localStorage.getItem('usuario');
     if (usuarioString) {
@@ -77,6 +86,7 @@ export class ActualizarCorteCaja implements OnInit {
     }
   }
 
+  /** Carga en paralelo (`forkJoin`) el corte actual, todos los cortes, los pagos y los usuarios */
   cargarDatos(): void {
     forkJoin({
       corte: this.corteService.getCortePorId(this.corteId),
@@ -93,6 +103,7 @@ export class ActualizarCorteCaja implements OnInit {
 
         this.pagosEnCorte = this.parsearPagos(corte.Pagos_Incluidos);
 
+        // Identifica qué pagos ya están metidos en OTROS cortes para no duplicarlos
         const usadosEnOtrosCortes = new Set<number>();
         for (const otro of cortes) {
           if (otro.CorteId === this.corteId) continue;
@@ -123,6 +134,7 @@ export class ActualizarCorteCaja implements OnInit {
     });
   }
 
+  /** Convierte una fecha ISO al formato requerido por un input `<input type="datetime-local">` */
   convertirAFechaLocal(valor: string | undefined | null): string {
     if (!valor) return '';
     const fecha = new Date(valor);
@@ -131,21 +143,25 @@ export class ActualizarCorteCaja implements OnInit {
     return `${fecha.getFullYear()}-${pad(fecha.getMonth() + 1)}-${pad(fecha.getDate())}T${pad(fecha.getHours())}:${pad(fecha.getMinutes())}`;
   }
 
+  /** Calcula la suma total en dinero de los pagos actualmente incluidos en el corte */
   totalCorte(): number {
     return this.pagosEnCorte.reduce((suma, pago) => suma + (Number(pago.Monto) || 0), 0);
   }
 
+  /** Pasa un pago de la lista de disponibles a la lista de incluidos en el corte */
   agregarPago(pago: PagoCorte): void {
     this.pagosDisponibles = this.pagosDisponibles.filter(p => p.PagoId !== pago.PagoId);
     this.pagosEnCorte = [...this.pagosEnCorte, pago];
   }
 
+  /** Quita un pago del corte y lo devuelve a la lista de pagos disponibles */
   quitarPago(pago: PagoCorte): void {
     this.pagosEnCorte = this.pagosEnCorte.filter(p => p.PagoId !== pago.PagoId);
     this.pagosDisponibles = [...this.pagosDisponibles, pago]
       .sort((a, b) => b.PagoId - a.PagoId);
   }
 
+  /** Guarda los cambios del corte de caja en el backend */
   guardar(): void {
     if (!this.form.UsuarioId) {
       alert('Selecciona el empleado dueño del corte.');

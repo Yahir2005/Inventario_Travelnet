@@ -5,6 +5,13 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Usuario } from '../../models/usuario.model';
 
+/**
+ * ============================================================================
+ * COMPONENTE: INSERTAR USUARIO (insertar-usuario.ts)
+ * ============================================================================
+ * Formulario para dar de alta a un nuevo empleado en el sistema (nombre,
+ * usuario de acceso, contraseña, correo, teléfono y rol/ocupación).
+ */
 @Component({
   selector: 'app-insertar-usuario',
   standalone: true,
@@ -25,6 +32,7 @@ export class InsertarUsuario {
     Ocupacion: ''
   };
 
+  /** Envía los datos del nuevo empleado al backend (donde su contraseña se encripta con bcrypt) */
   guardarUsuario(){
     this.usuarioService.postCrearUsuario(this.usuario).subscribe({
       next: (respuesta:any) =>{

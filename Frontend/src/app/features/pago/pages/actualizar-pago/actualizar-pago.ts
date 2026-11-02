@@ -4,6 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PagoService } from '../../services/pago';
 
+/**
+ * ============================================================================
+ * COMPONENTE: ACTUALIZAR PAGO (actualizar-pago.ts)
+ * ============================================================================
+ * Permite modificar los datos de un pago ya registrado (método de pago,
+ * número de cuenta, descuento, monto o estado) a partir de su `PagoId`.
+ */
 @Component({
   selector: 'app-actualizar-pago',
   standalone: true,
@@ -34,6 +41,7 @@ export class ActualizarPago implements OnInit {
     Estado_Pago: 'Completado' as string
   };
 
+  /** Al iniciar, lee el ID del pago desde la URL (`/pago/actualizar-pago/:id`) */
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
@@ -46,6 +54,7 @@ export class ActualizarPago implements OnInit {
     });
   }
 
+  /** Consulta los datos actuales del pago en el servidor y rellena el formulario */
   cargarPago(id: number) {
     this.pagoService.getPago(id).subscribe({
       next: (data) => {
@@ -69,6 +78,7 @@ export class ActualizarPago implements OnInit {
     });
   }
 
+  /** Valida y envía los cambios del pago al backend mediante `PUT /api/pago/:id` */
   guardarCambios() {
     if (!this.pagoId) return;
 

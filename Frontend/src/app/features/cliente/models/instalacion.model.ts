@@ -7,6 +7,9 @@ export interface Instalacion {
   InstalacionId?: number;
   UsuarioId: number;
   ClienteId?: number;
+  TarifaId?: number;
+  PlanId?: number;
+  InfraestructuraId?: number;
   OLTId?: number;
   TorreId?: number;
   Ubicacion_Maps: string;
@@ -15,12 +18,12 @@ export interface Instalacion {
   Active?: boolean | number;
   Tipo: 'Fibra' | 'Antena';
   LocalidadId?: number;
-  Plan?: '20 MEGAS' | '40 MEGAS' | '60 MEGAS' | '80 MEGAS' | '100 MEGAS' | null;
+  Plan?: string | null;
   Modalidad_Servicio?: 'Mensual' | 'Bimestral' | 'Trimestral' | 'Cuatrimestral' | 'Quinquemestral' | 'Semestral' | 'Heptamestral' | 'Octomestral' | 'Nonamestral' | 'Decamestral' | 'Oncemestral' | 'Anual' | null;
   Localidad?: string;
   Uuid_local?: string | null;
   Sincronizado?: boolean | number;
-  Fecha_Instalacion?: string; 
+  Fecha_Instalacion?: string;
   
   Usuario?: Usuario;
   Cliente?: Cliente;

@@ -5,6 +5,14 @@ import { Router } from '@angular/router';
 import { MensualidadService } from '../../services/mensualidad';
 import { Mensualidad } from '../../model/mensualidad.model';
 
+/**
+ * ============================================================================
+ * COMPONENTE: HISTORIAL DE MENSUALIDADES (lista-mensualidad.ts)
+ * ============================================================================
+ * Componente hijo que se incrusta dentro del modal de la pantalla de Pagos.
+ * Recibe un `@Input() instalacionId`, muestra todos los meses pagados de esa
+ * instalación y permite reimprimir recibos, editar o cancelar una mensualidad.
+ */
 @Component({
   selector: 'app-lista-mensualidad',
   standalone: true,
@@ -16,7 +24,9 @@ export class ListaMensualidad implements OnInit, OnChanges {
   private mensualidadService = inject(MensualidadService);
   private router = inject(Router);
 
+  // @Input recibe el ID de la instalación desde el componente padre (ListaPago)
   @Input() instalacionId?: number;
+  // @Output avisa al componente padre cuando se cancela una mensualidad o se pide imprimir un ticket
   @Output() mensualidadActualizada = new EventEmitter<void>();
   @Output() imprimirTicket = new EventEmitter<Mensualidad>();
 
@@ -24,6 +34,7 @@ export class ListaMensualidad implements OnInit, OnChanges {
   loading = signal(false);
   guardando = signal(false);
 
+  /** Emite el evento al componente padre para que imprima el ticket de esta mensualidad */
   imprimir(m: Mensualidad) {
     this.imprimirTicket.emit(m);
   }
@@ -46,6 +57,7 @@ export class ListaMensualidad implements OnInit, OnChanges {
     }
   }
 
+  /** Se ejecuta automáticamente cada vez que el usuario selecciona otra instalación en la tabla de Pagos */
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['instalacionId'] && this.instalacionId) {
       this.cargarMensualidades();
@@ -60,6 +72,7 @@ export class ListaMensualidad implements OnInit, OnChanges {
     }
   }
 
+  /** Consulta las mensualidades de la instalación seleccionada */
   cargarMensualidades(): void {
     if (!this.instalacionId) return;
     this.loading.set(true);
@@ -95,6 +108,7 @@ export class ListaMensualidad implements OnInit, OnChanges {
     this.motivoCancelar = '';
   }
 
+  /** Envía la solicitud de cancelación de mensualidad junto con el motivo obligatorio */
   confirmarCancelacion(): void {
     if (!this.mensualidadACancelar) return;
 
@@ -104,9 +118,15 @@ export class ListaMensualidad implements OnInit, OnChanges {
     }
 
     this.guardando.set(true);
+    const usuarioString = localStorage.getItem('usuario');
+    const usuarioActual = usuarioString ? JSON.parse(usuarioString) : null;
+
     this.mensualidadService.cancelarMensualidad({
       MensualidadId: this.mensualidadACancelar.MensualidadId,
-      Motivo: this.motivoCancelar.trim()
+      PagoId: this.mensualidadACancelar.PagoId ?? null,
+      UsuarioId: usuarioActual?.UsuarioId ?? null,
+      Motivo: this.motivoCancelar.trim(),
+      Observaciones: this.motivoCancelar.trim()
     }).subscribe({
       next: () => {
         this.guardando.set(false);

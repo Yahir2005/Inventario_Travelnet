@@ -4,6 +4,13 @@ import { Router } from '@angular/router';
 import { OltService } from '../../service/olt';
 import { Olt } from '../../model/olt.model';
 
+/**
+ * ============================================================================
+ * COMPONENTE: LISTAR OLTs (listar-olt.ts)
+ * ============================================================================
+ * Muestra la tabla con todas las terminales de fibra óptica (OLT) registradas
+ * y habilita los botones de creación/edición si el usuario es Administrador.
+ */
 @Component({
   selector: 'app-listar-olt',
   standalone: true,
@@ -30,6 +37,7 @@ export class ListarOLT implements OnInit {
     this.cargarOlts();
   }
 
+  /** Consulta las OLTs al servidor y actualiza el signal `olts` */
   cargarOlts(){
     this.loading.set(true);
     this.oltService.getOlts().subscribe({
@@ -45,11 +53,13 @@ export class ListarOLT implements OnInit {
     });
   }
 
+  /** Navega al formulario para dar de alta una nueva OLT */
   agregarOlt(){
     if (!this.esAdmin) return;
     this.router.navigate(['/OLT/insertar-olt']);
   }
 
+  /** Navega al formulario para editar la OLT seleccionada */
   editarOlt(olt: Olt){
     if (!this.esAdmin) return;
     this.router.navigate(['/OLT/actualizar-olt', olt.OLTId]);

@@ -4,6 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TorreService } from '../../service/torre';
 
+/**
+ * ============================================================================
+ * COMPONENTE: INSERTAR TORRE (insertar-torre.ts)
+ * ============================================================================
+ * Permite a un Administrador dar de alta una nueva torre de transmisión
+ * especificando su nombre identificador y ubicación física.
+ */
 @Component({
   selector: 'app-insertar-torre',
   standalone: true,
@@ -31,6 +38,7 @@ export class InsertarTorre {
     }
   }
 
+  /** Valida que el nombre sea válido y guarda la nueva torre en el backend */
   guardar(){
     if (!this.form.Nombre.trim()) {
       alert('El nombre de la torre es obligatorio.');

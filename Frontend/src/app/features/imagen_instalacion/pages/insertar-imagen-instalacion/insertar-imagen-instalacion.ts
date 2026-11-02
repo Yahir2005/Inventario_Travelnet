@@ -3,7 +3,16 @@ import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ImagenInstalacionService } from '../../services/imagen-instalacion';
+import { SyncService } from '../../../pago/services/sync.service';
 
+/**
+ * ============================================================================
+ * COMPONENTE: CAPTURAR EVIDENCIA DE INSTALACIÓN (insertar-imagen-instalacion.ts)
+ * ============================================================================
+ * Permite al técnico abrir la cámara de su celular/computadora o subir una foto,
+ * estampar automáticamente una marca de agua con logos, fecha, nombre del técnico
+ * y coordenadas GPS en un `<canvas>`, y guardarla tanto con internet como en Modo Offline.
+ */
 @Component({
   selector: 'app-insertar-imagen-instalacion',
   imports: [CommonModule,FormsModule,RouterModule],
@@ -12,32 +21,37 @@ import { ImagenInstalacionService } from '../../services/imagen-instalacion';
 })
 export class InsertarImagenInstalacion implements OnInit{
   private imagenInstalacionService = inject(ImagenInstalacionService);
+  private syncService = inject(SyncService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
-  //Variables para la cámara
+  // Variables para la cámara: @ViewChild conecta estas variables con las etiquetas <video> y <canvas> del HTML
   @ViewChild('videoElement') videoElement!: ElementRef<HTMLVideoElement>;
   @ViewChild('canvasElement') canvasElement!: ElementRef<HTMLCanvasElement>;
   mediaStream: MediaStream | null = null;
   fotoCapturada: string | null = null;
 
-
+  // Datos que se enviarán al backend o a la cola offline
   imagen_instalacion = {
     InstalacionId: null as number | null,
-    Ruta_Imagen: ''
+    Ruta_Imagen: '',
+    Uuid_local: null as string | null
   };
 
+  // Datos que se imprimen en la marca de agua de la foto
   nombreIngeniero: string = 'Desconocido';
   latitud: number = 0;
   longitud: number = 0;
   direccionFisica: string = 'Obteniendo ubicación...';
   coordenadasObtenidas: boolean = false;
 
+  // Imágenes de los logotipos para dibujarlos sobre la fotografía
   logoFiberhome = new Image();
   logoTravelNet = new Image();
   logofiberhomeCargado: boolean = false;
   logoTravelNetCargado: boolean = false;
 
+  /** Al abrir la pantalla, lee el ID de la instalación de la URL, identifica al técnico y precarga los logos */
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       if (params['instalacionId']) {
@@ -48,10 +62,12 @@ export class InsertarImagenInstalacion implements OnInit{
     this.cargarLogos();
   }
 
+  /** Al salir de la pantalla, apaga la cámara para no gastar batería ni dejar el foco encendido */
   ngOnDestroy(): void {
     this.detenerCamara();
   }
 
+  /** Precarga en memoria los logotipos de Fiberhome y TravelNet desde la carpeta assets */
   cargarLogos() {
     this.logoFiberhome.src = 'assets/images/FIBERHOME-LOGO.png';
     this.logoFiberhome.onload = () => this.logofiberhomeCargado = true;
@@ -62,6 +78,7 @@ export class InsertarImagenInstalacion implements OnInit{
     this.logoTravelNet.onerror = () => this.logoTravelNetCargado = false;
   }
 
+  /** Obtiene el nombre del técnico que inició sesión para estamparlo en la evidencia */
   obtenerUsuarioActual(){
     const usuarioString = localStorage.getItem('usuario');
     if(usuarioString){
@@ -70,6 +87,7 @@ export class InsertarImagenInstalacion implements OnInit{
     }
   }
 
+  /** Solicita permiso al navegador para abrir la cámara trasera ('environment') en alta definición */
   async iniciarCamara() {
     try {
       this.mediaStream = await navigator.mediaDevices.getUserMedia({ 
@@ -90,12 +108,18 @@ export class InsertarImagenInstalacion implements OnInit{
     }
   }
 
-obtenerCoordenadasYDireccion() {
+  /** Obtiene las coordenadas GPS del dispositivo y, si hay internet, consulta el nombre de la calle en OpenStreetMap */
+  obtenerCoordenadasYDireccion() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(async (position) => {
         this.latitud = position.coords.latitude;
         this.longitud = position.coords.longitude;
         this.coordenadasObtenidas = true;
+
+        if (!this.syncService.estaEnLinea()) {
+          this.direccionFisica = `GPS: ${this.latitud.toFixed(5)}, ${this.longitud.toFixed(5)} (Modo Offline)`;
+          return;
+        }
 
         // Usamos OpenStreetMap (gratis) para convertir las coordenadas en dirección
         try {
@@ -104,12 +128,13 @@ obtenerCoordenadasYDireccion() {
           const data = await response.json();
           this.direccionFisica = data.display_name || 'Dirección no encontrada';
         } catch (error) {
-          this.direccionFisica = 'Error al obtener la calle';
+          this.direccionFisica = `GPS: ${this.latitud.toFixed(5)}, ${this.longitud.toFixed(5)}`;
         }
       });
     }
   }
 
+  /** Congela el cuadro actual del video en un lienzo (<canvas>) y dibuja encima la ficha técnica de ingeniería */
   capturarFoto() {
     const video = this.videoElement.nativeElement;
     const canvas = this.canvasElement.nativeElement;
@@ -196,6 +221,7 @@ obtenerCoordenadasYDireccion() {
     ctx.fillText(line, x, y);
   }
 
+  /** Detiene todas las pistas de video activas de la cámara */
   detenerCamara() {
     if (this.mediaStream) {
       this.mediaStream.getTracks().forEach(track => track.stop());
@@ -203,24 +229,51 @@ obtenerCoordenadasYDireccion() {
     }
   }
 
-  saveImagen_Instalacion() {
+  /** Guarda la fotografía en el servidor o la encola en IndexedDB si no hay internet o la instalación aún es temporal (< 0) */
+  async saveImagen_Instalacion() {
     if (!this.imagen_instalacion.Ruta_Imagen) {
       alert('Por favor, captura una foto antes de guardar.');
       return;
     }
 
+    if (!this.imagen_instalacion.Uuid_local && typeof crypto !== 'undefined' && crypto.randomUUID) {
+      this.imagen_instalacion.Uuid_local = crypto.randomUUID();
+    }
+
+    if (!this.syncService.estaEnLinea() || Number(this.imagen_instalacion.InstalacionId) < 0) {
+      await this.guardarImagenOffline();
+      return;
+    }
+
     this.imagenInstalacionService.postImagen_Instalacion(this.imagen_instalacion).subscribe({
-      next: (res) => {
+      next: () => {
         alert('Imagen guardada correctamente');
         this.router.navigate(['/cliente']);
       },
-      error: (err) => {
+      error: async (err) => {
         console.error(err);
-        alert('Error al guardar la imagen de instalación');
+        if (err.status === 0 || err.status >= 500) {
+          await this.guardarImagenOffline();
+        } else {
+          alert('Error al guardar la imagen de instalación');
+        }
       }
     });
   }
 
+  /** Encola la foto en la base de datos local del navegador para subirla automáticamente cuando regrese la señal */
+  private async guardarImagenOffline(): Promise<void> {
+    try {
+      await this.syncService.encolarImagenOffline(this.imagen_instalacion);
+      alert('Sin conexión: Evidencia guardada localmente. Se sincronizará cuando vuelva la red.');
+      this.router.navigate(['/cliente']);
+    } catch (error) {
+      console.error('Error guardando imagen offline:', error);
+      alert('Error al guardar la imagen localmente.');
+    }
+  }
+
+  /** Permite seleccionar una foto existente desde la galería del teléfono/PC y la comprime a máximo 1920px */
   cargarImagenManual(event: Event) {
     const element = event.target as HTMLInputElement;
     const file = element.files?.[0];

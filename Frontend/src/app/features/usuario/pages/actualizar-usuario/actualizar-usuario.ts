@@ -5,6 +5,13 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { UsuarioService } from '../../services/usuario';
 import { Usuario } from '../../models/usuario.model';
 
+/**
+ * ============================================================================
+ * COMPONENTE: ACTUALIZAR USUARIO (actualizar-usuario.ts)
+ * ============================================================================
+ * Permite modificar la información de un empleado existente (nombre, correo,
+ * teléfono, rol o restablecer su contraseña) a partir de su ID en la URL.
+ */
 @Component({
   selector: 'app-actualizar-usuario',
   standalone: true,
@@ -20,6 +27,7 @@ export class ActualizarUsuario {
   usuarioForm: Partial<Usuario> = {};
   cargando = true;
 
+  /** Lee el ID del usuario desde la URL (`/usuario/actualizar-usuario/:id`) al abrir la vista */
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
@@ -29,6 +37,7 @@ export class ActualizarUsuario {
     })
   }
 
+  /** Consulta los datos actuales del empleado y deja el campo `Password` en blanco por seguridad */
   cargarUsuario(id: number){
     this.usuarioService.getByIdUsuario(id).subscribe({
       next: (data) => {
@@ -43,6 +52,7 @@ export class ActualizarUsuario {
     })
   }
 
+  /** Envía los datos actualizados del empleado al servidor mediante `PUT /api/usuarios/:id` */
   guardarCambios(){
     if(!this.usuarioForm.UsuarioId) return;
     this.usuarioService.putUsuario(this.usuarioForm.UsuarioId,this.usuarioForm).subscribe({

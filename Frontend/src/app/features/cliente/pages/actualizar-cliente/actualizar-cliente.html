@@ -1,3 +1,9 @@
+<!--
+  VISTA: ACTUALIZAR CLIENTE (actualizar-cliente.html)
+  ===================================================
+  Muestra un indicador de carga mientras se descargan los datos del cliente (`cargando()`),
+  y después despliega el formulario de edición precargado con su información actual.
+-->
 <div class="container-fluid mt-3" style="max-width: 760px;">
   @if (cargando()) {
     <div class="text-center py-5">
@@ -9,6 +15,7 @@
 
     <form (ngSubmit)="guardarCambios()" #formCliente="ngForm">
 
+      <!-- Datos de identificación y contacto -->
       <div class="mb-4">
         <label for="nombre_cliente" class="form-label fw-bold">Nombre Cliente</label>
         <input type="text" class="form-control" id="nombre_cliente" name="Nombre"
@@ -21,21 +28,47 @@
           [(ngModel)]="cliente.Telefono" placeholder="Ejemplo: 2341049080" required>
       </div>
 
-      <div class="mb-4">
-        <label for="Direccion" class="form-label fw-bold">Dirección</label>
-        <textarea class="form-control" id="Direccion" name="Direccion" rows="3"
-          [(ngModel)]="cliente.Direccion" required></textarea>
+      <!-- Domicilio desglosado en 3NF (Calle, Número, Colonia) -->
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <label for="Calle" class="form-label fw-bold">Calle</label>
+          <input type="text" class="form-control" id="Calle" name="Calle"
+            [(ngModel)]="cliente.Calle" placeholder="Ej. Av. Reforma" required>
+        </div>
+        <div class="col-md-2">
+          <label for="Numero" class="form-label fw-bold">Número</label>
+          <input type="text" class="form-control" id="Numero" name="Numero"
+            [(ngModel)]="cliente.Numero" placeholder="Ej. 45">
+        </div>
+        <div class="col-md-4">
+          <label for="Colonia" class="form-label fw-bold">Colonia / Barrio</label>
+          <input type="text" class="form-control" id="Colonia" name="Colonia"
+            [(ngModel)]="cliente.Colonia" placeholder="Ej. Centro">
+        </div>
       </div>
 
-      <div class="mb-4">
-        <label for="TipoCliente" class="form-label fw-bold">Tipo cliente</label>
-        <select class="form-select" id="TipoCliente" name="Tipo" [(ngModel)]="cliente.TipoCliente" required>
-          <option value="" disabled>Selecciona un tipo...</option>
-          <option value="Fisica">Física</option>
-          <option value="Moral">Moral</option>
-        </select>
+      <!-- Código Postal, Tipo de Cliente y Saldo a Favor (solo lectura) -->
+      <div class="row mb-4">
+        <div class="col-md-4">
+          <label for="Codigo_Postal" class="form-label fw-bold">Código Postal</label>
+          <input type="text" class="form-control" id="Codigo_Postal" name="Codigo_Postal"
+            [(ngModel)]="cliente.Codigo_Postal" placeholder="Ej. 75680">
+        </div>
+        <div class="col-md-4">
+          <label for="TipoCliente" class="form-label fw-bold">Tipo cliente</label>
+          <select class="form-select" id="TipoCliente" name="Tipo" [(ngModel)]="cliente.TipoCliente" required>
+            <option value="" disabled>Selecciona un tipo...</option>
+            <option value="Fisica">Física</option>
+            <option value="Moral">Moral</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label fw-bold">Saldo a Favor Actual</label>
+          <input type="text" class="form-control" [value]="'$' + (cliente.Saldo_Actual | number:'1.2-2')" disabled>
+        </div>
       </div>
 
+      <!-- Botones para cancelar o guardar cambios -->
       <div class="d-flex gap-2 mb-5">
         <button type="button" class="btn btn-secondary" routerLink="/cliente">Cancelar</button>
 
