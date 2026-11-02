@@ -20,7 +20,6 @@
     "@angular/service-worker": "^21.2.21",
     "bootstrap": "^5.3.8",
     "dexie": "^4.4.5",
-    "jsonwebtoken": "^9.0.3",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "xlsx": "^0.18.5"

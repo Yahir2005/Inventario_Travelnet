@@ -54,6 +54,18 @@
                 </li>
 
                 <li class="nav-item dropdown" *ngIf="esAdmin">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownPlanes" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Planes
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownPlanes">
+                        <li><a class="dropdown-item" routerLink="/plan" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Listar Planes</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" routerLink="/plan/insertar-plan" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Agregar Plan</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown" *ngIf="esAdmin">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownCorte" role="button"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         Corte de Caja
@@ -124,6 +136,24 @@
 
                 <!-- Separador visual (opcional) -->
                 <div class="vr d-none d-lg-block"></div>
+
+                <!-- Indicador Online / Offline y Cola de Sincronización -->
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge rounded-pill"
+                          [ngClass]="syncService.enLinea() ? 'text-bg-success' : 'text-bg-warning'">
+                        {{ syncService.enLinea() ? 'En línea' : 'Modo Offline' }}
+                    </span>
+
+                    @if (syncService.pendientesCount() > 0) {
+                        <button type="button"
+                                class="btn btn-outline-warning btn-sm py-0 px-2"
+                                [disabled]="!syncService.enLinea() || syncService.sincronizandoSignal()"
+                                (click)="forzarSincronizacion()"
+                                title="Sincronizar registros guardados sin conexión">
+                            {{ syncService.sincronizandoSignal() ? 'Sincronizando...' : (syncService.pendientesCount() + ' pendiente(s)') }}
+                        </button>
+                    }
+                </div>
 
                 <!-- Theme Toggle Button -->
                 <button class="btn btn-outline-secondary btn-sm d-flex align-items-center justify-content-center" 
