@@ -18,11 +18,13 @@ const SALT_ROUNDS = 10;
 const BCRYPT_PREFIX = /^\$2[aby]\$/;
 
 (async () => {
+    // 1. Conectarse con permisos de Administrador para poder alterar la tabla y actualizar filas
     const pool = getDbPool('Administrador');
     let conn;
     try {
         conn = await pool.getConnection();
 
+        // 2. Verificar que la columna Password tenga al menos 100 caracteres para alojar hashes de bcrypt (60 chars)
         const [{ MaxLength: maxLength }] = await conn.query(
             'SELECT CHARACTER_MAXIMUM_LENGTH AS MaxLength FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = "Usuario" AND COLUMN_NAME = "Password"'
         );
@@ -32,6 +34,7 @@ const BCRYPT_PREFIX = /^\$2[aby]\$/;
             console.log('✔ Columna Password ampliada a VARCHAR(100).');
         }
 
+        // 3. Recorrer todos los usuarios y encriptar solo las contraseñas que aún estén en texto plano
         const usuarios = await conn.query('SELECT UsuarioId, Usuario, Password FROM Usuario');
 
         let actualizados = 0;
